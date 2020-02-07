@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
 
 namespace HourglassServer.Data
@@ -25,7 +24,7 @@ namespace HourglassServer.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseMySQL(_config.GetConnectionString("CentralToastDatabase"));
+                optionsBuilder.UseNpgsql(_config.GetConnectionString("CentralToastDatabase"));
             }
         }
 
