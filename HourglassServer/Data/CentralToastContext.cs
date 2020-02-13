@@ -24,7 +24,7 @@ namespace HourglassServer.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseNpgsql(_config.GetConnectionString("CentralToastDatabase"));
+                optionsBuilder.UseNpgsql(_config.GetConnectionString("HourglassDatabase"));
             }
         }
 
