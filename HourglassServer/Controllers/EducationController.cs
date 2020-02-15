@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+[assembly: ApiController]
 namespace HourglassServer.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
+    [DefaultControllerRoute]
     public class EducationController : ControllerBase
     {
         private CentralToastContext _context;
