@@ -1,0 +1,119 @@
+{
+	"info": {
+		"_postman_id": "cc45adf7-eace-44b3-a5ad-5cd8a7b4d935",
+		"name": "HourglassUser",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "CreateUser",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"userid\": \"51d73193-470d-442b-a392-3e43238eb089\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/HourglassUser",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"HourglassUser"
+					]
+				},
+				"description": "Creates a user given a JSON string with their information."
+			},
+			"response": []
+		},
+		{
+			"name": "GetUserByID",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"UserID\": \"\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/HourglassUser/51d73193-470d-442b-a392-3e43238eb089",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"HourglassUser",
+						"51d73193-470d-442b-a392-3e43238eb089"
+					]
+				},
+				"description": "Retrieve a user's information based on a given ID."
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteUserByID",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/HourglassUser/51d73193-470d-442b-a392-3e43238eb089",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"HourglassUser",
+						"51d73193-470d-442b-a392-3e43238eb089"
+					]
+				},
+				"description": "Deleting a user by ID"
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateUser",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/HourglassUser",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"HourglassUser"
+					]
+				},
+				"description": "Updates a user's information in the database."
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

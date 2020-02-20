@@ -238,3 +238,8 @@ storage.ide-shm
 **/appsettings.Development.json
 **/appsettings.Staging.json
 **/appsettings.Production.json
+
+#
+*.code-workspace
+.DS_Store
+*/.DS_Store

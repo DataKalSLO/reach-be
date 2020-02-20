@@ -1,0 +1,151 @@
+{
+	"info": {
+		"_postman_id": "8074c741-1c9e-476c-9318-654658a9a960",
+		"name": "Graph",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "CreateGraph",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"graphid\": \"ee69b374-9bd6-4f44-b41f-e670b79762de\",\n\t\"graphseries\": [\n\t\t{\n\t\t\t\"tablename\": \"SalinasDam\",\n\t\t\t\"columnname\": \"DATE\",\n\t\t\t\"seriestype\": \"X\"\n\t\t},\n\t\t{\n\t\t\t\"tablename\": \"SalinasDam\",\n\t\t\t\"columnname\": \"CAPACITY\",\n\t\t\t\"seriestype\": \"Y\"\n\t\t}\n\t]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/graph",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"graph"
+					]
+				},
+				"description": "Create a graph given its JSON representation."
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteGraphByID",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/graph/ee69b374-9bd6-4f44-b41f-e670b79762de",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"graph",
+						"ee69b374-9bd6-4f44-b41f-e670b79762de"
+					]
+				},
+				"description": "Create a graph given its JSON representation."
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateGraph",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"graphid\": \"ee69b374-9bd6-4f44-b41f-e670b79762de\",\n\t\"graphseries\": [\n\t\t{\n\t\t\t\"tablename\": \"SalinasDam\",\n\t\t\t\"columnname\": \"CAPACITY\",\n\t\t\t\"seriestype\": \"Y\"\n\t\t}\n\t]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/graph",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"graph"
+					]
+				},
+				"description": "Create a graph given its JSON representation."
+			},
+			"response": []
+		},
+		{
+			"name": "GetGraphByID",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/graph/ee69b374-9bd6-4f44-b41f-e670b79762de",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"graph",
+						"ee69b374-9bd6-4f44-b41f-e670b79762de"
+					]
+				},
+				"description": "Create a graph given its JSON representation."
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

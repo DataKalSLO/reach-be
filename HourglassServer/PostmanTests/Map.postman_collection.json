@@ -1,0 +1,150 @@
+{
+	"info": {
+		"_postman_id": "476ba73a-5ce2-49b1-9a06-d23e94df55e2",
+		"name": "Map",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "CreateMap",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"geomapid\": \"be0e0a7f-f8a0-44ed-9921-58def197e366\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/Map",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"Map"
+					]
+				},
+				"description": "Create a map containing markers from a GeoTables (table containing Longitude and Latitude as columns)."
+			},
+			"response": []
+		},
+		{
+			"name": "GetMapByID",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"GeoMapID\": \"be0e0a7f-f8a0-44ed-9921-58def197e366\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/map/be0e0a7f-f8a0-44ed-9921-58def197e366",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"map",
+						"be0e0a7f-f8a0-44ed-9921-58def197e366"
+					]
+				},
+				"description": "Retrieve a map based on its ID"
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteMapByID",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/Map/be0e0a7f-f8a0-44ed-9921-58def197e366",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"Map",
+						"be0e0a7f-f8a0-44ed-9921-58def197e366"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateMap",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"geomapid\": \"be0e0a7f-f8a0-44ed-9921-58def197e366\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/map",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"map"
+					]
+				},
+				"description": "Update a map based off a given ID."
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

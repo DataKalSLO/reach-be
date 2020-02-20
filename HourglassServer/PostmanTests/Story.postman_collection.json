@@ -1,0 +1,188 @@
+{
+	"info": {
+		"_postman_id": "4005261a-09dc-4de7-9ef3-50218153b9bc",
+		"name": "Story",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GetStoryByID",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/story/6f903a5e-0269-4ae9-b62f-bce8dd78a4d2",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"story",
+						"6f903a5e-0269-4ae9-b62f-bce8dd78a4d2"
+					]
+				},
+				"description": "Retrieve a story from the server/database given the ID of the story."
+			},
+			"response": []
+		},
+		{
+			"name": "GetAllStories",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/story",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"story"
+					]
+				},
+				"description": "Retrieve a story from the server/database given the ID of the story."
+			},
+			"response": []
+		},
+		{
+			"name": "CreateStory",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"storyid\": \"6f903a5e-0269-4ae9-b62f-bce8dd78a4d2\",\n  \"userid\": \"51d73193-470d-442b-a392-3e43238eb089\",\n  \"title\": \"Dam Water Capacity Over Time\",\n  \"description\": \"Our two main Dams in our central coast region, Salinas Dam and Lake Lopez, are constantly monitored. Their water levels are displayed throughout time.\",\n  \"storyblocks\": [\n    {\n      \"blockid\": \"6e159091-17a5-40a2-b3a5-f80da04ad71a\",\n      \"position\": 1,\n      \"type\": \"TEXT\",\n      \"block\": {\n       \"editorstate\": \"JSON\"\n      }\n    },\n    {\n      \"blockid\": \"ee69b374-9bd6-4f44-b41f-e670b79762de\",\n      \"position\": 2,\n      \"type\": \"GRAPH\",\n      \"block\": {\n       \"id\": \"6b52d546-1828-4563-a010-ff8ffaf7fdf5\"\n      }\n    },\n    {\n    \t\"blockid\": \"\",\n    \t\"position\": 3,\n    \t\"type\": \"MAP\",\n    \t\"block\": {\n    \t\t\"id\": \"be0e0a7f-f8a0-44ed-9921-58def197e366\"\n    \t}\n    }\n  ]\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/story",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"story"
+					]
+				},
+				"description": "Create a story from a given JSON representation of it."
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteStory",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/story/6f903a5e-0269-4ae9-b62f-bce8dd78a4d2",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"story",
+						"6f903a5e-0269-4ae9-b62f-bce8dd78a4d2"
+					]
+				},
+				"description": "Delete a story based on a given ID."
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateStory",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"storyid\": \"6f903a5e-0269-4ae9-b62f-bce8dd78a4d2\",\n  \"title\": \"Some New Title\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/story",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"story"
+					]
+				},
+				"description": "Create a story from a given JSON representation of it."
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
