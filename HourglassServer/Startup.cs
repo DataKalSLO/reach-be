@@ -19,6 +19,7 @@ namespace HourglassServer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<CentralToastContext>();
+            services.AddDbContext<DatasetDbContext>();
             services.AddControllers();
         }
 
