@@ -9,6 +9,7 @@ namespace HourglassServer.Data
     {
         private IConfiguration _config;
 
+        public CentralToastContext() { } // needed to mock this context
         public CentralToastContext(DbContextOptions<CentralToastContext> options, IConfiguration config)
             : base(options)
         {
