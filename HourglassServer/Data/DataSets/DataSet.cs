@@ -9,7 +9,7 @@ using System.Collections.Generic;
  *----------------------------------------
  */
 namespace HourglassServer.Data{
-    public class DataSets{
-        public Object[] Row {get; set;}
+    public class DataSet{
+        public List<Object[]> Data {get; set;}
     }
 }

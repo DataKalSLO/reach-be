@@ -41,15 +41,7 @@ namespace HourglassServer.Data
         {
             _config = config;
         }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseNpgsql(_config.GetConnectionString("HourglassDatabase"));
-            }
-        }
-
+        
         private NpgsqlConnection getConnection() {
             return new NpgsqlConnection(_config.GetConnectionString("HourglassDatabase"));
         }
@@ -79,25 +71,22 @@ namespace HourglassServer.Data
             return String.Format("SELECT * FROM {0}", tableName);
         }
 
-        public async Task<List<DataSets>> getDataSet(string tableName){
-            //TODO: connect to DB and return requested dataset
-            //formatString(tableName).Result;
-            //Test of concept code. Will NOT make it into production
-            List<DataSets> datasets = new List<DataSets>();
-            DataSets data;
+        public async Task<DataSet> getDataSet(string tableName){
+            //get all the rows of a data set
+            List<Object[]> datasetRows = new List<Object[]>();
+            string sql = formatString(tableName).Result;
             var conn = getConnection();
             await conn.OpenAsync();
-            await using (var cmd = new NpgsqlCommand("SELECT * FROM datasetmetadata", conn))
+            await using (var cmd = new NpgsqlCommand(sql, conn))
             await using (var reader = await cmd.ExecuteReaderAsync())
             while (await reader.ReadAsync()) {
                 Object[] values = new Object[reader.FieldCount];
                 reader.GetValues(values);
-                data = new DataSets{
-                    Row = values
-                };
-                datasets.Add(data);
+                datasetRows.Add(values);
             }
-            return datasets;
+            return new DataSet{
+                Data = datasetRows
+            };
         }
 
         public async Task<List<DatasetMetadata>> getAllDatasetMetadata() {

@@ -32,7 +32,7 @@ namespace HourglassServer.Controllers{
 
         // GET: api/DataSets?tableName=[string tableName]
         [HttpGet]
-        public ActionResult<List<DataSets>> GetDataSet(string tableName){
+        public ActionResult<DataSet> GetDataSet(string tableName){
 
             return _context.getDataSet(tableName).Result;         
         }
