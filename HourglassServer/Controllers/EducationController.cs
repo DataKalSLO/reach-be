@@ -11,9 +11,9 @@ namespace HourglassServer.Controllers
     [DefaultControllerRoute]
     public class EducationController : ControllerBase
     {
-        private CentralToastContext _context;
+        private HourglassContext _context;
 
-        public EducationController(CentralToastContext context)
+        public EducationController(HourglassContext context)
         {
             _context = context;
         }

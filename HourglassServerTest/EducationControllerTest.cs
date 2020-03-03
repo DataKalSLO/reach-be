@@ -58,7 +58,7 @@ namespace HourglassServerTest
             mockSet.As<IQueryable<Degrees>>().Setup(m => m.ElementType).Returns(_data.ElementType);
             mockSet.As<IQueryable<Degrees>>().Setup(m => m.GetEnumerator()).Returns(_data.GetEnumerator());
 
-            var mockContext = new Mock<CentralToastContext>();
+            var mockContext = new Mock<HourglassContext>();
             mockContext.Setup(m => m.Degrees).Returns(mockSet.Object);
 
             var controller = new EducationController(mockContext.Object);

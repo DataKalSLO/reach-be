@@ -12,9 +12,9 @@ namespace HourglassServer.Controllers
     [DefaultControllerRoute]
     public class StoryController : Controller
     {
-        private CentralToastContext _context;
+        private HourglassContext _context;
 
-        public StoryController(CentralToastContext context)
+        public StoryController(HourglassContext context)
         {
             _context = context;
         }

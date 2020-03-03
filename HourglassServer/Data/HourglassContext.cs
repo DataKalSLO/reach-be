@@ -5,12 +5,13 @@ using HourglassServer.Data.StoryModel;
 
 namespace HourglassServer.Data
 {
-    public partial class CentralToastContext : DbContext
+    public partial class HourglassContext : DbContext
     {
         private IConfiguration _config;
 
-        public CentralToastContext() { } // needed to mock this context
-        public CentralToastContext(DbContextOptions<CentralToastContext> options, IConfiguration config)
+        public HourglassContext() { }
+
+        public HourglassContext(DbContextOptions<HourglassContext> options, IConfiguration config)
             : base(options)
         {
             _config = config;
@@ -22,6 +23,7 @@ namespace HourglassServer.Data
         public virtual DbSet<DegreesAwarded> DegreesAwarded { get; set; }
         public virtual DbSet<Dummy> Dummy { get; set; }
         public virtual DbSet<Universities> Universities { get; set; }
+        public virtual DbSet<Person> Person { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -41,8 +43,6 @@ namespace HourglassServer.Data
             {
                 entity.HasKey(e => e.IdCounty);
 
-                entity.ToTable("Counties", "central_toast");
-
                 entity.Property(e => e.IdCounty)
                     .HasColumnName("ID_County")
                     .HasMaxLength(255)
@@ -57,8 +57,6 @@ namespace HourglassServer.Data
             modelBuilder.Entity<Degrees>(entity =>
             {
                 entity.HasKey(e => new { e.Gender, e.Year, e.IdUniversity });
-
-                entity.ToTable("Degrees", "central_toast");
 
                 entity.Property(e => e.Gender)
                     .HasMaxLength(255)
@@ -83,8 +81,6 @@ namespace HourglassServer.Data
             modelBuilder.Entity<DegreesAwarded>(entity =>
             {
                 entity.HasKey(e => new { e.Year, e.IdCounty });
-
-                entity.ToTable("DegreesAwarded", "central_toast");
 
                 entity.Property(e => e.Year).HasColumnType("int(11)");
 
@@ -112,8 +108,6 @@ namespace HourglassServer.Data
 
             modelBuilder.Entity<Dummy>(entity =>
             {
-                entity.ToTable("dummy", "central_toast");
-
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(11)")
@@ -128,8 +122,6 @@ namespace HourglassServer.Data
             modelBuilder.Entity<Universities>(entity =>
             {
                 entity.HasKey(e => e.IdUniversity);
-
-                entity.ToTable("Universities", "central_toast");
 
                 entity.Property(e => e.IdUniversity)
                     .HasColumnName("ID_University")
@@ -155,6 +147,28 @@ namespace HourglassServer.Data
                     .HasMaxLength(50)
                     .IsUnicode(false);
             });
-        }
+
+            modelBuilder.Entity<Person>(entity =>
+            {
+               entity.HasKey(e => e.Email)
+                   .HasName("Person_pkey");
+
+               entity.Property(e => e.Email)
+                   .HasColumnName("email")
+                   .HasMaxLength(50);
+
+               entity.Property(e => e.Name)
+                   .IsRequired()
+                   .HasColumnName("name")
+                   .HasMaxLength(50);
+
+               entity.Property(e => e.Password)
+                   .IsRequired()
+                   .HasColumnName("password")
+                   .HasMaxLength(50);
+
+               entity.Property(e => e.Role).HasColumnName("role");
+            });
+      }
     }
 }
