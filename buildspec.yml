@@ -1,0 +1,21 @@
+version: 0.2
+phases:
+  install: 
+    runtime-versions:
+      dotnet: 3.0
+  pre_build:
+    commands:
+      - echo Copying config files into source directory
+      - cp $CODEBUILD_SRC_DIR_ConfigArtifact/appsettings.* $CODEBUILD_SRC_DIR/HourglassServer/
+      - echo Restore started on `date`
+      - dotnet restore $CODEBUILD_SRC_DIR/HourglassServer/HourglassServer.csproj
+  build:
+    commands:
+      - echo Build started on `date`
+      - dotnet publish -c release -o ./build_output $CODEBUILD_SRC_DIR/HourglassServer/HourglassServer.csproj
+artifacts:
+  files:
+    - build_output/**/*
+    - scripts/**/*
+    - appspec.yml
+

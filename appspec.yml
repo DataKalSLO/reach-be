@@ -1,0 +1,25 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/ec2-user/Hourglass
+hooks:
+  ApplicationStop:
+    - location: scripts/stop_service.sh
+      timeout: 300
+      runas: root
+
+  BeforeInstall:
+    - location: scripts/remove_application.sh
+      timeout: 300
+      runas: root
+
+  AfterInstall:
+    - location: scripts/server_config.sh
+      timeout: 500
+      runas: root
+
+  ApplicationStart:
+    - location: scripts/start_service.sh
+      timeout: 300
+      runas: root
