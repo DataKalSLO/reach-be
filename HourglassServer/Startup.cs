@@ -72,7 +72,6 @@ namespace HourglassServer
         public void Configure(IApplicationBuilder app, IHostEnvironment env)
         {
             app.UseCors(MyAllowSpecificOrigins);
-            app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
