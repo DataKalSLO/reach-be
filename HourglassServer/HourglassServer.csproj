@@ -17,4 +17,12 @@
     <PackageReference Include="Npgsql" Version="4.1.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Data\postgresContext.cs" />
+    <Compile Remove="Data\Story.cs" />
+    <Compile Remove="Controllers\EducationController.cs" />
+    <Compile Remove="Data\Storyblock.cs" />
+    <Compile Remove="Data\Storycategory.cs" />
+    <Compile Remove="Data\Category.cs" />
+  </ItemGroup>
 </Project>

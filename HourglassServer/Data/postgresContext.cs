@@ -20,6 +20,7 @@ namespace HourglassServer.Data
 
 
         public virtual DbSet<Area> Area { get; set; }
+        public virtual DbSet<Category> Category { get; set; }
         public virtual DbSet<CensusData> CensusData { get; set; }
         public virtual DbSet<CensusVariables> CensusVariables { get; set; }
         public virtual DbSet<Datasetmetadata> Datasetmetadata { get; set; }
@@ -35,6 +36,8 @@ namespace HourglassServer.Data
         public virtual DbSet<Person> Person { get; set; }
         public virtual DbSet<Point> Point { get; set; }
         public virtual DbSet<Story> Story { get; set; }
+        public virtual DbSet<Storyblock> Storyblock { get; set; }
+        public virtual DbSet<Storycategory> Storycategory { get; set; }
         public virtual DbSet<Textblock> Textblock { get; set; }
         public virtual DbSet<Tmp> Tmp { get; set; }
         public virtual DbSet<ZipArea> ZipArea { get; set; }
@@ -68,6 +71,22 @@ namespace HourglassServer.Data
                     .HasColumnType("character varying");
 
                 entity.Property(e => e.Coordinates).HasColumnName("coordinates");
+            });
+
+            modelBuilder.Entity<Category>(entity =>
+            {
+                entity.HasKey(e => e.Categoryname)
+                    .HasName("category_pkey");
+
+                entity.ToTable("category");
+
+                entity.Property(e => e.Categoryname)
+                    .HasColumnName("categoryname")
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Categorydescription)
+                    .HasColumnName("categorydescription")
+                    .HasMaxLength(500);
             });
 
             modelBuilder.Entity<CensusData>(entity =>
@@ -239,35 +258,35 @@ namespace HourglassServer.Data
                     .IsFixedLength();
             });
 
-            //modelBuilder.Entity<Geomapblock>(entity =>
-            //{
-            //    entity.HasKey(e => e.Blockid)
-            //        .HasName("geomapblock_pkey");
+            modelBuilder.Entity<Geomapblock>(entity =>
+            {
+                entity.HasKey(e => e.Blockid)
+                    .HasName("geomapblock_pkey");
 
-            //    entity.ToTable("geomapblock");
+                entity.ToTable("geomapblock");
 
-            //    entity.Property(e => e.Blockid)
-            //        .HasColumnName("blockid")
-            //        .HasMaxLength(36)
-            //        .IsFixedLength();
+                entity.Property(e => e.Blockid)
+                    .HasColumnName("blockid")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
 
-            //    entity.Property(e => e.Geomapid)
-            //        .IsRequired()
-            //        .HasColumnName("geomapid")
-            //        .HasMaxLength(36)
-            //        .IsFixedLength();
+                entity.Property(e => e.Geomapid)
+                    .IsRequired()
+                    .HasColumnName("geomapid")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
 
-            //    entity.HasOne(d => d.Block)
-            //        .WithOne(p => p.Geomapblock)
-            //        .HasForeignKey<Geomapblock>(d => d.Blockid)
-            //        .HasConstraintName("geomapblock_blockid_fkey");
+                entity.HasOne(d => d.Block)
+                    .WithOne(p => p.Geomapblock)
+                    .HasForeignKey<Geomapblock>(d => d.Blockid)
+                    .HasConstraintName("geomapblock_blockid_fkey");
 
-            //    entity.HasOne(d => d.Geomap)
-            //        .WithMany(p => p.Geomapblock)
-            //        .HasForeignKey(d => d.Geomapid)
-            //        .OnDelete(DeleteBehavior.ClientSetNull)
-            //        .HasConstraintName("geomapblock_geomapid_fkey");
-            //});
+                entity.HasOne(d => d.Geomap)
+                    .WithMany(p => p.Geomapblock)
+                    .HasForeignKey(d => d.Geomapid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("geomapblock_geomapid_fkey");
+            });
 
             modelBuilder.Entity<Graph>(entity =>
             {
@@ -284,35 +303,35 @@ namespace HourglassServer.Data
                     .HasMaxLength(500);
             });
 
-            //modelBuilder.Entity<Graphblock>(entity =>
-            //{
-            //    entity.HasKey(e => e.Blockid)
-            //        .HasName("graphblock_pkey");
+            modelBuilder.Entity<Graphblock>(entity =>
+            {
+                entity.HasKey(e => e.Blockid)
+                    .HasName("graphblock_pkey");
 
-            //    entity.ToTable("graphblock");
+                entity.ToTable("graphblock");
 
-            //    entity.Property(e => e.Blockid)
-            //        .HasColumnName("blockid")
-            //        .HasMaxLength(36)
-            //        .IsFixedLength();
+                entity.Property(e => e.Blockid)
+                    .HasColumnName("blockid")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
 
-            //    entity.Property(e => e.Graphid)
-            //        .IsRequired()
-            //        .HasColumnName("graphid")
-            //        .HasMaxLength(36)
-            //        .IsFixedLength();
+                entity.Property(e => e.Graphid)
+                    .IsRequired()
+                    .HasColumnName("graphid")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
 
-            //    entity.HasOne(d => d.Block)
-            //        .WithOne(p => p.Graphblock)
-            //        .HasForeignKey<Graphblock>(d => d.Blockid)
-            //        .HasConstraintName("graphblock_blockid_fkey");
+                entity.HasOne(d => d.Block)
+                    .WithOne(p => p.Graphblock)
+                    .HasForeignKey<Graphblock>(d => d.Blockid)
+                    .HasConstraintName("graphblock_blockid_fkey");
 
-            //    entity.HasOne(d => d.Graph)
-            //        .WithMany(p => p.Graphblock)
-            //        .HasForeignKey(d => d.Graphid)
-            //        .OnDelete(DeleteBehavior.ClientSetNull)
-            //        .HasConstraintName("graphblock_graphid_fkey");
-            //});
+                entity.HasOne(d => d.Graph)
+                    .WithMany(p => p.Graphblock)
+                    .HasForeignKey(d => d.Graphid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("graphblock_graphid_fkey");
+            });
 
             modelBuilder.Entity<Graphseries>(entity =>
             {
@@ -440,28 +459,127 @@ namespace HourglassServer.Data
                     .ValueGeneratedOnAdd();
             });
 
-            //modelBuilder.Entity<Textblock>(entity =>
-            //{
-            //    entity.HasKey(e => e.Blockid)
-            //        .HasName("textblock_pkey");
+            modelBuilder.Entity<Story>(entity =>
+            {
+                entity.ToTable("story");
 
-            //    entity.ToTable("textblock");
+                entity.Property(e => e.Storyid)
+                    .HasColumnName("storyid")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
 
-            //    entity.Property(e => e.Blockid)
-            //        .HasColumnName("blockid")
-            //        .HasMaxLength(36)
-            //        .IsFixedLength();
+                entity.Property(e => e.Datecreated).HasColumnName("datecreated");
 
-            //    entity.Property(e => e.Editorstate)
-            //        .IsRequired()
-            //        .HasColumnName("editorstate")
-            //        .HasMaxLength(100000);
+                entity.Property(e => e.Datelastedited).HasColumnName("datelastedited");
 
-            //    entity.HasOne(d => d.Block)
-            //        .WithOne(p => p.Textblock)
-            //        .HasForeignKey<Textblock>(d => d.Blockid)
-            //        .HasConstraintName("textblock_blockid_fkey");
-            //});
+                entity.Property(e => e.Description)
+                    .HasColumnName("description")
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Publicationstatus)
+                    .IsRequired()
+                    .HasColumnName("publicationstatus")
+                    .HasMaxLength(10);
+
+                entity.Property(e => e.Title)
+                    .IsRequired()
+                    .HasColumnName("title")
+                    .HasMaxLength(250);
+
+                entity.Property(e => e.Userid)
+                    .IsRequired()
+                    .HasColumnName("userid")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Story)
+                    .HasForeignKey(d => d.Userid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("story_userid_fkey");
+            });
+
+            modelBuilder.Entity<Storyblock>(entity =>
+            {
+                entity.HasKey(e => e.Blockid)
+                    .HasName("storyblock_pkey");
+
+                entity.ToTable("storyblock");
+
+                entity.HasIndex(e => new { e.Storyid, e.Blockposition })
+                    .HasName("storyblock_storyid_blockposition_key")
+                    .IsUnique();
+
+                entity.Property(e => e.Blockid)
+                    .HasColumnName("blockid")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.Property(e => e.Blockposition).HasColumnName("blockposition");
+
+                entity.Property(e => e.Storyid)
+                    .IsRequired()
+                    .HasColumnName("storyid")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.HasOne(d => d.Story)
+                    .WithMany(p => p.Storyblock)
+                    .HasForeignKey(d => d.Storyid)
+                    .HasConstraintName("storyblock_storyid_fkey");
+            });
+
+            modelBuilder.Entity<Storycategory>(entity =>
+            {
+                entity.HasKey(e => new { e.Storyid, e.Categoryname })
+                    .HasName("storycategory_pkey");
+
+                entity.ToTable("storycategory");
+
+                entity.Property(e => e.Storyid)
+                    .HasColumnName("storyid")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.Property(e => e.Categoryname)
+                    .HasColumnName("categoryname")
+                    .HasMaxLength(500);
+
+                entity.HasOne(d => d.CategorynameNavigation)
+                    .WithMany(p => p.Storycategory)
+                    .HasForeignKey(d => d.Categoryname)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("storycategory_categoryname_fkey");
+
+                entity.HasOne(d => d.Story)
+                    .WithMany(p => p.Storycategory)
+                    .HasForeignKey(d => d.Storyid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("storycategory_storyid_fkey");
+            });
+
+            modelBuilder.Entity<Textblock>(entity =>
+            {
+                entity.HasKey(e => e.Blockid)
+                    .HasName("textblock_pkey");
+
+                entity.ToTable("textblock");
+
+                entity.Property(e => e.Blockid)
+                    .HasColumnName("blockid")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.Property(e => e.Editorstate)
+                    .IsRequired()
+                    .HasColumnName("editorstate")
+                    .HasMaxLength(100000);
+
+                entity.HasOne(d => d.Block)
+                    .WithOne(p => p.Textblock)
+                    .HasForeignKey<Textblock>(d => d.Blockid)
+                    .HasConstraintName("textblock_blockid_fkey");
+            });
 
             modelBuilder.Entity<Tmp>(entity =>
             {
@@ -509,7 +627,10 @@ namespace HourglassServer.Data
 
                 entity.Property(e => e.Coordinates).HasColumnName("coordinates");
             });
+
+            OnModelCreatingPartial(modelBuilder);
         }
 
+        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 }
