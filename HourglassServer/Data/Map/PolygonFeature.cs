@@ -7,16 +7,18 @@ namespace HourglassServer.Data.Map
     {
         public string Type { get; set; }
         public PolygonGeometry Geometry { get; set; }
+        public Property Property { get; set; }
 
-        public PolygonFeature(List<Point> points)
+        public PolygonFeature(List<Point> points, string name)
         {
             this.Type = "Feature";
             this.Geometry = new PolygonGeometry(points);
+            this.Property = new Property(name);
         }
 
         public override string ToString()
         {
-            return Type + ", " + Geometry.ToString();
+            return Type + ", " + "( " + Geometry.ToString() + " )";
         }
        
     }

@@ -1,7 +1,7 @@
 ﻿using System;
-namespace HourglassServer
+namespace HourglassServer.Data
 {
-    enum GeoType
+    public enum GeoType
     {
         zip,
         city,

@@ -8,6 +8,7 @@ namespace HourglassServer.Data
         public string VariableName { get; set; }
         public int Year { get; set; }
         public string GeoName { get; set; }
+        public GeoType GeoType { get; set; } 
         public int? Value { get; set; }
 
         public virtual CensusVariables VariableNameNavigation { get; set; }

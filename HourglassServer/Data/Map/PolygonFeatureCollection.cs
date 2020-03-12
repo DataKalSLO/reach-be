@@ -23,5 +23,19 @@ namespace HourglassServer.Data.Map
                 return innerList;
             });
         }
+
+        public override string ToString()
+        {
+            string result = "";
+            foreach (List<PolygonFeature> feat in FeatureList)
+            {
+                foreach (PolygonFeature f in feat)
+                {
+                    result+= (f.ToString());
+                }
+
+            }
+            return result;
+        }
     }
 }

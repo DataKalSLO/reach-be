@@ -93,16 +93,18 @@ namespace HourglassServerTest
             {
                 VariableName = "B19019_001E",
                 Year = 2018,
+                GeoType = GeoType.zip,
                 GeoName = "93428",
                 Value = 69766
+            },
+            new CensusData()
+            {
+                VariableName = "B19019_001E",
+                Year = 2018,
+                GeoType = GeoType.zip,
+                GeoName = "93402",
+                Value = 75302
             }
-            //new CensusData()
-            //{
-            //    VariableName = "B19019_001E",
-            //    Year = 2018,
-            //    GeoName = "93402",
-            //    Value = 75302
-            //},
             //new CensusData()
             //{
             //    VariableName = "B19019_001E",
@@ -119,6 +121,11 @@ namespace HourglassServerTest
                 Zip = 93428,
                 Coordinates = new int[]
                     {1,2,5,6,7,8,9,10}
+            },
+            new ZipCode()
+            {
+                Zip = 93402,
+                Coordinates = new int[] { 96, 97, 98, 99 }
             }
         }.AsQueryable();
 
@@ -171,6 +178,30 @@ namespace HourglassServerTest
                 Id = 10,
                 Longitude = -121.11427100000002M,
                 Latitude = 35.619727M
+            },
+            new Point()
+            {
+                Id = 96,
+                Longitude = -120.86240469202802M,
+                Latitude = 35.353866164443794M
+            },
+            new Point()
+            {
+                Id = 97,
+                Longitude = -120.84443899999998M,
+                Latitude = 35.350483M
+            },
+            new Point()
+            {
+                Id = 98,
+                Longitude = -120.844605M,
+                Latitude = 35.346331M
+            },
+            new Point()
+            {
+                Id = 99,
+                Longitude = -120.839849M,
+                Latitude = 35.345361M
             }
         }.AsQueryable();
 
@@ -211,12 +242,92 @@ namespace HourglassServerTest
             var controller = new HourglassServer.MapController(mockContext.Object);
             var results = controller.GetZipCodes("median household income");
 
-            List<Point> points = _points.ToList();
-            PolygonFeature geom = new PolygonFeature(points);
-            List<PolygonFeature> features = new List<PolygonFeature>() { geom };
+            List<Point> points1 = new List<Point>() {
+                new Point()
+                {
+                    Id = 1,
+                    Longitude = -121.12786764474501M,
+                    Latitude = 35.594866374176696M
+                },
+                new Point()
+                {
+                    Id = 2,
+                    Longitude =  -121.125593M,
+                    Latitude = 35.595427M
+                },
+                new Point()
+                {
+                    Id = 5,
+                    Longitude = -121.12764199999998M,
+                    Latitude = 35.598861M
+                },
+                new Point()
+                {
+                    Id = 6,
+                    Longitude = -121.12243599999998M,
+                    Latitude = 35.600187M
+                },
+                new Point()
+                {
+                    Id = 7,
+                    Longitude = -121.123989M,
+                    Latitude = 35.611579M
+                },
+                new Point()
+                {
+                    Id = 8,
+                    Longitude = -121.12178899999999M,
+                    Latitude = 35.613671M
+                },
+                new Point()
+                {
+                    Id = 9,
+                    Longitude = -121.11732799999999M,
+                    Latitude = 35.614964M
+                },
+                new Point()
+                {
+                    Id = 10,
+                    Longitude = -121.11427100000002M,
+                    Latitude = 35.619727M
+                } };
+
+            List<Point> points2 = new List<Point>()
+            {
+                new Point()
+                {
+                    Id = 96,
+                    Longitude = -120.86240469202802M,
+                    Latitude = 35.353866164443794M
+                },
+                new Point()
+                {
+                    Id = 97,
+                    Longitude = -120.84443899999998M,
+                    Latitude = 35.350483M
+                },
+                new Point()
+                {
+                    Id = 98,
+                    Longitude = -120.844605M,
+                    Latitude = 35.346331M
+                },
+                new Point()
+                {
+                    Id = 99,
+                    Longitude = -120.839849M,
+                    Latitude = 35.345361M
+                }
+            };
+
+            PolygonFeature geom1 = new PolygonFeature(points1, "93428");
+            PolygonFeature geom2 = new PolygonFeature(points2, "93402");
+            List<PolygonFeature> features = new List<PolygonFeature>() { geom1, geom2 };
             PolygonFeatureCollection expectedCollection = new PolygonFeatureCollection(features);
-            Console.WriteLine(results.FeatureList.First().First().ToString());
-            Assert.AreEqual(results.FeatureList.First().First().ToString(), geom.ToString());
+            Assert.AreEqual(results.FeatureList.Count(), 2);
+            Console.WriteLine("expected:");
+            Console.WriteLine(expectedCollection.ToString());
+            Assert.AreEqual(results.ToString(), expectedCollection.ToString());
         }
 
         //[TestMethod]

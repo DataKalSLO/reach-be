@@ -32,10 +32,12 @@ namespace HourglassServer.Data.Map
             {
                 foreach (List<decimal> coordinates in innerList)
                 {
+                    result += " ( ";
                     foreach (decimal coord in coordinates)
                     {
-                        result += "( " + coord + ",";
+                        result += coord + " ";
                     }
+                    result += " ) \r";
                     
                 }
             }

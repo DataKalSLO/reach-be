@@ -59,20 +59,44 @@ namespace HourglassServer
         {
             try
             {
+                // finding variable name of given census description
                 string variableName = _context.CensusVariables.Where(v => v.Description.ToUpper().Contains(description.ToUpper())).First().Name;
-                Console.WriteLine(variableName);
-                string zipCode = _context.CensusData.Where(d => d.VariableName == variableName).First().GeoName;
-                Console.WriteLine(zipCode);
-                // if geo_type == 'zip' ...
-                int[] coordinates = _context.ZipCode.Where(z => z.Zip.ToString() == zipCode).First().Coordinates;
-                List<Point> points = new List<Point>();
-                foreach (int pt in coordinates)
+
+                // getting all rows in CensusData with variableName
+                IEnumerable<CensusData> cData = _context.CensusData.Where(d => d.VariableName == variableName);
+
+                // creating empty list of PolygonFeatures
+                List<PolygonFeature> features = new List<PolygonFeature>();
+
+                // iterating through CensusData rows
+                foreach (CensusData data in cData)
                 {
-                    Point point = _context.Point.Where(p => p.Id == pt).First();
-                    points.Add(point);
+                    // if geo type is zip, go through ZipCode table
+                    if (data.GeoType == GeoType.zip)
+                    {
+                        // getting all rows in ZipCode with specified zipcode name
+                        IEnumerable<ZipCode> zips = _context.ZipCode
+                            .Where(z => z.Zip.ToString() == data.GeoName);
+
+                        // iterating through zipcodes (should only be one ?)
+                        foreach (ZipCode zip in zips)
+                        {
+                            // iterating through point ids in zip coordinates list
+                            // this should be using foreign key
+                            List<Point> points = new List<Point>();
+                            foreach (int pt in zip.Coordinates)
+                            {
+                                Point point = _context.Point.Where(p => p.Id == pt).First();
+                                points.Add(point);
+                            }
+                            // creating PolygonFeature using new list of points and name of location
+                            PolygonFeature geom = new PolygonFeature(points, data.GeoName);
+                            features.Add(geom);
+                        }
+
+                    }
+                    // TODO: add functionality for city, county
                 }
-                PolygonFeature geom = new PolygonFeature(points);
-                List<PolygonFeature> features = new List<PolygonFeature>() { geom };
                 PolygonFeatureCollection collection = new PolygonFeatureCollection(features);
                 return collection;
             }
