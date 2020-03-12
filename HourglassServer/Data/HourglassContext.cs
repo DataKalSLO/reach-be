@@ -88,6 +88,9 @@ namespace HourglassServer.Data
                     .HasColumnName("geo_name")
                     .HasMaxLength(100);
 
+                entity.Property(e => e.GeoType)
+                    .HasColumnName("geo_type");
+
                 entity.Property(e => e.Value).HasColumnName("value");
 
                 entity.HasOne(d => d.VariableNameNavigation)
@@ -419,7 +422,7 @@ namespace HourglassServer.Data
 
             modelBuilder.Entity<Point>(entity =>
             {
-                entity.HasKey(e => new { e.Longitude, e.Latitude })
+                entity.HasKey(e => new { e.Id })
                     .HasName("point_pkey");
 
                 entity.ToTable("point");
