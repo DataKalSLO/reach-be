@@ -16,6 +16,7 @@ namespace HourglassServer.Data
             : base(options)
         {
             _config = config;
+            Npgsql.NpgsqlConnection.GlobalTypeMapper.MapEnum<GeoType>();
         }
 
 
@@ -52,7 +53,7 @@ namespace HourglassServer.Data
         {
             modelBuilder.HasAnnotation("ProductVersion", "2.2.4-servicing-10062");
 
-            modelBuilder.HasPostgresEnum(null, "geo_type", new[] { "city", "zip", "county" });
+            modelBuilder.HasPostgresEnum("geo_type", new[] { "city", "zip", "county" });
 
             modelBuilder.Entity<Story>(StoryEntityCreator.create);
 

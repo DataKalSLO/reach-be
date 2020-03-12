@@ -22,4 +22,7 @@
     <ProjectReference Include="..\HourglassServer\HourglassServer.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="EducationControllerTest.cs" />
+  </ItemGroup>
 </Project>

@@ -25,4 +25,7 @@
     <Compile Remove="Data\Storycategory.cs" />
     <Compile Remove="Data\Category.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Data\Map\" />
+  </ItemGroup>
 </Project>
