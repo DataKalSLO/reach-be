@@ -26,5 +26,32 @@ It is probably [LINQ query langauge](https://docs.microsoft.com/en-us/dotnet/csh
 
 - When updating the database schema, run the following dotnet command: `dotnet ef dbcontext scaffold "our connection string here" Npgsql.EntityFrameworkCore.PostgreSQL -o Data`. Note: you will most likely need to install `dotnet-ef` by running `dotnet tool install --global dotnet-ef` This command looks at the database schema and updates the corresponding classes in our code. You should then commit the changes. More information can be found [here](https://docs.microsoft.com/en-us/ef/core/miscellaneous/cli/dotnet).
 
+### Running Script Through the CLI (e.g. For Mac/Linux Users)
+
+As you may have noticed the powershell is not available for mac users. A summary of the issue can be found here: https://stackoverflow.com/questions/44086572/cant-find-package-manager-console-in-visual-studio-for-mac
+
+These instruction use the command line interface provided by .NET to run the scaffold tool.
+
+#### 1. Install the Command Line Interface for .net (CLI Tools)
+
+https://docs.microsoft.com/en-us/ef/core/miscellaneous/cli/dotnet
+
+#### 2. Install Reverse Engineering Tool, Scaffold:
+
+dotnet tool install --global dotnet-ef
+
+
+#### 3. Install Postgress NuGet Driver (should be installed if project is able to run)
+
+https://www.nuget.org/packages/Npgsql.EntityFrameworkCore.PostgreSQL
+
+#### 4. Run script reverse_engineer_database_table
+
+python reverse_engineer_database_table.py
+
+or
+
+python3 reverse_engineer_database_table.py
+
 ## Resources
 https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?view=aspnetcore-3.1&tabs=visual-studio
