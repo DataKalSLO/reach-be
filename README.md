@@ -14,7 +14,7 @@
 }
 ```
 
-## Note
+### Note
 - If you see syntax that looks like SQL in API controllers like this:
 ```
 return (from degrees in _context.Degrees
@@ -26,11 +26,14 @@ It is probably [LINQ query langauge](https://docs.microsoft.com/en-us/dotnet/csh
 
 - When updating the database schema, run the following dotnet command: `dotnet ef dbcontext scaffold "our connection string here" Npgsql.EntityFrameworkCore.PostgreSQL -o Data`. Note: you will most likely need to install `dotnet-ef` by running `dotnet tool install --global dotnet-ef` This command looks at the database schema and updates the corresponding classes in our code. You should then commit the changes. More information can be found [here](https://docs.microsoft.com/en-us/ef/core/miscellaneous/cli/dotnet).
 
-### Running Script Through the CLI (e.g. For Mac/Linux Users)
-
-As you may have noticed the powershell is not available for mac users. A summary of the issue can be found here: https://stackoverflow.com/questions/44086572/cant-find-package-manager-console-in-visual-studio-for-mac
+## Reverse Engineer/Scaffoling  Script
 
 These instruction use the command line interface provided by .NET to run the scaffold tool.
+More detailed instructions can be found here: https://docs.microsoft.com/en-us/ef/core/managing-schemas/scaffolding
+
+#### Preliminary Step: Specify Tables to Reverse Engineer
+1. Make sure that HourglassServer/TablesToReverseEngineer.txt has a list of all the tables that 
+you want created into classes. This file should have a table name per line. Trailing newline should not matter.
 
 #### 1. Install the Command Line Interface for .net (CLI Tools)
 
