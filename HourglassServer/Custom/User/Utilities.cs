@@ -45,7 +45,7 @@ namespace HourglassServer
         {
             byte[] salt = Convert.FromBase64String(saltString);
             string hash = Hash(enteredPassword, salt);
-            return hash.Equals(realHash);
+            return hash == realHash;
         }
 
         private static string Hash(string password, byte[] salt, int hashLength = 128)
