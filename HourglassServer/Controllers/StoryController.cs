@@ -19,21 +19,21 @@ namespace HourglassServer.Controllers
         }
 
         [HttpGet]
-        public IList<StoryCreationObject> Get()
+        public IList<StoryApplicationModel> Get()
         {
-            throw new Exception("Method not implemented yet.");
+            throw new Exception("Method not yet implemented");
         }
 
         [HttpGet("{id}")]
-        public StoryCreationObject Get(string id)
+        public StoryApplicationModel Get(string id)
         {
-            throw new Exception("Method not implemented yet.");
+            throw new Exception("Method not yet implemented");
         }
 
         [HttpPost]
-        public string Post([FromBody] StoryCreationObject story)
+        public StoryApplicationModel Post([FromBody] StoryApplicationModel story)
         {
-            throw new Exception("Method not implemented yet.");
+            throw new Exception("Method not yet implemented");
         }
 
         [HttpPut]
@@ -43,15 +43,15 @@ namespace HourglassServer.Controllers
         }
 
         [HttpDelete("{id}")]
-        public string Delete(string id)
+        public StoryApplicationModel Delete(string id)
         {
-            throw new Exception("Method not implemented yet.");
+            throw new Exception("Method not yet implemented");
         }
 
         [HttpGet("count")]
         public string getNumberOfStories()
         {
-            return _context.Story.Count().ToString();
+            throw new Exception("Method not yet implemented");
         }
     }
 }
