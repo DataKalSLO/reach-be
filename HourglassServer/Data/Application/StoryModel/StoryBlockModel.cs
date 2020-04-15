@@ -1,7 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using HourglassServer.Data.Persistent;
-using System.Collections.Generic;
+
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 
 /* Responsibility: Represent the front end interface Story. This is the object
@@ -16,7 +18,8 @@ namespace HourglassServer.Data.Application.StoryModel
         public string Id { get; set; }
 
         [Required]
-        public string type { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))] //Strings not converted by default
+        public StoryBlockType Type { get; set; } 
 
         public string GraphId { get; set; }
 
@@ -34,28 +37,27 @@ namespace HourglassServer.Data.Application.StoryModel
 
         public StoryBlockModel(GeoMapBlock mapBlock, int position)
         {
-            this.type = "GEOMAP"; //TODO: Find design pattern to make type extendable
             this.Id = mapBlock.BlockId;
+            this.Type = StoryBlockType.GEOMAP;
             this.MapId = mapBlock.GeoMapId;
             this.BlockPosition = position;
         }
 
         public StoryBlockModel(GraphBlock graphBlock, int position)
         {
-            this.type = "GRAPH";
             this.Id = graphBlock.BlockId;
+            this.Type = StoryBlockType.GRAPH;
             this.GraphId = graphBlock.GraphId;
             this.BlockPosition = position;
         }
 
         public StoryBlockModel(TextBlock textBlock, int position)
         {
-            this.type = "TEXTDB";
             this.Id = textBlock.BlockId;
+            this.Type = StoryBlockType.TEXT;
             this.EditorState = textBlock.EditorState;
             this.BlockPosition = position;
         }
-
 
         public int CompareTo(StoryBlockModel other)
         {

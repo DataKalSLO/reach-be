@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using HourglassServer.Data.Persistent;
+using Newtonsoft.Json.Converters;
 
 /* Represents the Application Model (FEND) version of Story.
  * Note, the reason there are two versions Application vs Persistent is because
@@ -30,23 +31,24 @@ namespace HourglassServer.Data.Application.StoryModel
 
         public string Description { get; set; }
 
-        public string publicationStatus { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public PublicationStatus PublicationStatus { get; set; }
 
         [Required]
         public List<StoryBlockModel> StoryBlocks { get; set; }
 
         public StoryApplicationModel()
         {
-            this.publicationStatus = "DRAFT"; //TODO: Find a way to make constant (enum or something else)
+            this.PublicationStatus = PublicationStatus.DRAFT; //TODO: Find a way to make constant (enum or something else)
         }
 
         public StoryApplicationModel(Story story)
         {
-            this.publicationStatus = story.PublicationStatus;
             this.Id = story.StoryId;
             this.UserId = story.UserId;
             this.Title = story.Title;
             this.Description = story.Description;
+            this.PublicationStatus = (PublicationStatus) Enum.Parse(typeof(PublicationStatus), story.PublicationStatus, true);
         }
     }
 }
