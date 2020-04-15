@@ -13,55 +13,55 @@ namespace HourglassServer.Data.Application.StoryModel
     {
         [Key]
         [Required]
-        public string id { get; set; }
+        public string Id { get; set; }
 
         [Required]
         public string type { get; set; }
 
-        public string graphID { get; set; }
+        public string GraphId { get; set; }
 
-        public string mapID { get; set; }
+        public string MapId { get; set; }
 
-        public string editorState { get; set; }
+        public string EditorState { get; set; }
 
         /* Note, FEND will not define this and will be null after initial model binding
          * This means that this is required to be set based on its position in
          * given Story's storyBlocks
          */
-        public int blockPosition { get; set; }
+        public int BlockPosition { get; set; }
 
         public StoryBlockModel() { }
 
         public StoryBlockModel(GeoMapBlock mapBlock, int position)
         {
-            this.id = mapBlock.BlockId;
             this.type = "GEOMAP"; //TODO: Find design pattern to make type extendable
-            this.mapID = mapBlock.GeoMapId;
-            this.blockPosition = position;
+            this.Id = mapBlock.BlockId;
+            this.MapId = mapBlock.GeoMapId;
+            this.BlockPosition = position;
         }
 
         public StoryBlockModel(GraphBlock graphBlock, int position)
         {
-            this.id = graphBlock.BlockId;
             this.type = "GRAPH";
-            this.graphID = graphBlock.GraphId;
-            this.blockPosition = position;
+            this.Id = graphBlock.BlockId;
+            this.GraphId = graphBlock.GraphId;
+            this.BlockPosition = position;
         }
 
         public StoryBlockModel(TextBlock textBlock, int position)
         {
-            this.id = textBlock.BlockId;
             this.type = "TEXTDB";
-            this.editorState = textBlock.EditorState;
-            this.blockPosition = position;
+            this.Id = textBlock.BlockId;
+            this.EditorState = textBlock.EditorState;
+            this.BlockPosition = position;
         }
 
 
         public int CompareTo(StoryBlockModel other)
         {
-            if (this.blockPosition < other.blockPosition)
+            if (this.BlockPosition < other.BlockPosition)
                 return -1;
-            else if (this.blockPosition > other.blockPosition)
+            else if (this.BlockPosition > other.BlockPosition)
                 return 1;
             else
                 return 0;

@@ -20,20 +20,20 @@ namespace HourglassServer.Data.Application.StoryModel
     {
         [Key]
         [Required]
-        public string id { get; set; }
+        public string Id { get; set; }
 
         [Required]
-        public string userID { get; set; }
+        public string UserId { get; set; }
 
         [Required]
-        public string title { get; set; }
+        public string Title { get; set; }
 
-        public string description { get; set; }
+        public string Description { get; set; }
 
         public string publicationStatus { get; set; }
 
         [Required]
-        public List<StoryBlockModel> storyBlocks { get; set; }
+        public List<StoryBlockModel> StoryBlocks { get; set; }
 
         public StoryApplicationModel()
         {
@@ -42,11 +42,11 @@ namespace HourglassServer.Data.Application.StoryModel
 
         public StoryApplicationModel(Story story)
         {
-            this.id = story.StoryId;
-            this.userID = story.UserId;
-            this.title = story.Title;
-            this.description = story.Description;
             this.publicationStatus = story.PublicationStatus;
+            this.Id = story.StoryId;
+            this.UserId = story.UserId;
+            this.Title = story.Title;
+            this.Description = story.Description;
         }
     }
 }
