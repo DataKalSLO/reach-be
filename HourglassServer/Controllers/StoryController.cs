@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using HourglassServer.Data.Application.StoryModel;
 using HourglassServer.Data;
 using HourglassServer.Data.StoryModel;
 

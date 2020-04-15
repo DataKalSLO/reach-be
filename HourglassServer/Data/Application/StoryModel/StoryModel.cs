@@ -16,7 +16,7 @@ using HourglassServer.Data.Persistent;
  */
 namespace HourglassServer.Data.Application.StoryModel
 {
-    public class StoryModel
+    public class StoryApplicationModel
     {
         [Key]
         [Required]
@@ -35,12 +35,12 @@ namespace HourglassServer.Data.Application.StoryModel
         [Required]
         public List<StoryBlockModel> storyBlocks { get; set; }
 
-        public StoryModel()
+        public StoryApplicationModel()
         {
             this.publicationStatus = "DRAFT"; //TODO: Find a way to make constant (enum or something else)
         }
 
-        public StoryModel(Story story)
+        public StoryApplicationModel(Story story)
         {
             this.id = story.StoryId;
             this.userID = story.UserId;
