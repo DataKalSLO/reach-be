@@ -54,7 +54,6 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
                 default:
                     throw new ArgumentException("Could not recognize type of story block: " + storyType);
             }
-            db.SaveChanges();
         }
     }
 }
