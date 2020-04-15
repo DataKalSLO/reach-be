@@ -47,11 +47,5 @@ namespace HourglassServer.Controllers
         {
             throw new Exception("Method not yet implemented");
         }
-
-        [HttpGet("count")]
-        public string getNumberOfStories()
-        {
-            throw new Exception("Method not yet implemented");
-        }
     }
 }
