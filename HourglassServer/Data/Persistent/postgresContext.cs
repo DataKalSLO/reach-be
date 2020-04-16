@@ -11,12 +11,12 @@ namespace HourglassServer.Data.Persistent
         {
         }
 
-		private IConfiguration _config;
+        private IConfiguration _config;
 
-		public postgresContext(DbContextOptions<postgresContext> options, IConfiguration config)
+        public postgresContext(DbContextOptions<postgresContext> options, IConfiguration config)
             : base(options)
         {
-			_config = config;
+            _config = config;
         }
 
         public virtual DbSet<Area> Area { get; set; }
@@ -42,7 +42,7 @@ namespace HourglassServer.Data.Persistent
         {
             if (!optionsBuilder.IsConfigured)
             {
-				optionsBuilder.UseNpgsql(_config.GetConnectionString("HourglassDatabase"));
+                optionsBuilder.UseNpgsql(_config.GetConnectionString("HourglassDatabase"));
             }
         }
 
