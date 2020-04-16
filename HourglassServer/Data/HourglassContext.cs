@@ -17,7 +17,6 @@ namespace HourglassServer.Data
             _config = config;
         }
 
-        public virtual DbSet<Story> Story { get; set; }
         public virtual DbSet<Counties> Counties { get; set; }
         public virtual DbSet<Degrees> Degrees { get; set; }
         public virtual DbSet<DegreesAwarded> DegreesAwarded { get; set; }
@@ -36,8 +35,6 @@ namespace HourglassServer.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasAnnotation("ProductVersion", "2.2.4-servicing-10062");
-
-            modelBuilder.Entity<Story>(StoryEntityCreator.create);
 
             modelBuilder.Entity<Counties>(entity =>
             {
