@@ -54,7 +54,7 @@ namespace HourglassServer.Data.Application.StoryModel
         public StoryBlockModel(TextBlock textBlock, int position)
         {
             this.Id = textBlock.BlockId;
-            this.Type = StoryBlockType.TEXT;
+            this.Type = StoryBlockType.TEXTDB;
             this.EditorState = textBlock.EditorState;
             this.BlockPosition = position;
         }
