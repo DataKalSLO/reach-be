@@ -41,8 +41,7 @@ https://docs.microsoft.com/en-us/ef/core/miscellaneous/cli/dotnet
 
 #### 2. Install Reverse Engineering Tool, Scaffold:
 
-dotnet tool install --global dotnet-ef
-
+'dotnet tool install --global dotnet-ef'
 
 #### 3. Install Postgress NuGet Driver (should be installed if project is able to run)
 
