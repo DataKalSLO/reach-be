@@ -150,35 +150,29 @@ namespace HourglassServer.Data
 
             modelBuilder.Entity<Person>(entity =>
             {
-               entity.HasKey(e => e.Email)
-                   .HasName("Person_pkey");
+                entity.HasKey(e => e.Email)
+                    .HasName("person_pkey");
 
-               entity.Property(e => e.Email)
-                   .HasColumnName("email")
-                   .HasMaxLength(50);
+                entity.ToTable("person");
 
-               entity.Property(e => e.Name)
-                   .IsRequired()
-                   .HasColumnName("name")
-                   .HasMaxLength(50);
+                entity.Property(e => e.Email)
+                    .HasColumnName("email")
+                    .HasMaxLength(50);
 
-               // Deprecated; will be removed in a future release.
-               entity.Property(e => e.Password)
-                   .HasColumnName("password")
-                   .HasMaxLength(50);
+                entity.Property(e => e.Name)
+                    .HasColumnName("name")
+                    .HasMaxLength(50);
 
-               entity.Property(e => e.PasswordHash)
-                   .IsRequired()
-                   .HasColumnName("password_hash")
-                   .HasMaxLength(128);
+                entity.Property(e => e.PasswordHash)
+                    .HasColumnName("password_hash")
+                    .HasMaxLength(128);
 
-               entity.Property(e => e.Salt)
-                   .IsRequired()
-                   .HasColumnName("salt")
-                   .HasMaxLength(64);
+                entity.Property(e => e.Role).HasColumnName("role");
 
-               entity.Property(e => e.Role).HasColumnName("role");
+                entity.Property(e => e.Salt)
+                    .HasColumnName("salt")
+                    .HasMaxLength(64);
             });
-      }
+        }
     }
 }
