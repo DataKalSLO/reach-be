@@ -22,7 +22,6 @@ namespace HourglassServer.Data.Persistent
         public virtual DbSet<Area> Area { get; set; }
         public virtual DbSet<Category> Category { get; set; }
         public virtual DbSet<DatasetMetaData> DatasetMetaData { get; set; }
-        public virtual DbSet<DefaultGraphs> DefaultGraphs { get; set; }
         public virtual DbSet<GeoMap> GeoMap { get; set; }
         public virtual DbSet<GeoMapBlock> GeoMapBlock { get; set; }
         public virtual DbSet<GeoMapTables> GeoMapTables { get; set; }
@@ -109,20 +108,6 @@ namespace HourglassServer.Data.Persistent
                 entity.Property(e => e.LocationValues).HasColumnName("location_values");
 
                 entity.Property(e => e.ZipCodeColumn).HasColumnName("zip_code_column");
-            });
-
-            modelBuilder.Entity<DefaultGraphs>(entity =>
-            {
-                entity.ToTable("default_graphs");
-
-                entity.Property(e => e.Id)
-                    .HasColumnName("id")
-                    .HasDefaultValueSql("nextval('defaultgraphs_id_seq'::regclass)");
-
-                entity.Property(e => e.JsonData)
-                    .IsRequired()
-                    .HasColumnName("json_data")
-                    .HasColumnType("json");
             });
 
             modelBuilder.Entity<GeoMap>(entity =>
