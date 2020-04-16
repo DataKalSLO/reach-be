@@ -121,6 +121,7 @@ def remove_connection_string_from_postgres_context():
 
     # Step 4. Group lines back to single strign representing postgresContext file
     context_file_content = "\n".join(context_file_lines)
+    context_file_content = context_file_content.replace("\t", "    ")
 
     # Step 4. Export changes to file
     context_file = open(path_to_context_file, "w+")  # w+ deletes file content
