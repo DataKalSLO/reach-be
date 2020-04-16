@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace HourglassServer.Data.Persistent
 {
@@ -11,13 +11,13 @@ namespace HourglassServer.Data.Persistent
         {
         }
 
-        private IConfiguration _config;
+		private IConfiguration _config;
 
 		public postgresContext(DbContextOptions<postgresContext> options, IConfiguration config)
             : base(options)
         {
-        	_config = config;
-		}
+			_config = config;
+        }
 
         public virtual DbSet<Area> Area { get; set; }
         public virtual DbSet<Category> Category { get; set; }
