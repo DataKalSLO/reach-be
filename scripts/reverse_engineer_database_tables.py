@@ -53,7 +53,7 @@ def get_name_of_project_file():
 # Constants extended - (placed here because Python has no function hoisting)
 app_settings_connection_string = get_connection_string_from_settings_file()
 path_to_project_file = "/".join([path_to_server_root, get_name_of_project_file()])
-connection_string_replacement = "_config.GetConnectionString(\"%s\")" % connection_string_key_name
+connection_string_replacement = "\t\t\t\toptionsBuilder.UseNpgsql(_config.GetConnectionString(\"%s\"));" % connection_string_key_name
 
 
 def get_command_specifying_tables_to_reverse_engineer():
@@ -75,20 +75,6 @@ def get_command_specifying_tables_to_reverse_engineer():
     return " ".join(table_commands)
 
 
-def remove_connection_string_from_context_file():
-    # Read Context File
-    context_file = open(path_to_context_file, "r")
-    context_file_content = context_file.read()
-    context_file.close()
-
-    # Replace Connection String
-    content_without_connection_string = context_file_content.replace("\"%s\"" % app_settings_connection_string,
-                                                                     connection_string_replacement)
-    context_file = open(path_to_context_file, "w+")
-    context_file.write(content_without_connection_string)
-    context_file.close()
-
-
 def remove_connection_string_from_postgres_context():
     """
     This file replaces the connection string inside of postgresContext which a call to extract the connection
@@ -101,39 +87,58 @@ def remove_connection_string_from_postgres_context():
     old_constructor_header = "public postgresContext(DbContextOptions<postgresContext> options)"
 
     # New file strings
-    configuration_class_variable = "private IConfiguration _config;"
+    configuration_class_variable = "\t\tprivate IConfiguration _config;"
     new_constructor_header = "public postgresContext(DbContextOptions<postgresContext> options, IConfiguration config)"
-    configuration_import_name = "using Microsoft.Extensions.Configuration;\n"
-    newline_before_namespace = "\nnamespace"  # above which the import will go.
-    config_setting = "\t_config = config;\n\t\t}"
+    configuration_import_name = "using Microsoft.Extensions.Configuration;"
+    newline_before_namespace = "namespace"  # above which the import will go.
+    config_setting = "\t\t\t_config = config;"
 
-    # Read Content of context file
+    # Step 1. Read postgresContext.cs
     context_file = open(path_to_context_file, "r")
     context_file_content = context_file.read()
     context_file.close()
+    context_file_lines = context_file_content.split("\n")
 
     # Step 1. Write config import
-    index_of_config_import = context_file_content.index(newline_before_namespace)
-    context_file_content = add_string_at_index(context_file_content, configuration_import_name, index_of_config_import)
+    namespace_line_index = get_index_of_element_containing_string(context_file_lines, newline_before_namespace)
+    context_file_lines.insert(namespace_line_index - 2, configuration_import_name)
 
-    # Step 2. Add dependency injection to constructor for new import
-    """
-    class variable included here because its easy to replace
-    #constructor header with a class variable a top of it.
-    """
-    new_constructor_with_class_variable = "%s\n\n\t\t%s" % (
-        configuration_class_variable, new_constructor_header)
-    context_file_content = context_file_content.replace(old_constructor_header, new_constructor_with_class_variable)
+    # Step 2. Add dependency to constructor for new import
+    constructor_line_index = get_index_of_element_containing_string(context_file_lines, old_constructor_header)
+    context_file_lines[constructor_line_index] = "\t\t%s" % new_constructor_header
+    context_file_lines.insert(constructor_line_index + 3, config_setting)
 
-    # Step 3. Add instantiation of class variable inside constructor (the new one)
-    header_index = context_file_content.index(new_constructor_header)
-    end_bracket_index = context_file_content.index("}", header_index)
-    context_file_content = add_string_at_index(context_file_content, config_setting, end_bracket_index, offset=1)
+    # Step 3. Add class variable for configuration
+    constructor_line_index = get_index_of_element_containing_string(context_file_lines, new_constructor_header)
+    context_file_lines.insert(constructor_line_index, configuration_class_variable)
+    context_file_lines.insert(constructor_line_index + 1, "")  # adds new line
+
+    # Step 4. Remove connection string
+    connection_string_line_index = get_index_of_element_containing_string(context_file_lines,
+                                                                          app_settings_connection_string)
+    context_file_lines[connection_string_line_index] = connection_string_replacement
+    context_file_lines.pop(connection_string_line_index - 1)
+
+    # Step 4. Group lines back to single strign representing postgresContext file
+    context_file_content = "\n".join(context_file_lines)
 
     # Step 4. Export changes to file
     context_file = open(path_to_context_file, "w+")  # w+ deletes file content
     context_file.write(context_file_content)
     context_file.close()
+
+
+def replace_element_containing_string(lines, query_string, replacement_line):
+    def update_line(line, query, replacement):
+        return line if query not in line else replacement
+
+    return list(map(lambda line: update_line(line, query_string, replacement_line), lines))
+
+
+def get_index_of_element_containing_string(lines, query=None):
+    for line_index in range(len(lines)):
+        if query in lines[line_index]:
+            return line_index
 
 
 def add_string_at_index(base_string, new_string, index, offset=0):
@@ -154,12 +159,10 @@ if __name__ == "__main__":
                                                                            overwrite_files_command)
 
     command = command.strip()  # removes extra space if overwrite file command is false
-
     command_exit_code = os.system(command)
 
     if command_exit_code != 0:
         raise Exception("Scaffold failed. Received error code: %d" % command_exit_code)
 
-    remove_connection_string_from_context_file()
     remove_connection_string_from_postgres_context()
     print("Finished!")
