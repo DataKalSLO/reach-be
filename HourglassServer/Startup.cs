@@ -65,6 +65,8 @@ namespace HourglassServer
                 });
             });
 
+            services.AddMemoryCache();
+
             services.AddControllers();
         }
 

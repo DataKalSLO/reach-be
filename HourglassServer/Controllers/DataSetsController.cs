@@ -1,3 +1,4 @@
+using System;
 using HourglassServer.Data;
 using System.Threading.Tasks;
 //using HourglassServer.EndpointResults;
@@ -32,9 +33,38 @@ namespace HourglassServer.Controllers{
 
         // GET: api/DataSets?tableName=[string tableName]
         [HttpGet]
-        public ActionResult<DataSet> GetDataSet(string tableName){
+        public ActionResult<DataSet> GetDataSet(string tableName) {
+            try {
+                return _context.getDataSet(tableName).Result;
+            }
+            
+            // Note: when using Task.Result on a task that faults, the exception that caused the
+            // Task to fault is propagated, but it’s not thrown directly. Instead, it's wrapped 
+            // in an AggregateException object
+            catch (AggregateException exceptions) {
+                var error = "";
+                var message = "";
 
-            return _context.getDataSet(tableName).Result;         
+                foreach(var e in exceptions.Flatten().InnerExceptions) {
+                    if (e is TableNotFoundException) {
+                        error = "Bad Request";
+                        message = string.Format("The provided table name does not exist: {0}", tableName);
+                        break;
+                    }
+                    if (e is StaleRequestException) {
+                        error = "Stale Request";
+                        message = string.Format("Table no longer exists in database: {0}", tableName);
+                        break;
+                    }
+                }
+
+                return BadRequest(
+                    new ExceptionMessageContent() { 
+                            Error = error, 
+                            Message = message
+                    }
+                );
+            } 
         }
     }
 } 
