@@ -31,7 +31,7 @@ namespace HourglassServer.Controllers
         }
 
         [HttpPost]
-        public StoryApplicationModel Post([FromBody] StoryApplicationModel story)
+        public string Post([FromBody] StoryApplicationModel story)
         {
             throw new Exception("Method not yet implemented");
         }
@@ -39,11 +39,11 @@ namespace HourglassServer.Controllers
         [HttpPut]
         public string Put()
         {
-            return "Updating stories not yet implemented";
+            throw new Exception("Method not yet implemented");
         }
 
         [HttpDelete("{id}")]
-        public StoryApplicationModel Delete(string id)
+        public string Delete(string id)
         {
             throw new Exception("Method not yet implemented");
         }
