@@ -296,8 +296,6 @@ namespace HourglassServer.Data.Persistent
                 entity.HasKey(e => e.Email)
                     .HasName("Person_pkey");
 
-                entity.ToTable("person");
-
                 entity.Property(e => e.Email)
                     .HasColumnName("email")
                     .HasMaxLength(50);
