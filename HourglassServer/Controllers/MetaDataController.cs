@@ -39,7 +39,7 @@ namespace HourglassServer.Controllers{
         [HttpGet]
         public ActionResult<List<DatasetMetadata>> GetMetaData(){
 
-            return _context.getAllDatasetMetadata().Result;
+            return _context.getDatasetMetadata().Result;
         }
     } 
 }
