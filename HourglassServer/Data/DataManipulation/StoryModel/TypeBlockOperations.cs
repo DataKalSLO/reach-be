@@ -13,7 +13,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             StoryBlockType storyType = model.Type;
             switch (storyType)
             {
-                case StoryBlockType.TEXT:
+                case StoryBlockType.TEXTDB:
                     TextBlock textBlock = StoryFactory.CreateTextBlockFromStoryBlockModel(model);
                     switch (operation)
                     {
