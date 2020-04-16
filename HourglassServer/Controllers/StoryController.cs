@@ -37,7 +37,7 @@ namespace HourglassServer.Controllers
             {
                 StoryApplicationModel storyCreated = StoryModelCreator.AddStoryApplicationModelToDatabaseContext(_context, story);
                 _context.SaveChanges();
-                return new OkObjectResult(storyCreated);
+                return new OkObjectResult(storyCreated.Id);
             }
             catch (Exception e)
             {
