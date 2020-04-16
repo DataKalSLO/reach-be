@@ -26,15 +26,8 @@ namespace HourglassServer
 
             try
             {
-                Person userWithEmail = _context.Person.First(p => p.Email == tokenModel.Email);
-                if (userWithEmail.Salt == null ||
-                    userWithEmail.PasswordHash == null ||
-                    !Utilities.PasswordMatches(tokenModel.Password, userWithEmail.Salt, userWithEmail.PasswordHash))
-                {
-                    return Unauthorized(new { tag = "badLogin" });
-                }
-
-                loggedInUser = userWithEmail;
+                loggedInUser = _context.Person.First(p => p.Email == tokenModel.Email
+                    && p.Password == tokenModel.Password);
             }
             catch (InvalidOperationException)
             {
