@@ -13,25 +13,25 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
 {
     public class StoryModelCreator
     {
-        public static StoryApplicationModel AddStoryModelToDatabase(postgresContext db, StoryApplicationModel storyModel)
+        public static StoryApplicationModel AddStoryApplicationModelToDatabaseContext(postgresContext db, StoryApplicationModel storyModel)
         {
-            AddStoryToDatabase(db, storyModel);
+            AddStoryPersistenceModelToDatabaseContext(db, storyModel);
             for (int position = 0; position < storyModel.StoryBlocks.Count; position++)
             {
                 var storyBlockModel = storyModel.StoryBlocks[position];
                 storyBlockModel.BlockPosition = position;
-                AddStoryBlockToDatabase(db, storyBlockModel, storyModel.Id);
+                AddStoryBlockPersistenceModelToDatabaseContext(db, storyBlockModel, storyModel.Id);
             }
             return storyModel;
         }
 
-        private static void AddStoryToDatabase(postgresContext db, StoryApplicationModel model)
+        private static void AddStoryPersistenceModelToDatabaseContext(postgresContext db, StoryApplicationModel model)
         {
             Story newStory = StoryFactory.CreateStoryFromStoryModel(model);
             db.Story.Add(newStory);
         }
 
-        private static void AddStoryBlockToDatabase(postgresContext db, StoryBlockModel blockModel, string storyid)
+        private static void AddStoryBlockPersistenceModelToDatabaseContext(postgresContext db, StoryBlockModel blockModel, string storyid)
         {
             StoryBlock newStoryBlock = StoryFactory.CreateStoryBlockFromStoryBlockModel(blockModel, storyid);
             db.StoryBlock.Add(newStoryBlock);
