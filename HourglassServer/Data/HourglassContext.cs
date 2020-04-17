@@ -160,16 +160,19 @@ namespace HourglassServer.Data
                     .HasMaxLength(50);
 
                 entity.Property(e => e.Name)
+                    .IsRequired()
                     .HasColumnName("name")
                     .HasMaxLength(50);
 
                 entity.Property(e => e.PasswordHash)
+                    .IsRequired()
                     .HasColumnName("password_hash")
                     .HasMaxLength(128);
 
                 entity.Property(e => e.Role).HasColumnName("role");
 
                 entity.Property(e => e.Salt)
+                    .IsRequired()
                     .HasColumnName("salt")
                     .HasMaxLength(64);
             });

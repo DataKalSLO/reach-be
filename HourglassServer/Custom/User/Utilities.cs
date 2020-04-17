@@ -48,10 +48,10 @@ namespace HourglassServer
             return hash == realHash;
         }
 
-        private static string Hash(string password, byte[] salt, int hashLength = 128)
+        private static string Hash(string password, byte[] salt, int hashLength = 128, int iterations = 10000)
         {
             int hashByteCount = hashLength / 8;
-            byte[] bytes = KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA1, 10000, hashByteCount);
+            byte[] bytes = KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA1, iterations, hashByteCount);
             return Convert.ToBase64String(bytes);
         }
     }

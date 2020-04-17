@@ -4,7 +4,7 @@
     {
         public string Email { get; set; }
         public string Name { get; set; }
-        public int? Role { get; set; }
+        public int Role { get; set; }
         public string Salt { get; set; }
         public string PasswordHash { get; set; }
     }
