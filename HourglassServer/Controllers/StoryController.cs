@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using HourglassServer.Data.Application.StoryModel;
 using HourglassServer.Data;
+using HourglassServer.Data.DataManipulation.StoryModel;
 
 namespace HourglassServer.Controllers
 {
@@ -18,9 +19,9 @@ namespace HourglassServer.Controllers
         }
 
         [HttpGet]
-        public IList<StoryApplicationModel> Get()
+        public IList<StoryApplicationModel> GetAllStories()
         {
-            throw new Exception("Method not yet implemented");
+            return StoryModelRetriever.GetAllStoryApplicationModels(_context);
         }
 
         [HttpGet("{id}")]
