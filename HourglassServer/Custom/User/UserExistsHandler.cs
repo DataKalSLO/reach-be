@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using HourglassServer.Data;
+using System;
 
 namespace HourglassServer
 {
@@ -19,20 +20,25 @@ namespace HourglassServer
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, UserExistsRequirement requirement)
         {
+            // Check if the token has an email claim
             if (!context.User.HasClaim(c => c.Type == ClaimTypes.Email))
             {
                 context.Fail();
                 return;
             }
+
+            // Check if a user matching the email in the token exists
             try
             {
-                await _context.Person.SingleAsync(p => p.Email == context.User.Claims.Where(c => c.Type == ClaimTypes.Email).First().Value);
+                string email = context.User.Claims.Where(c => c.Type == ClaimTypes.Email).First().Value;
+                await _context.Person.SingleAsync(p => p.Email == email);
             }
             catch
             {
                 context.Fail();
                 return;
             }
+
             context.Succeed(requirement);
         }
     }
