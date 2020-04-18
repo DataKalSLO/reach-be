@@ -61,7 +61,9 @@ namespace HourglassServer
                 {
                     builder.WithOrigins("http://localhost:3000")
                            .AllowCredentials()
-                           .WithHeaders(HeaderNames.ContentType);
+                           .AllowAnyMethod()
+                           .WithHeaders(HeaderNames.ContentType)
+                           .WithHeaders(HeaderNames.Authorization);
                 });
             });
 
