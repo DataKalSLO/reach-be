@@ -79,13 +79,21 @@ namespace HourglassServer
         }
 
         [UserExists]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpDelete("{email}")]
+        public async Task<IActionResult> Delete(string email)
         {
-            var person = await _context.FindAsync<Person>(id);
-            if (!User.HasRole(Role.Admin))
+            Person person;
+            try
             {
-                if (User.Claims.Where(c => c.Type == ClaimTypes.Email).First().Value == person.Email)
+                person = await _context.Person.SingleAsync(p => p.Email == email);
+            }
+            catch
+            {
+                return NotFound();
+            }
+            if (!HttpContext.User.HasRole(Role.Admin))
+            {
+                if (HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).First().Value == person.Email)
                 {
                     await _context.DeleteAsync(person);
                     return Ok();
