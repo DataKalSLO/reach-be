@@ -46,13 +46,37 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             return newTextBlock;
         }
 
-        public static StoryBlock CreateStoryBlockFromStoryBlockModel(StoryBlockModel model, string storyId)
+        public static StoryBlock CreateStoryBlockFromStoryBlockModel(StoryBlockModel model, string StoryId)
         {
             StoryBlock newStoryBlock = new StoryBlock();
             newStoryBlock.BlockId = model.Id;
-            newStoryBlock.StoryId = storyId;
+            newStoryBlock.StoryId = StoryId;
             newStoryBlock.BlockPosition = model.BlockPosition;
             return newStoryBlock;
+        }
+
+        public static GraphBlock createGraphBlock(string BlockId, string GraphId)
+        {
+            GraphBlock graphBlock = new GraphBlock();
+            graphBlock.BlockId = BlockId;
+            graphBlock.GraphId = GraphId;
+            return graphBlock;
+        }
+
+        public static TextBlock createTextBlock(string BlockId, string EditorState)
+        {
+            TextBlock textBlock = new TextBlock();
+            textBlock.BlockId = BlockId;
+            textBlock.EditorState = EditorState;
+            return textBlock;
+        }
+
+        public static GeoMapBlock createGeoMapBlock(string BlockId, string GeoMapId)
+        {
+            GeoMapBlock geoMapBlock = new GeoMapBlock();
+            geoMapBlock.BlockId = BlockId;
+            geoMapBlock.GeoMapId = GeoMapId;
+            return geoMapBlock;
         }
     }
 }
