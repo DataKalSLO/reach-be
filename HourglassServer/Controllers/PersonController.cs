@@ -96,13 +96,12 @@ namespace HourglassServer
                 if (HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).First().Value == person.Email)
                 {
                     await _context.DeleteAsync(person);
-                    return Ok();
+                    return Ok(new { email });
                 }
                 return Forbid();
             }
             await _context.DeleteAsync(person);
-
-            return Ok();
+            return Ok(new { email });
         }
     }
 }
