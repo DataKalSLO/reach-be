@@ -307,20 +307,17 @@ namespace HourglassServer.Data
                     .HasColumnName("name")
                     .HasMaxLength(50);
 
-                //TODO: Update this field to point to PasswordHash once its created
-                entity.Property(e => e.Password)
+                entity.Property(e => e.PasswordHash)
                     .IsRequired()
                     .HasColumnName("password_hash")
                     .HasMaxLength(128);
 
                 entity.Property(e => e.Role).HasColumnName("role");
 
-                /*
                 entity.Property(e => e.Salt)
                     .IsRequired()
                     .HasColumnName("salt")
                     .HasMaxLength(64);
-                */
             });
 
             modelBuilder.Entity<Point>(entity =>
