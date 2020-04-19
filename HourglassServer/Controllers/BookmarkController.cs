@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using HourglassServer.Data;
 using HourglassServer.Data.Bookmark;
 using HourglassServer.Models.Persistent;
+using HourglassServer.Data.DataManipulation.StoryModel;
+using HourglassServer.Data.Application.StoryModel;
 
 namespace HourglassServer.Controllers
 {
@@ -26,15 +28,38 @@ namespace HourglassServer.Controllers
             var graphIds = _context.GraphBookmark.Where(b => b.UserId == UserId).Select(r => r.GraphId);
             var graphs = _context.Graph.Where(r => graphIds.Contains(r.GraphId));
 
-            var storyIds = _context.StoryBookmark.Where(b => b.UserId == UserId).Select(r => r.StoryId);
-            var stories = _context.Story.Where(r => storyIds.Contains(r.StoryId)); //TODO: User StoryRetriever when merged.
+            var storyIds = _context.StoryBookmark.Where(b => b.UserId == UserId).Select(r => r.StoryId).ToList();
+            var stories = StoryModelRetriever.GetListOfStoryModelsByID(_context, storyIds);
 
             var geoMapIds = _context.GeoMapBookmark.Where(b => b.UserId == UserId).Select(r => r.GeoMapId);
-            var maps = _context.Graph.Where(r => geoMapIds.Contains(r.GraphId));
+            var maps = _context.GeoMap.Where(r => geoMapIds.Contains(r.GeoMapId));
 
-            bookmarks.AddRange(graphs);
-            bookmarks.AddRange(stories);
-            bookmarks.AddRange(maps);
+            foreach (StoryApplicationModel story in stories)
+            {
+                bookmarks.Add(new BookmarkContent()
+                {
+                    Type = ContentType.STORY,
+                    Content = story
+                });
+            }
+
+            foreach (GeoMap geoMap in maps)
+            {
+                bookmarks.Add(new BookmarkContent()
+                {
+                    Type = ContentType.GEOMAP,
+                    Content = geoMap
+                });
+            }
+
+            foreach (Graph graph in graphs)
+            {
+                bookmarks.Add(new BookmarkContent()
+                {
+                    Type = ContentType.GRAPH,
+                    Content = graph
+                });
+            }
 
             return bookmarks;
         }

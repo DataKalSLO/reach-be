@@ -13,6 +13,14 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
 {
     public static class StoryModelRetriever
     {
+        public static List<StoryApplicationModel> GetListOfStoryModelsByID(HourglassContext db, List<string> StoryIDs)
+        {
+            List<StoryApplicationModel> stories = new List<StoryApplicationModel>();
+            foreach (string StoryId in StoryIDs)
+                stories.Add(GetStoryModelByID(db, StoryId));
+            return stories;
+        }
+
         public static StoryApplicationModel GetStoryModelByID(HourglassContext db, string storyID)
         {
             Story story = db.Story.First(a => a.StoryId == storyID);
