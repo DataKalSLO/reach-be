@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace HourglassServer.Data.Bookmark
 {
@@ -11,6 +13,8 @@ namespace HourglassServer.Data.Bookmark
         [Required]
         public string ItemId { get; set; }
 
+        [Required]
+        [JsonConverter(typeof(StringEnumConverter))]
         public ContentType Type;
 
         public Bookmark()
