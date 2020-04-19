@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using HourglassServer.Data.Persistent;
+using HourglassServer.Models.Persistent;
 using HourglassServer.Data.Application.StoryModel;
 
 /* Responsibility: Retrieve Stories through some query method.
@@ -13,13 +13,13 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
 {
     public static class StoryModelRetriever
     {
-        public static StoryApplicationModel GetStoryModelByID(postgresContext db, string storyID)
+        public static StoryApplicationModel GetStoryModelByID(HourglassContext db, string storyID)
         {
             Story story = db.Story.First(a => a.StoryId == storyID);
             return CreateStoryModelFromStory(db, story);
         }
 
-        public static IList<StoryApplicationModel> GetAllStoryApplicationModels(postgresContext db)
+        public static IList<StoryApplicationModel> GetAllStoryApplicationModels(HourglassContext db)
         {
             List<Story> stories = db.Story.ToList();
             List<StoryApplicationModel> storyModels = new List<StoryApplicationModel>();
@@ -28,7 +28,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             return storyModels;
         }
 
-        public static StoryApplicationModel CreateStoryModelFromStory(postgresContext db, Story story)
+        public static StoryApplicationModel CreateStoryModelFromStory(HourglassContext db, Story story)
         {
             string storyID = story.StoryId;
             List<StoryBlockModel> storyBlocks = getStoryBlocksWithStoryID(db, storyID);
@@ -37,7 +37,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             return model;
         }
 
-        public static List<StoryBlockModel> getStoryBlocksWithStoryID(postgresContext db, string StoryID)
+        public static List<StoryBlockModel> getStoryBlocksWithStoryID(HourglassContext db, string StoryID)
         {
             List<StoryBlockModel> graphBlocks = GetGraphStoryBlockOnStoryID(db, StoryID);
             List<StoryBlockModel> mapBlocks = GetMapBlocksWithStoryID(db, StoryID);
@@ -50,7 +50,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
         }
 
         //Returns StoryBlocks SORTED by position 
-        public static List<StoryBlockModel> GetGraphStoryBlockOnStoryID(postgresContext db, string StoryID)
+        public static List<StoryBlockModel> GetGraphStoryBlockOnStoryID(HourglassContext db, string StoryID)
         {
             var res = from storyBlock in db.StoryBlock
                       join graphBlock in db.GraphBlock
@@ -73,7 +73,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             return storyBlocks;
         }
 
-        public static List<StoryBlockModel> GetMapBlocksWithStoryID(postgresContext db, string StoryID)
+        public static List<StoryBlockModel> GetMapBlocksWithStoryID(HourglassContext db, string StoryID)
         {
             var res = from storyBlock in db.StoryBlock
                       join geomapBlock in db.GeoMapBlock
@@ -96,7 +96,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             return storyBlocks;
         }
 
-        public static List<StoryBlockModel> GetTextBlocksWithStoryID(postgresContext db, string StoryID)
+        public static List<StoryBlockModel> GetTextBlocksWithStoryID(HourglassContext db, string StoryID)
         {
             var res = from storyBlock in db.StoryBlock
                       join geomapBlock in db.TextBlock

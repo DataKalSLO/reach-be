@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Diagnostics;
-using HourglassServer.EndpointResults;
-using Microsoft.EntityFrameworkCore;
-using HourglassServer.Data.Persistent;
+﻿using HourglassServer.Data;
 using HourglassServer.Data.Application.StoryModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HourglassServer.Data.DataManipulation.StoryModel;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using HourglassServer.Controllers;
 
 namespace HourglassServerTest.StoryTests
 {
@@ -16,7 +14,7 @@ namespace HourglassServerTest.StoryTests
     public class GetAllStoriesTest
     {
         StoryTestData SampleData;
-        postgresContext MockContext;
+        HourglassContext MockContext;
 
         [TestInitialize]
         public void TestInit()
@@ -28,7 +26,7 @@ namespace HourglassServerTest.StoryTests
         [TestMethod]
         public void GetAllStories()
         {
-            postgresContext context = SampleData.GetMockContext();
+            HourglassContext context = SampleData.GetMockContext();
 
             IList<StoryApplicationModel> stories = StoryModelRetriever.GetAllStoryApplicationModels(context);
             GeneralAssertions.AssertListHasMinimumCount(stories, 1);
