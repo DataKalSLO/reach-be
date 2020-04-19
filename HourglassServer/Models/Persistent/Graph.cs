@@ -8,6 +8,7 @@ namespace HourglassServer.Models.Persistent
         public Graph()
         {
             GraphBlock = new HashSet<GraphBlock>();
+            GraphBookmark = new HashSet<GraphBookmark>();
             GraphSeries = new HashSet<GraphSeries>();
         }
 
@@ -15,6 +16,7 @@ namespace HourglassServer.Models.Persistent
         public string Title { get; set; }
 
         public virtual ICollection<GraphBlock> GraphBlock { get; set; }
+        public virtual ICollection<GraphBookmark> GraphBookmark { get; set; }
         public virtual ICollection<GraphSeries> GraphSeries { get; set; }
     }
 }

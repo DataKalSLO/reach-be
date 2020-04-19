@@ -8,6 +8,7 @@ namespace HourglassServer.Models.Persistent
         public Story()
         {
             StoryBlock = new HashSet<StoryBlock>();
+            StoryBookmark = new HashSet<StoryBookmark>();
             StoryCategory = new HashSet<StoryCategory>();
         }
 
@@ -21,6 +22,7 @@ namespace HourglassServer.Models.Persistent
 
         public virtual Person User { get; set; }
         public virtual ICollection<StoryBlock> StoryBlock { get; set; }
+        public virtual ICollection<StoryBookmark> StoryBookmark { get; set; }
         public virtual ICollection<StoryCategory> StoryCategory { get; set; }
     }
 }

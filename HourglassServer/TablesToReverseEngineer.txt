@@ -16,3 +16,6 @@ story_category
 text_block
 zip_area
 zip_code
+story_bookmark
+graph_bookmark
+geo_map_bookmark
