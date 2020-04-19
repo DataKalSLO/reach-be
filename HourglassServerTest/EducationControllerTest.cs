@@ -49,26 +49,6 @@ namespace HourglassServerTest
             }
         }.AsQueryable();
 
-        [TestMethod]
-        public void TestGetDegreesGrouping()
-        {
-            var mockSet = new Mock<DbSet<Degrees>>();
-            mockSet.As<IQueryable<Degrees>>().Setup(m => m.Provider).Returns(_data.Provider);
-            mockSet.As<IQueryable<Degrees>>().Setup(m => m.Expression).Returns(_data.Expression);
-            mockSet.As<IQueryable<Degrees>>().Setup(m => m.ElementType).Returns(_data.ElementType);
-            mockSet.As<IQueryable<Degrees>>().Setup(m => m.GetEnumerator()).Returns(_data.GetEnumerator());
-
-            var mockContext = new Mock<HourglassContext>();
-            mockContext.Setup(m => m.Degrees).Returns(mockSet.Object);
-
-            var controller = new EducationController(mockContext.Object);
-            var results = controller.Get("Cal Poly").ToList();
-
-            Assert.AreEqual(results.Count, 2);
-            Assert.AreEqual(results[0].X, "2018");
-            Assert.AreEqual(results[0].Y, 25000);
-            Assert.AreEqual(results[1].X, "2019");
-            Assert.AreEqual(results[1].Y, 1000);
-        }
+      
     }
 }

@@ -26,18 +26,5 @@ namespace HourglassServer.Controllers
                 return sr.ReadToEnd();
             }
         }
-
-        [HttpGet("degrees")]
-        public IEnumerable<XYGraphData> Get(string university)
-        {
-            return (from degrees in _context.Degrees
-                    where degrees.University == university
-                    group degrees by degrees.Year into groupedDegrees
-                    select new XYGraphData
-                    {
-                        X = groupedDegrees.Key,
-                        Y = groupedDegrees.Sum(degreesSameYear => degreesSameYear.Completions).GetValueOrDefault(0)
-                    });
-        }
     }
 }
