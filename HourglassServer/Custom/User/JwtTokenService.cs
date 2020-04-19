@@ -2,7 +2,7 @@
 using System;
 using System.Security.Claims;
 using System.Text;
-using HourglassServer.Data;
+using HourglassServer.Models.Persistent;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 

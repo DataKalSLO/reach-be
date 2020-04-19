@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using HourglassServer.Data;
+using HourglassServer.Models.Persistent;
 using System.Collections.Generic;
 
 namespace HourglassServer

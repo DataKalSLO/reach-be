@@ -1,4 +1,4 @@
-﻿using HourglassServer.Data;
+﻿using HourglassServer.Models.Persistent;
 
 namespace HourglassServer
 {
