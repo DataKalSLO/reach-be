@@ -1,4 +1,4 @@
-﻿using HourglassServer.Data.Persistent;
+﻿using HourglassServer.Models.Persistent;
 using HourglassServer.Data.Application.StoryModel;
 using System;
 

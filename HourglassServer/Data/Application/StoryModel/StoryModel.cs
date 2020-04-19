@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
-using HourglassServer.Data.Persistent;
+using HourglassServer.Models.Persistent;
 using Newtonsoft.Json.Converters;
 
 /* Represents the Application Model (FEND) version of Story.

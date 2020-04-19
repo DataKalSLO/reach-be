@@ -3,7 +3,8 @@ using Moq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HourglassServer.Data.Application.StoryModel;
 using HourglassServer.Data.DataManipulation.StoryModel;
-using HourglassServer.Data.Persistent;
+using HourglassServer.Models.Persistent;
+using HourglassServer.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace HourglassServerTest.StoryTests
         public string EditorState { get; }
 
 
-        private readonly Mock<postgresContext> MockContext;
+        private readonly Mock<HourglassContext> MockContext;
         private readonly Mock<DbSet<Story>> StoryDbSet;
         private readonly Mock<DbSet<TextBlock>> TextBlockDbSet;
         private readonly Mock<DbSet<GraphBlock>> GraphBlockDbSet;
@@ -45,18 +46,18 @@ namespace HourglassServerTest.StoryTests
             GraphBlockDbSet = new Mock<DbSet<GraphBlock>>();
             GeoMapBlockDbDSet = new Mock<DbSet<GeoMapBlock>>();
             StoryBlockDbSet = new Mock<DbSet<StoryBlock>>();
-            MockContext = new Mock<postgresContext>();
+            MockContext = new Mock<HourglassContext>();
             AddStoryApplicationModelToContext();
         }
 
-        public postgresContext GetMockContext()
+        public HourglassContext GetMockContext()
         {
             return MockContext.Object;
         }
 
         private void AddStoryApplicationModelToContext()
         {
-            AddItemToMockSet(StoryDbSet, getNewStory());
+            AddItemToMockSet(StoryDbSet, GetNewStory());
             AddItemToMockSet(TextBlockDbSet, GetNewTextBlock());
             AddItemToMockSet(GraphBlockDbSet, GetNewGraphBlock());
             AddItemToMockSet(GeoMapBlockDbDSet, GetNewGeoMapBlock());
@@ -115,7 +116,7 @@ namespace HourglassServerTest.StoryTests
             return storyBlocks;
         }
 
-        private Story getNewStory()
+        private Story GetNewStory()
         {
             return new Story
             {

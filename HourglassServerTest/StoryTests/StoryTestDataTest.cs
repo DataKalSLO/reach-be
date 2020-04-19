@@ -2,9 +2,8 @@
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.EntityFrameworkCore;
-using HourglassServer.Data.Persistent;
-using HourglassServerTest;
+using HourglassServer.Models.Persistent;
+using HourglassServer.Data;
 
 namespace HourglassServerTest.StoryTests
 {
@@ -12,7 +11,7 @@ namespace HourglassServerTest.StoryTests
     public class StoryTestDataTest
     {
         StoryTestData sampleData;
-        postgresContext mockContext;
+        HourglassContext mockContext;
 
         [TestInitialize]
         public void TestInit()
