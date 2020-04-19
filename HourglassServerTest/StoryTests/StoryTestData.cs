@@ -1,6 +1,4 @@
-﻿using System;
-using Moq; 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Moq; 
 using HourglassServer.Data.Application.StoryModel;
 using HourglassServer.Data.DataManipulation.StoryModel;
 using HourglassServer.Models.Persistent;
@@ -18,36 +16,27 @@ namespace HourglassServerTest.StoryTests
         public string TextBlockId { get; }
         public string GeoMapBlockId { get; }
 
-        public string StoryTitle { get;  }
-        public string StoryDescription { get; }
-        public string UserId { get;  }
-        public string EditorState { get; }
-
-
         private readonly Mock<HourglassContext> MockContext;
-        private readonly Mock<DbSet<Story>> StoryDbSet;
-        private readonly Mock<DbSet<TextBlock>> TextBlockDbSet;
-        private readonly Mock<DbSet<GraphBlock>> GraphBlockDbSet;
-        private readonly Mock<DbSet<GeoMapBlock>> GeoMapBlockDbDSet;
-        private readonly Mock<DbSet<StoryBlock>> StoryBlockDbSet;
+        private Mock<DbSet<Story>> StoryDbSet;
+        private Mock<DbSet<TextBlock>> TextBlockDbSet;
+        private Mock<DbSet<GraphBlock>> GraphBlockDbSet;
+        private Mock<DbSet<GeoMapBlock>> GeoMapBlockDbDSet;
+        private Mock<DbSet<StoryBlock>> StoryBlockDbSet;
+
+        private const string EditorState = "{\"MeaningOfLife\": 42}";
+        private const string UserId = "test@test.com";
+        private const string StoryDescription = "Sample Description";
+        private const string StoryTitle = "Example Title";
 
         public StoryTestData()
         {
-            this.StoryId = GetNewId();
-            this.GraphBlockId = GetNewId();
-            this.TextBlockId = GetNewId();
-            this.GeoMapBlockId = GetNewId();
-            this.StoryTitle = "Example Title";
-            this.StoryDescription = "Sample Description";
-            this.UserId = "test@test.com";
-            this.EditorState = "{\"MeaningOfLife\": 42}";
-            StoryDbSet = new Mock<DbSet<Story>>();
-            TextBlockDbSet = new Mock<DbSet<TextBlock>>();
-            GraphBlockDbSet = new Mock<DbSet<GraphBlock>>();
-            GeoMapBlockDbDSet = new Mock<DbSet<GeoMapBlock>>();
-            StoryBlockDbSet = new Mock<DbSet<StoryBlock>>();
+            this.StoryId = CreateUUID();
+            this.GraphBlockId = CreateUUID();
+            this.TextBlockId = CreateUUID();
+            this.GeoMapBlockId = CreateUUID();
             MockContext = new Mock<HourglassContext>();
-            AddStoryApplicationModelToContext();
+            CreateEmptyMockDbSets();
+            AddStoryApplicationModelToMockContext();
         }
 
         public HourglassContext GetMockContext()
@@ -55,17 +44,38 @@ namespace HourglassServerTest.StoryTests
             return MockContext.Object;
         }
 
-        private void AddStoryApplicationModelToContext()
+        public void ClearDataInContext()
         {
-            AddItemToMockSet(StoryDbSet, GetNewStory());
-            AddItemToMockSet(TextBlockDbSet, GetNewTextBlock());
-            AddItemToMockSet(GraphBlockDbSet, GetNewGraphBlock());
-            AddItemToMockSet(GeoMapBlockDbDSet, GetNewGeoMapBlock());
-            AddItemsToMockSet(StoryBlockDbSet, GetStoryBlocks());
-            AddDbSetsToContext();
+            CreateEmptyMockDbSets();
+            AddDbSetsToMockContext();
         }
 
-        private void AddDbSetsToContext()
+        private void AddStoryApplicationModelToMockContext()
+        {
+            CreateQueryableMockSetWithItem(StoryDbSet, CreateStory());
+            CreateQueryableMockSetWithItem(TextBlockDbSet, CreateTextBlock());
+            CreateQueryableMockSetWithItem(GraphBlockDbSet, CreateGraphBlock());
+            CreateQueryableMockSetWithItem(GeoMapBlockDbDSet, CreateGeoMapBlock());
+            CreateQueryableMockDbSet(StoryBlockDbSet, CreateListOfStoryBlocks());
+            AddDbSetsToMockContext();
+        }
+
+        private void CreateEmptyMockDbSets()
+        {
+            StoryDbSet = new Mock<DbSet<Story>>();
+            TextBlockDbSet = new Mock<DbSet<TextBlock>>();
+            GraphBlockDbSet = new Mock<DbSet<GraphBlock>>();
+            GeoMapBlockDbDSet = new Mock<DbSet<GeoMapBlock>>();
+            StoryBlockDbSet = new Mock<DbSet<StoryBlock>>();
+
+            CreateQueryableMockDbSet(StoryDbSet, new List<Story>());
+            CreateQueryableMockDbSet(TextBlockDbSet, new List<TextBlock>());
+            CreateQueryableMockDbSet(GraphBlockDbSet, new List<GraphBlock>());
+            CreateQueryableMockDbSet(GeoMapBlockDbDSet, new List<GeoMapBlock>());
+            CreateQueryableMockDbSet(StoryBlockDbSet, new List<StoryBlock>());
+        }
+
+        private void AddDbSetsToMockContext()
         {
             MockContext.Setup(m => m.Story).Returns(StoryDbSet.Object);
             MockContext.Setup(m => m.TextBlock).Returns(TextBlockDbSet.Object);
@@ -74,49 +84,47 @@ namespace HourglassServerTest.StoryTests
             MockContext.Setup(m => m.StoryBlock).Returns(StoryBlockDbSet.Object);
         }
 
-
-        private Mock<DbSet<T>> AddItemToMockSet<T>(Mock<DbSet<T>> mockSet,T item) where T : class
+        private Mock<DbSet<T>> CreateQueryableMockSetWithItem<T>(Mock<DbSet<T>> mockSet,T item) where T : class
         {
             List<T> items = new List<T>() { item };
-            IQueryable<T> queryableList = items.AsQueryable();
-            return AddQueryListToMockSet(mockSet, queryableList);
+            return CreateQueryableMockDbSet(mockSet, items);
         }
 
-        private Mock<DbSet<T>> AddItemsToMockSet<T>(Mock<DbSet<T>> mockSet, List<T> items) where T : class
+        private Mock<DbSet<T>> CreateQueryableMockDbSet <T> (Mock<DbSet<T>> mockSet, List<T> sourceList) where T : class
         {
-            IQueryable<T> queryableList = items.AsQueryable();
-            return AddQueryListToMockSet(mockSet, queryableList);
-        }
-
-        private Mock<DbSet<T>> AddQueryListToMockSet <T> (Mock<DbSet<T>> mockSet, IQueryable<T> queryableList) where T : class
-        {
+            IQueryable<T> queryableList = sourceList.AsQueryable();
             mockSet.As<IQueryable<T>>().Setup(m => m.Provider).Returns(queryableList.Provider);
             mockSet.As<IQueryable<T>>().Setup(m => m.Expression).Returns(queryableList.Expression);
             mockSet.As<IQueryable<T>>().Setup(m => m.ElementType).Returns(queryableList.ElementType);
             mockSet.As<IQueryable<T>>().Setup(m => m.GetEnumerator()).Returns(queryableList.GetEnumerator());
+            mockSet.Setup(d => d.Add(It.IsAny<T>())).Callback<T>((s) => sourceList.Add(s));
+            mockSet.Setup(d => d.Remove(It.IsAny<T>())).Callback<T>((s) => sourceList.Remove(s));
+            //TODO: Find a way to moq updating items in list.
             return mockSet;
         }
 
-        private List<StoryBlock> GetStoryBlocks()
+        private List<StoryBlock> CreateListOfStoryBlocks()
         {
-            List<StoryBlockModel> storyBlockModels= GetStoryBlockModels();
-            List<StoryBlock> storyBlocks = new List<StoryBlock>();
-            storyBlocks.Add(StoryFactory.CreateStoryBlockFromStoryBlockModel(storyBlockModels[0], StoryId));
-            storyBlocks.Add(StoryFactory.CreateStoryBlockFromStoryBlockModel(storyBlockModels[1], StoryId));
-            storyBlocks.Add(StoryFactory.CreateStoryBlockFromStoryBlockModel(storyBlockModels[2], StoryId));
+            List<StoryBlockModel> storyBlockModels= CreateListOfStoryBlockModels();
+            List<StoryBlock> storyBlocks = new List<StoryBlock>
+            {
+                StoryFactory.CreateStoryBlockFromStoryBlockModel(storyBlockModels[0], StoryId),
+                StoryFactory.CreateStoryBlockFromStoryBlockModel(storyBlockModels[1], StoryId),
+                StoryFactory.CreateStoryBlockFromStoryBlockModel(storyBlockModels[2], StoryId)
+            };
             return storyBlocks;
         }
 
-        private List<StoryBlockModel> GetStoryBlockModels()
+        private List<StoryBlockModel> CreateListOfStoryBlockModels()
         {
             List<StoryBlockModel> storyBlocks = new List<StoryBlockModel>();
-            storyBlocks.Add(new StoryBlockModel(GetNewTextBlock(), 0));
-            storyBlocks.Add(new StoryBlockModel(GetNewGeoMapBlock(), 1));
-            storyBlocks.Add(new StoryBlockModel(GetNewGraphBlock(), 2));
+            storyBlocks.Add(new StoryBlockModel(CreateTextBlock(), 0));
+            storyBlocks.Add(new StoryBlockModel(CreateGeoMapBlock(), 1));
+            storyBlocks.Add(new StoryBlockModel(CreateGraphBlock(), 2));
             return storyBlocks;
         }
 
-        private Story GetNewStory()
+        private Story CreateStory()
         {
             return new Story
             {
@@ -124,38 +132,38 @@ namespace HourglassServerTest.StoryTests
                 Title = StoryTitle,
                 Description = StoryDescription,
                 UserId = UserId,
-                PublicationStatus = "DRAFT" //TODO: use enum and convert to string
+                PublicationStatus = PublicationStatus.DRAFT.ToString()
             };
         }
 
-        private TextBlock GetNewTextBlock()
+        private TextBlock CreateTextBlock()
         {
             return new TextBlock
             {
-                BlockId = TextBlockId,
+                BlockId = this.TextBlockId,
                 EditorState = EditorState
             };
         }
 
-        private GraphBlock GetNewGraphBlock()
+        private GraphBlock CreateGraphBlock()
         {
             return new GraphBlock
             {
                 BlockId = GraphBlockId,
-                GraphId = GetNewId()
+                GraphId = CreateUUID()
             };
         }
 
-        private GeoMapBlock GetNewGeoMapBlock()
+        private GeoMapBlock CreateGeoMapBlock()
         {
             return new GeoMapBlock
             {
                 BlockId = GeoMapBlockId,
-                GeoMapId = GetNewId()
+                GeoMapId = CreateUUID()
             };
         }
 
-        private static string GetNewId()
+        private static string CreateUUID()
         {
             return System.Guid.NewGuid().ToString();
         }
