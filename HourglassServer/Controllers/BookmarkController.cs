@@ -67,12 +67,12 @@ namespace HourglassServer.Controllers
             try
             {
                 _context.SaveChanges();
-            } catch(Exception e)
-            {
-                return new BadRequestObjectResult(e);
+                return new OkObjectResult("success");
             }
-           
-            return new OkObjectResult("success");
+            catch (Exception e)
+            {
+                return BadRequest(e.ToString());
+            }
         }
     }
 }
