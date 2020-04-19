@@ -23,18 +23,23 @@ namespace HourglassServer.Controllers
         {
             List<Object> bookmarks = new List<Object>();
 
-            List<GraphBookmark> graphBookmarks = _context.GraphBookmark.Where(b => b.UserId == UserId).ToList();
-            List<StoryBookmark> storyBookmarks = _context.StoryBookmark.Where(b => b.UserId == UserId).ToList();
-            List<GeoMapBookmark> geoMapBookmarks = _context.GeoMapBookmark.Where(b => b.UserId == UserId).ToList();
+            var graphIds = _context.GraphBookmark.Where(b => b.UserId == UserId).Select(r => r.GraphId);
+            var graphs = _context.Graph.Where(r => graphIds.Contains(r.GraphId));
 
-            bookmarks.AddRange(graphBookmarks);
-            bookmarks.AddRange(storyBookmarks);
-            bookmarks.AddRange(geoMapBookmarks);
+            var storyIds = _context.StoryBookmark.Where(b => b.UserId == UserId).Select(r => r.StoryId);
+            var stories = _context.Story.Where(r => storyIds.Contains(r.StoryId)); //TODO: User StoryRetriever when merged.
+
+            var geoMapIds = _context.GeoMapBookmark.Where(b => b.UserId == UserId).Select(r => r.GeoMapId);
+            var maps = _context.Graph.Where(r => geoMapIds.Contains(r.GraphId));
+
+            bookmarks.AddRange(graphs);
+            bookmarks.AddRange(stories);
+            bookmarks.AddRange(maps);
 
             return bookmarks;
         }
 
-        [HttpPost()]
+        [HttpPost]
         public IActionResult CreateBookmark(Bookmark Bookmark)
         {
             switch(Bookmark.Type)
