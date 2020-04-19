@@ -1,4 +1,4 @@
-﻿Person
+﻿person
 area
 category
 dataset_meta_data
