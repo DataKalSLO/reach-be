@@ -1,15 +1,18 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
-using HourglassServer.Data.StoryModel;
+using HourglassServer.Models.Persistent;
 
 namespace HourglassServer.Data
 {
     public partial class HourglassContext : DbContext
     {
-        private IConfiguration _config;
+        public HourglassContext()
+        {
+        }
 
-        public HourglassContext() { }
+        private readonly IConfiguration _config;
 
         public HourglassContext(DbContextOptions<HourglassContext> options, IConfiguration config)
             : base(options)
@@ -17,12 +20,24 @@ namespace HourglassServer.Data
             _config = config;
         }
 
-        public virtual DbSet<Counties> Counties { get; set; }
-        public virtual DbSet<Degrees> Degrees { get; set; }
-        public virtual DbSet<DegreesAwarded> DegreesAwarded { get; set; }
-        public virtual DbSet<Dummy> Dummy { get; set; }
-        public virtual DbSet<Universities> Universities { get; set; }
+        public virtual DbSet<Area> Area { get; set; }
+        public virtual DbSet<Category> Category { get; set; }
+        public virtual DbSet<DatasetMetaData> DatasetMetaData { get; set; }
+        public virtual DbSet<GeoMap> GeoMap { get; set; }
+        public virtual DbSet<GeoMapBlock> GeoMapBlock { get; set; }
+        public virtual DbSet<GeoMapTables> GeoMapTables { get; set; }
+        public virtual DbSet<Graph> Graph { get; set; }
+        public virtual DbSet<GraphBlock> GraphBlock { get; set; }
+        public virtual DbSet<GraphSeries> GraphSeries { get; set; }
+        public virtual DbSet<Location> Location { get; set; }
         public virtual DbSet<Person> Person { get; set; }
+        public virtual DbSet<Point> Point { get; set; }
+        public virtual DbSet<Story> Story { get; set; }
+        public virtual DbSet<StoryBlock> StoryBlock { get; set; }
+        public virtual DbSet<StoryCategory> StoryCategory { get; set; }
+        public virtual DbSet<TextBlock> TextBlock { get; set; }
+        public virtual DbSet<ZipArea> ZipArea { get; set; }
+        public virtual DbSet<ZipCode> ZipCode { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -34,115 +49,246 @@ namespace HourglassServer.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasAnnotation("ProductVersion", "2.2.4-servicing-10062");
+            modelBuilder.HasPostgresEnum(null, "geo_type", new[] { "city", "zip", "county" })
+                .HasPostgresEnum(null, "graph_category", new[] { "Industry", "Demographics", "Assets", "Education", "Housing" });
 
-            modelBuilder.Entity<Counties>(entity =>
+            modelBuilder.Entity<Area>(entity =>
             {
-                entity.HasKey(e => e.IdCounty);
+                entity.HasKey(e => e.Name)
+                    .HasName("area_pkey");
 
-                entity.Property(e => e.IdCounty)
-                    .HasColumnName("ID_County")
-                    .HasMaxLength(255)
-                    .IsUnicode(false)
-                    .ValueGeneratedNever();
+                entity.ToTable("area");
 
                 entity.Property(e => e.Name)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                    .HasColumnName("name")
+                    .HasColumnType("character varying");
+
+                entity.Property(e => e.Coordinates).HasColumnName("coordinates");
             });
 
-            modelBuilder.Entity<Degrees>(entity =>
+            modelBuilder.Entity<Category>(entity =>
             {
-                entity.HasKey(e => new { e.Gender, e.Year, e.IdUniversity });
+                entity.HasKey(e => e.CategoryName)
+                    .HasName("category_pkey");
 
-                entity.Property(e => e.Gender)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
+                entity.ToTable("category");
 
-                entity.Property(e => e.Year)
-                    .HasMaxLength(5)
-                    .IsUnicode(false);
+                entity.Property(e => e.CategoryName)
+                    .HasColumnName("category_name")
+                    .HasMaxLength(500);
 
-                entity.Property(e => e.IdUniversity)
-                    .HasColumnName("ID_University")
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.Completions).HasColumnType("int(11)");
-
-                entity.Property(e => e.University)
-                    .HasMaxLength(300)
-                    .IsUnicode(false);
+                entity.Property(e => e.CategoryDescription)
+                    .HasColumnName("category_description")
+                    .HasMaxLength(500);
             });
 
-            modelBuilder.Entity<DegreesAwarded>(entity =>
+            modelBuilder.Entity<DatasetMetaData>(entity =>
             {
-                entity.HasKey(e => new { e.Year, e.IdCounty });
+                entity.HasKey(e => e.TableName)
+                    .HasName("datasetmetadata_pkey");
 
-                entity.Property(e => e.Year).HasColumnType("int(11)");
+                entity.ToTable("dataset_meta_data");
 
-                entity.Property(e => e.IdCounty)
-                    .HasColumnName("ID_County")
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
+                entity.Property(e => e.TableName)
+                    .HasColumnName("table_name")
+                    .HasMaxLength(500);
 
-                entity.Property(e => e.Associates).HasColumnType("int(11)");
+                entity.Property(e => e.CityColumn).HasColumnName("city_column");
 
-                entity.Property(e => e.Bachelor).HasColumnType("int(11)");
+                entity.Property(e => e.ColumnNames)
+                    .HasColumnName("column_names")
+                    .HasColumnType("character varying(500)[]");
 
-                entity.Property(e => e.HsDiploma)
-                    .HasColumnName("HS_Diploma")
-                    .HasColumnType("int(11)");
+                entity.Property(e => e.CountyColumn).HasColumnName("county_column");
 
-                entity.Property(e => e.NumNoDiploma)
-                    .HasColumnName("Num_No_Diploma")
-                    .HasColumnType("int(11)");
+                entity.Property(e => e.DataTypes)
+                    .HasColumnName("data_types")
+                    .HasColumnType("character varying(500)[]");
 
-                entity.Property(e => e.TotalPopulation)
-                    .HasColumnName("Total_Population")
-                    .HasColumnType("int(11)");
+                entity.Property(e => e.LocationValues).HasColumnName("location_values");
+
+                entity.Property(e => e.ZipCodeColumn).HasColumnName("zip_code_column");
             });
 
-            modelBuilder.Entity<Dummy>(entity =>
+            modelBuilder.Entity<GeoMap>(entity =>
             {
-                entity.Property(e => e.Id)
-                    .HasColumnName("id")
-                    .HasColumnType("int(11)")
-                    .ValueGeneratedNever();
+                entity.ToTable("geo_map");
 
-                entity.Property(e => e.Data)
-                    .HasColumnName("data")
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.GeoMapId)
+                    .HasColumnName("geo_map_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
             });
 
-            modelBuilder.Entity<Universities>(entity =>
+            modelBuilder.Entity<GeoMapBlock>(entity =>
             {
-                entity.HasKey(e => e.IdUniversity);
+                entity.HasKey(e => e.BlockId)
+                    .HasName("geo_map_block_pkey");
 
-                entity.Property(e => e.IdUniversity)
-                    .HasColumnName("ID_University")
-                    .HasMaxLength(15)
-                    .IsUnicode(false)
-                    .ValueGeneratedNever();
+                entity.ToTable("geo_map_block");
 
-                entity.Property(e => e.IdGeography)
-                    .HasColumnName("ID_Geography")
-                    .HasMaxLength(20)
-                    .IsUnicode(false);
+                entity.Property(e => e.BlockId)
+                    .HasColumnName("block_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.Property(e => e.GeoMapId)
+                    .IsRequired()
+                    .HasColumnName("geo_map_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.HasOne(d => d.Block)
+                    .WithOne(p => p.GeoMapBlock)
+                    .HasForeignKey<GeoMapBlock>(d => d.BlockId)
+                    .HasConstraintName("geo_map_block_block_id_fkey");
+
+                entity.HasOne(d => d.GeoMap)
+                    .WithMany(p => p.GeoMapBlock)
+                    .HasForeignKey(d => d.GeoMapId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("geo_map_block_geo_map_id_fkey");
+            });
+
+            modelBuilder.Entity<GeoMapTables>(entity =>
+            {
+                entity.HasKey(e => new { e.GeoMapId, e.TableName })
+                    .HasName("geo_map_tables_pkey");
+
+                entity.ToTable("geo_map_tables");
+
+                entity.Property(e => e.GeoMapId)
+                    .HasColumnName("geo_map_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.Property(e => e.TableName)
+                    .HasColumnName("table_name")
+                    .HasMaxLength(500)
+                    .IsFixedLength();
+
+                entity.HasOne(d => d.GeoMap)
+                    .WithMany(p => p.GeoMapTables)
+                    .HasForeignKey(d => d.GeoMapId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("geo_map_tables_geo_map_id_fkey");
+
+                entity.HasOne(d => d.TableNameNavigation)
+                    .WithMany(p => p.GeoMapTables)
+                    .HasForeignKey(d => d.TableName)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("geo_map_tables_table_name_fkey");
+            });
+
+            modelBuilder.Entity<Graph>(entity =>
+            {
+                entity.ToTable("graph");
+
+                entity.Property(e => e.GraphId)
+                    .HasColumnName("graph_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.Property(e => e.Title)
+                    .IsRequired()
+                    .HasColumnName("title")
+                    .HasMaxLength(500);
+            });
+
+            modelBuilder.Entity<GraphBlock>(entity =>
+            {
+                entity.HasKey(e => e.BlockId)
+                    .HasName("graph_block_pkey");
+
+                entity.ToTable("graph_block");
+
+                entity.Property(e => e.BlockId)
+                    .HasColumnName("block_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.Property(e => e.GraphId)
+                    .IsRequired()
+                    .HasColumnName("graph_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.HasOne(d => d.Block)
+                    .WithOne(p => p.GraphBlock)
+                    .HasForeignKey<GraphBlock>(d => d.BlockId)
+                    .HasConstraintName("graph_block_block_id_fkey");
+
+                entity.HasOne(d => d.Graph)
+                    .WithMany(p => p.GraphBlock)
+                    .HasForeignKey(d => d.GraphId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("graph_block_graph_id_fkey");
+            });
+
+            modelBuilder.Entity<GraphSeries>(entity =>
+            {
+                entity.HasKey(e => new { e.GraphId, e.TableName, e.ColumnName, e.SeriesType })
+                    .HasName("graphseries_pkey");
+
+                entity.ToTable("graph_series");
+
+                entity.Property(e => e.GraphId)
+                    .HasColumnName("graph_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.Property(e => e.TableName)
+                    .HasColumnName("table_name")
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.ColumnName)
+                    .HasColumnName("column_name")
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.SeriesType)
+                    .HasColumnName("series_type")
+                    .HasMaxLength(20);
+
+                entity.HasOne(d => d.Graph)
+                    .WithMany(p => p.GraphSeries)
+                    .HasForeignKey(d => d.GraphId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("graphseries_graphid_fkey");
+
+                entity.HasOne(d => d.TableNameNavigation)
+                    .WithMany(p => p.GraphSeries)
+                    .HasForeignKey(d => d.TableName)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("graphseries_tablename_fkey");
+            });
+
+            modelBuilder.Entity<Location>(entity =>
+            {
+                entity.HasKey(e => new { e.Name, e.TableName })
+                    .HasName("location_pkey");
+
+                entity.ToTable("location");
 
                 entity.Property(e => e.Name)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
+                    .HasColumnName("name")
+                    .HasColumnType("character varying");
 
-                entity.Property(e => e.PublicPrivate)
-                    .HasColumnName("Public_Private")
-                    .HasMaxLength(20)
-                    .IsUnicode(false);
+                entity.Property(e => e.TableName)
+                    .HasColumnName("table_name")
+                    .HasColumnType("character varying");
 
-                entity.Property(e => e.Type)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                entity.Property(e => e.PointId).HasColumnName("point_id");
+
+                entity.HasOne(d => d.Point)
+                    .WithMany(p => p.Location)
+                    .HasForeignKey(d => d.PointId)
+                    .HasConstraintName("location_point_id_fkey");
+
+                entity.HasOne(d => d.TableNameNavigation)
+                    .WithMany(p => p.Location)
+                    .HasForeignKey(d => d.TableName)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("location_table_name_fkey");
             });
 
             modelBuilder.Entity<Person>(entity =>
@@ -161,18 +307,208 @@ namespace HourglassServer.Data
                     .HasColumnName("name")
                     .HasMaxLength(50);
 
-                entity.Property(e => e.PasswordHash)
+                //TODO: Update this field to point to PasswordHash once its created
+                entity.Property(e => e.Password)
                     .IsRequired()
                     .HasColumnName("password_hash")
                     .HasMaxLength(128);
 
                 entity.Property(e => e.Role).HasColumnName("role");
 
+                /*
                 entity.Property(e => e.Salt)
                     .IsRequired()
                     .HasColumnName("salt")
                     .HasMaxLength(64);
+                */
             });
+
+            modelBuilder.Entity<Point>(entity =>
+            {
+                entity.ToTable("point");
+
+                entity.HasIndex(e => e.Id)
+                    .HasName("point_id_key")
+                    .IsUnique();
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Latitude)
+                    .HasColumnName("latitude")
+                    .HasColumnType("numeric");
+
+                entity.Property(e => e.Longitude)
+                    .HasColumnName("longitude")
+                    .HasColumnType("numeric");
+            });
+
+            modelBuilder.Entity<Story>(entity =>
+            {
+                entity.ToTable("story");
+
+                entity.HasIndex(e => e.UserId)
+                    .HasName("fki_story_user_id_fkey");
+
+                entity.Property(e => e.StoryId)
+                    .HasColumnName("story_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.Property(e => e.DateCreated).HasColumnName("date_created");
+
+                entity.Property(e => e.DateLastEdited).HasColumnName("date_last_edited");
+
+                entity.Property(e => e.Description)
+                    .HasColumnName("description")
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.PublicationStatus)
+                    .IsRequired()
+                    .HasColumnName("publication_status")
+                    .HasMaxLength(10);
+
+                entity.Property(e => e.Title)
+                    .IsRequired()
+                    .HasColumnName("title")
+                    .HasMaxLength(250);
+
+                entity.Property(e => e.UserId)
+                    .IsRequired()
+                    .HasColumnName("user_id")
+                    .HasMaxLength(50);
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Story)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("story_user_id_fkey");
+            });
+
+            modelBuilder.Entity<StoryBlock>(entity =>
+            {
+                entity.HasKey(e => e.BlockId)
+                    .HasName("story_block_pkey");
+
+                entity.ToTable("story_block");
+
+                entity.HasIndex(e => new { e.StoryId, e.BlockPosition })
+                    .HasName("story_block_story_id_block_position_key")
+                    .IsUnique();
+
+                entity.Property(e => e.BlockId)
+                    .HasColumnName("block_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.Property(e => e.BlockPosition).HasColumnName("block_position");
+
+                entity.Property(e => e.StoryId)
+                    .IsRequired()
+                    .HasColumnName("story_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.HasOne(d => d.Story)
+                    .WithMany(p => p.StoryBlock)
+                    .HasForeignKey(d => d.StoryId)
+                    .HasConstraintName("story_block_story_id_fkey");
+            });
+
+            modelBuilder.Entity<StoryCategory>(entity =>
+            {
+                entity.HasKey(e => new { e.StoryId, e.CategoryName })
+                    .HasName("story_category_pkey");
+
+                entity.ToTable("story_category");
+
+                entity.Property(e => e.StoryId)
+                    .HasColumnName("story_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.Property(e => e.CategoryName)
+                    .HasColumnName("category_name")
+                    .HasMaxLength(500);
+
+                entity.HasOne(d => d.CategoryNameNavigation)
+                    .WithMany(p => p.StoryCategory)
+                    .HasForeignKey(d => d.CategoryName)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("story_category_category_name_fkey");
+
+                entity.HasOne(d => d.Story)
+                    .WithMany(p => p.StoryCategory)
+                    .HasForeignKey(d => d.StoryId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("story_category_story_id_fkey");
+            });
+
+            modelBuilder.Entity<TextBlock>(entity =>
+            {
+                entity.HasKey(e => e.BlockId)
+                    .HasName("text_block_pkey");
+
+                entity.ToTable("text_block");
+
+                entity.Property(e => e.BlockId)
+                    .HasColumnName("block_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.Property(e => e.EditorState)
+                    .IsRequired()
+                    .HasColumnName("editor_state")
+                    .HasMaxLength(100000);
+
+                entity.HasOne(d => d.Block)
+                    .WithOne(p => p.TextBlock)
+                    .HasForeignKey<TextBlock>(d => d.BlockId)
+                    .HasConstraintName("text_block_block_id_fkey");
+            });
+
+            modelBuilder.Entity<ZipArea>(entity =>
+            {
+                entity.HasKey(e => new { e.Zip, e.Area })
+                    .HasName("zip_area_pkey");
+
+                entity.ToTable("zip_area");
+
+                entity.Property(e => e.Zip).HasColumnName("zip");
+
+                entity.Property(e => e.Area)
+                    .HasColumnName("area")
+                    .HasColumnType("character varying");
+
+                entity.HasOne(d => d.AreaNavigation)
+                    .WithMany(p => p.ZipArea)
+                    .HasForeignKey(d => d.Area)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("zip_area_area_fkey");
+
+                entity.HasOne(d => d.ZipNavigation)
+                    .WithMany(p => p.ZipArea)
+                    .HasForeignKey(d => d.Zip)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("zip_area_zip_fkey");
+            });
+
+            modelBuilder.Entity<ZipCode>(entity =>
+            {
+                entity.HasKey(e => e.Zip)
+                    .HasName("zip_code_pkey");
+
+                entity.ToTable("zip_code");
+
+                entity.Property(e => e.Zip)
+                    .HasColumnName("zip")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.Coordinates).HasColumnName("coordinates");
+            });
+
+            OnModelCreatingPartial(modelBuilder);
         }
+
+        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 }

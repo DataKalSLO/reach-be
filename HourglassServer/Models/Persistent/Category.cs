@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace HourglassServer.Data.Persistent
+namespace HourglassServer.Models.Persistent
 {
     public partial class Category
     {

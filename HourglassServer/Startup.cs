@@ -1,5 +1,4 @@
 using HourglassServer.Data;
-using HourglassServer.Data.Persistent;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -27,7 +26,6 @@ namespace HourglassServer
         {
             services.AddDbContext<HourglassContext>();
             services.AddDbContext<DatasetDbContext>();
-            services.AddDbContext<postgresContext>();
 
             services.AddScoped<IAuthorizationHandler, UserExistsHandler>();
             services.AddAuthorization(options =>
