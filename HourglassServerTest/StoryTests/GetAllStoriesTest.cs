@@ -1,6 +1,3 @@
-﻿using System;
-using System.Linq;
-using System.Diagnostics;
 ﻿using HourglassServer.Data;
 using HourglassServer.Data.Application.StoryModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -24,16 +21,25 @@ namespace HourglassServerTest.StoryTests
         }
 
         [TestMethod]
-        public void GetAllStories()
+        public void GetAllStoriesFromRetriever()
         {
             HourglassContext context = SampleData.GetMockContext();
 
             IList<StoryApplicationModel> stories = StoryModelRetriever.GetAllStoryApplicationModels(context);
             GeneralAssertions.AssertListHasMinimumCount(stories, 1);
-            StoryApplicationModel story = stories[0];
+            GeneralAssertions.AssertListHasMinimumCount(stories[0].StoryBlocks, 1);
 
-            Assert.AreEqual(3, story.StoryBlocks.Count);
-            Assert.AreEqual(SampleData.StoryId, story.Id);
+        }
+
+        [TestMethod]
+        public void GetAllStoriesFromController()
+        {
+            HourglassContext context = SampleData.GetMockContext();
+            StoryController storyController = new StoryController(context);
+            IList<StoryApplicationModel> stories = storyController.GetAllStories();
+
+            GeneralAssertions.AssertListHasMinimumCount(stories, 1);
+            GeneralAssertions.AssertListHasMinimumCount(stories[0].StoryBlocks, 1);
         }
     }
 }
