@@ -24,10 +24,10 @@ namespace HourglassServer.Controllers
             return StoryModelRetriever.GetAllStoryApplicationModels(_context);
         }
 
-        [HttpGet("{id}")]
-        public StoryApplicationModel Get(string id)
+        [HttpGet("{StoryId}")]
+        public StoryApplicationModel GetStoryWithId(string StoryId)
         {
-            throw new Exception("Method not yet implemented");
+            return StoryModelRetriever.GetStoryModelByID(_context, StoryId);
         }
 
         [HttpPost]
