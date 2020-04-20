@@ -1,6 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using HourglassServer.Models.Persistent;
 using Newtonsoft.Json;
 
 namespace HourglassServer.Data.StoryModel

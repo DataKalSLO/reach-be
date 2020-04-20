@@ -1,4 +1,6 @@
-﻿namespace HourglassServer.Data
+﻿using System.Collections.Generic;
+
+namespace HourglassServer.Models.Persistent
 {
     public partial class Person
     {
@@ -7,5 +9,6 @@
         public int Role { get; set; }
         public string Salt { get; set; }
         public string PasswordHash { get; set; }
-    }
+        public virtual ICollection<Story> Story { get; set; }
+   }
 }

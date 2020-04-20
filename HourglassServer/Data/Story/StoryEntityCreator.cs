@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using HourglassServer.Data.StoryModel;
+using HourglassServer.Models.Persistent;
 
 namespace HourglassServer.Data
 {
