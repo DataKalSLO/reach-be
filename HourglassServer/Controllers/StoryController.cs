@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using HourglassServer.Data.Application.StoryModel;
 using HourglassServer.Data;
 using HourglassServer.Data.DataManipulation.StoryModel;
+using Newtonsoft.Json.Linq;
 
 namespace HourglassServer.Controllers
 {
@@ -37,7 +38,7 @@ namespace HourglassServer.Controllers
             {
                 StoryApplicationModel storyCreated = StoryModelCreator.AddStoryApplicationModelToDatabaseContext(_context, story);
                 _context.SaveChanges();
-                return new OkObjectResult(storyCreated.Id);
+                return new OkObjectResult(storyCreated);
             }
             catch (Exception e)
             {
