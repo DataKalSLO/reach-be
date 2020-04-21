@@ -61,12 +61,7 @@ namespace HourglassServer.Data.Application.StoryModel
 
         public int CompareTo(StoryBlockModel other)
         {
-            if (this.BlockPosition < other.BlockPosition)
-                return -1;
-            else if (this.BlockPosition > other.BlockPosition)
-                return 1;
-            else
-                return 0;
+            return this.BlockPosition.CompareTo(other.BlockPosition); //TODO: add unit test testing sort is ascending
         }
     }
 }
