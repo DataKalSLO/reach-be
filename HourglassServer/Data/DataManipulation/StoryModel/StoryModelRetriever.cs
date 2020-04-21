@@ -16,7 +16,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
         public static StoryApplicationModel GetStoryModelByID(HourglassContext db, string storyID)
         {
             Story story = db.Story.First(a => a.StoryId == storyID);
-            return CreateStoryModelFromStory(db, story);
+            return GetStoryAppplicationModelFromStory(db, story);
         }
 
         public static IList<StoryApplicationModel> GetAllStoryApplicationModels(HourglassContext db)
@@ -24,20 +24,20 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             List<Story> stories = db.Story.ToList();
             List<StoryApplicationModel> storyModels = new List<StoryApplicationModel>();
             foreach (var story in stories)
-                storyModels.Add(CreateStoryModelFromStory(db, story));
+                storyModels.Add(GetStoryAppplicationModelFromStory(db, story));
             return storyModels;
         }
 
-        public static StoryApplicationModel CreateStoryModelFromStory(HourglassContext db, Story story)
+        public static StoryApplicationModel GetStoryAppplicationModelFromStory(HourglassContext db, Story story)
         {
             string storyID = story.StoryId;
-            List<StoryBlockModel> storyBlocks = getStoryBlocksWithStoryID(db, storyID);
+            List<StoryBlockModel> storyBlocks = GetStoryBlocksWithStoryID(db, storyID);
             StoryApplicationModel model = new StoryApplicationModel(story);
             model.StoryBlocks = storyBlocks;
             return model;
         }
 
-        public static List<StoryBlockModel> getStoryBlocksWithStoryID(HourglassContext db, string StoryID)
+        public static List<StoryBlockModel> GetStoryBlocksWithStoryID(HourglassContext db, string StoryID)
         {
             List<StoryBlockModel> graphBlocks = GetGraphStoryBlockOnStoryID(db, StoryID);
             List<StoryBlockModel> mapBlocks = GetMapBlocksWithStoryID(db, StoryID);
@@ -49,7 +49,10 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             return allStories;
         }
 
-        //Returns StoryBlocks SORTED by position 
+        /* The reason these blocks cannot be generalized is because no supertype can be
+         * declared for StoryBlocks. The script we use to generate the classes specifically
+         * mentions this as one of its limitations.
+         */
         public static List<StoryBlockModel> GetGraphStoryBlockOnStoryID(HourglassContext db, string StoryID)
         {
             var res = from storyBlock in db.StoryBlock
@@ -67,7 +70,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             List<StoryBlockModel> storyBlocks = new List<StoryBlockModel>();
             foreach (var val in res)
             {
-                GraphBlock graphBlock = StoryFactory.createGraphBlock(val.BlockId, val.GraphId);
+                GraphBlock graphBlock = StoryFactory.CreateGraphBlock(val.BlockId, val.GraphId);
                 storyBlocks.Add(new StoryBlockModel(graphBlock, val.position));
             }
             return storyBlocks;
@@ -90,7 +93,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             List<StoryBlockModel> storyBlocks = new List<StoryBlockModel>();
             foreach (var val in res)
             {
-                GeoMapBlock geoMapBlock = StoryFactory.createGeoMapBlock(val.BlockId, val.GeoMapId);
+                GeoMapBlock geoMapBlock = StoryFactory.CreateGeoMapBlock(val.BlockId, val.GeoMapId);
                 storyBlocks.Add(new StoryBlockModel(geoMapBlock, val.position));
             }
             return storyBlocks;
@@ -113,7 +116,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             List<StoryBlockModel> storyBlocks = new List<StoryBlockModel>();
             foreach (var val in res)
             {
-                TextBlock textBlock = StoryFactory.createTextBlock(val.BlockId, val.EditorState);
+                TextBlock textBlock = StoryFactory.CreateTextBlock(val.BlockId, val.EditorState);
                 storyBlocks.Add(new StoryBlockModel(textBlock, val.position));
             }
             return storyBlocks;

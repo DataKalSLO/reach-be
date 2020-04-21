@@ -18,8 +18,11 @@ namespace HourglassServerTest.StoryTests
             HourglassContext context = SampleData.GetMockContext();
             IList<StoryApplicationModel> stories = StoryModelRetriever.GetAllStoryApplicationModels(context);
             GeneralAssertions.AssertListHasMinimumCount(stories, 1);
-            GeneralAssertions.AssertListHasMinimumCount(stories[0].StoryBlocks, 1);
-
+            StoryApplicationModel story = stories[0];
+            int expectedStoryBlockCount = 3;
+            GeneralAssertions.AssertListHasCount(story.StoryBlocks, expectedStoryBlockCount);
+            for (int i=0;i<expectedStoryBlockCount; i++) //Checks that blocks are sorted.
+                Assert.AreEqual(0, story.StoryBlocks[0].BlockPosition);
         }
 
         [TestMethod]
