@@ -12,8 +12,7 @@ namespace HourglassServerTest.StoryTests
     [TestClass]
     public class StoryTestDataTest
     {
-        private StoryTestData sampleData;
-        private HourglassContext mockContext;
+        private StoryTestData testData;
         private Story exampleStory;
         private TextBlock exampleTextBlock;
         private GraphBlock exampleGraphBlock;
@@ -23,8 +22,7 @@ namespace HourglassServerTest.StoryTests
         [TestInitialize]
         public void TestInit()
         {
-            sampleData = new StoryTestData();
-            mockContext = sampleData.GetMockContext();
+            testData = new StoryTestData();
             exampleStory = new Story() { StoryId = System.Guid.NewGuid().ToString() };
             exampleTextBlock = new TextBlock() { BlockId = System.Guid.NewGuid().ToString() };
             exampleGraphBlock = new GraphBlock() { BlockId = System.Guid.NewGuid().ToString() };
@@ -39,6 +37,9 @@ namespace HourglassServerTest.StoryTests
         [TestMethod]
         public void DbSetsCanGetData()
         {
+            testData.AddItemToMockContext();
+            HourglassContext mockContext = testData.GetMockContext();
+
             List<Story> Stories = mockContext.Story.ToList();
             List<TextBlock> TextBlocks = mockContext.TextBlock.ToList();
             List<GeoMapBlock> GeoMapBlocks = mockContext.GeoMapBlock.ToList();
@@ -51,17 +52,19 @@ namespace HourglassServerTest.StoryTests
             GeneralAssertions.AssertListHasMinimumCount(GraphBlocks, 1);
             GeneralAssertions.AssertListHasMinimumCount(StoryBlocks, 1);
 
-            Assert.AreEqual(sampleData.StoryId, Stories[0].StoryId, "Story");
-            Assert.AreEqual(sampleData.TextBlockId, TextBlocks[0].BlockId, "TextBlock");
-            Assert.AreEqual(sampleData.GeoMapBlockId, GeoMapBlocks[0].BlockId, "GeoMapBlock");
-            Assert.AreEqual(sampleData.GraphBlockId, GraphBlocks[0].BlockId, "GraphBlock");
-            Assert.AreEqual(sampleData.StoryId, StoryBlocks[0].StoryId, "StoryBlock");
+            Assert.AreEqual(testData.StoryId, Stories[0].StoryId, "Story");
+            Assert.AreEqual(testData.TextBlockId, TextBlocks[0].BlockId, "TextBlock");
+            Assert.AreEqual(testData.GeoMapBlockId, GeoMapBlocks[0].BlockId, "GeoMapBlock");
+            Assert.AreEqual(testData.GraphBlockId, GraphBlocks[0].BlockId, "GraphBlock");
+            Assert.AreEqual(testData.StoryId, StoryBlocks[0].StoryId, "StoryBlock");
         }
 
         [TestMethod]
         public void DbSetsCanAddData()
         {
-            sampleData.ClearDataInContext();
+            testData.ClearDataInContext();
+            HourglassContext mockContext = testData.GetMockContext();
+
             GeneralAssertions.AssertDbSetHasCount(mockContext.Story, 0);
             GeneralAssertions.AssertDbSetHasCount(mockContext.TextBlock, 0);
             GeneralAssertions.AssertDbSetHasCount(mockContext.GraphBlock, 0);
@@ -84,17 +87,18 @@ namespace HourglassServerTest.StoryTests
         [TestMethod]
         public void DbSetsCanDeleteData()
         {
-            DbSetsCanAddData();
-            mockContext.Story.Remove(exampleStory);
-            mockContext.TextBlock.Remove(exampleTextBlock);
-            mockContext.GraphBlock.Remove(exampleGraphBlock);
-            mockContext.GeoMapBlock.Remove(exampleGeoMapBlock);
-            mockContext.StoryBlock.Remove(exampleStoryBlock);
+            testData.AddItemToMockContext();
+            HourglassContext mockContext = testData.GetMockContext();
+            mockContext.Story.Remove(testData.Story);
+            mockContext.TextBlock.Remove(testData.TextBlock);
+            mockContext.GraphBlock.Remove(testData.GraphBlock);
+            mockContext.GeoMapBlock.Remove(testData.GeoMapBlock);
+            mockContext.StoryBlock.Remove(testData.StoryBlocks[0]);
             GeneralAssertions.AssertDbSetHasCount(mockContext.Story, 0);
             GeneralAssertions.AssertDbSetHasCount(mockContext.TextBlock, 0);
             GeneralAssertions.AssertDbSetHasCount(mockContext.GraphBlock, 0);
             GeneralAssertions.AssertDbSetHasCount(mockContext.GeoMapBlock, 0);
-            GeneralAssertions.AssertDbSetHasCount(mockContext.StoryBlock, 0);
+            GeneralAssertions.AssertDbSetHasCount(mockContext.StoryBlock, 2);
         }
     }
 }

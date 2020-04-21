@@ -219,6 +219,15 @@ namespace HourglassServer.Data
                     .IsRequired()
                     .HasColumnName("title")
                     .HasMaxLength(500);
+
+                entity.Property(e => e.UserId)
+                    .HasColumnName("user_id")
+                    .HasMaxLength(50);
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Graph)
+                    .HasForeignKey(d => d.UserId)
+                    .HasConstraintName("graph_user_id_fkey");
             });
 
             modelBuilder.Entity<GraphBlock>(entity =>

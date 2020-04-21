@@ -7,6 +7,7 @@ namespace HourglassServer.Models.Persistent
     {
         public Person()
         {
+            Graph = new HashSet<Graph>();
             Story = new HashSet<Story>();
         }
 
@@ -16,6 +17,7 @@ namespace HourglassServer.Models.Persistent
         public string Salt { get; set; }
         public string PasswordHash { get; set; }
 
+        public virtual ICollection<Graph> Graph { get; set; }
         public virtual ICollection<Story> Story { get; set; }
     }
 }

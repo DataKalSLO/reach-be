@@ -14,10 +14,10 @@ namespace HourglassServerTest
             Assert.IsTrue(dbSet.Count() >= minimumCount);
         }
 
-        public static void AssertDbSetHasCount<T>(DbSet<T> dbSet, int count) where T : class
+        public static void AssertDbSetHasCount<T>(DbSet<T> dbSet, int expectedCount) where T : class
         {
             Assert.IsNotNull(dbSet);
-            Assert.AreEqual(dbSet.Count(), count);
+            Assert.AreEqual(expectedCount, dbSet.Count());
         }
 
         public static void AssertListHasMinimumCount<T>(IList<T> list, int expectedMinimum) where T : class

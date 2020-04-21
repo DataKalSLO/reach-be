@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace HourglassServer.Data.Bookmark
+namespace HourglassServer.Data.BookmarkModel
 {
     public class Bookmark
     {
