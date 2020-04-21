@@ -59,8 +59,7 @@ namespace HourglassServer
                 options.AddPolicy(MyAllowSpecificOrigins,
                 builder =>
                 {
-                    builder.WithOrigins("http://localhost:3000")
-                           .AllowCredentials()
+                    builder.AllowAnyOrigin()
                            .AllowAnyMethod()
                            .WithHeaders(HeaderNames.ContentType)
                            .WithHeaders(HeaderNames.Authorization);
