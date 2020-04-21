@@ -39,7 +39,7 @@ namespace HourglassServer.Data.Application.StoryModel
 
         public StoryApplicationModel()
         {
-            this.PublicationStatus = PublicationStatus.DRAFT; //TODO: Find a way to make constant (enum or something else)
+            this.PublicationStatus = PublicationStatus.DRAFT;
         }
 
         public StoryApplicationModel(Story story)
