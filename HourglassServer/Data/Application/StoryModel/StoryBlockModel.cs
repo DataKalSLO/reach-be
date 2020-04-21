@@ -20,9 +20,8 @@ namespace HourglassServer.Data.Application.StoryModel
         [Required]
         public string Id { get; set; }
 
-        
-        [Required]  //Check only performed during model binding and defaults to GRAPH
-        [JsonConverter(typeof(StringEnumConverter))] 
+        [Required]
+        [JsonConverter(typeof(StringEnumConverter))] //Strings not converted by default
         public StoryBlockType Type { get; set; } 
 
         public string GraphId { get; set; }
@@ -31,9 +30,13 @@ namespace HourglassServer.Data.Application.StoryModel
 
         public string EditorState { get; set; }
 
+        /* Note, FEND will not define this and will be null after initial model binding
+         * This means that this is required to be set based on its position in
+         * given Story's storyBlocks
+         */
         public int BlockPosition { get; set; }
 
-        public StoryBlockModel() {}
+        public StoryBlockModel() { }
 
         public StoryBlockModel(GeoMapBlock mapBlock, int position)
         {
