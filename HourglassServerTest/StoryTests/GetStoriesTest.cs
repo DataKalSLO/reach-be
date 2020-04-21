@@ -8,7 +8,7 @@ using HourglassServer.Controllers;
 namespace HourglassServerTest.StoryTests
 {
     [TestClass]
-    public class GetAllStoriesTest
+    public class GetStoriesTest
     {
 
         [TestMethod]
