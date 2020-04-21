@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using HourglassServer.Data.Application.StoryModel;
 using HourglassServer.Data;
-using HourglassServer.Data.StoryModel;
 
 namespace HourglassServer.Controllers
 {
@@ -18,39 +18,33 @@ namespace HourglassServer.Controllers
         }
 
         [HttpGet]
-        public IList<StoryCreationObject> Get()
+        public IList<StoryApplicationModel> Get()
         {
-            throw new Exception("Method not implemented yet.");
+            throw new NotImplementedException();
         }
 
         [HttpGet("{id}")]
-        public StoryCreationObject Get(string id)
+        public StoryApplicationModel Get(string id)
         {
-            throw new Exception("Method not implemented yet.");
+            throw new NotImplementedException();
         }
 
         [HttpPost]
-        public string Post([FromBody] StoryCreationObject story)
+        public string Post([FromBody] StoryApplicationModel story)
         {
-            throw new Exception("Method not implemented yet.");
+            throw new NotImplementedException();
         }
 
         [HttpPut]
         public string Put()
         {
-            return "Updating stories not yet implemented";
+            throw new NotImplementedException();
         }
 
         [HttpDelete("{id}")]
         public string Delete(string id)
         {
-            throw new Exception("Method not implemented yet.");
-        }
-
-        [HttpGet("count")]
-        public string getNumberOfStories()
-        {
-            return _context.Story.Count().ToString();
+            throw new NotImplementedException();
         }
     }
 }
