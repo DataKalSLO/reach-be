@@ -11,6 +11,9 @@ using Newtonsoft.Json.Converters;
  */
 namespace HourglassServer.Data.Application.StoryModel
 {
+    /*TODO: Make this an abstract class with child StoryBlocks (e.g. TextBlock)
+     * and create custom binder to redirect to child constructor.
+     */
     public class StoryBlockModel : IComparable<StoryBlockModel>
     {
         [Key]
@@ -61,12 +64,7 @@ namespace HourglassServer.Data.Application.StoryModel
 
         public int CompareTo(StoryBlockModel other)
         {
-            if (this.BlockPosition < other.BlockPosition)
-                return -1;
-            else if (this.BlockPosition > other.BlockPosition)
-                return 1;
-            else
-                return 0;
+            return this.BlockPosition.CompareTo(other.BlockPosition); //TODO: add unit test testing sort is ascending
         }
     }
 }

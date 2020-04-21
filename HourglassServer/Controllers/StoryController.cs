@@ -33,19 +33,19 @@ namespace HourglassServer.Controllers
         [HttpPost]
         public string Post([FromBody] StoryApplicationModel story)
         {
-            throw new Exception("Method not yet implemented");
+            throw new NotImplementedException();
         }
 
         [HttpPut]
         public string Put()
         {
-            throw new Exception("Method not yet implemented");
+            throw new NotImplementedException();
         }
 
         [HttpDelete("{id}")]
         public string Delete(string id)
         {
-            throw new Exception("Method not yet implemented");
+            throw new NotImplementedException();
         }
     }
 }
