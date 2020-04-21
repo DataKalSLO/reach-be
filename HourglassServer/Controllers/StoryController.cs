@@ -20,31 +20,31 @@ namespace HourglassServer.Controllers
         [HttpGet]
         public IList<StoryApplicationModel> Get()
         {
-            throw new NotImplementedException("Method not yet implemented");
+            throw new NotImplementedException();
         }
 
         [HttpGet("{id}")]
         public StoryApplicationModel Get(string id)
         {
-            throw new NotImplementedException("Method not yet implemented");
+            throw new NotImplementedException();
         }
 
         [HttpPost]
         public string Post([FromBody] StoryApplicationModel story)
         {
-            throw new NotImplementedException("Method not yet implemented");
+            throw new NotImplementedException();
         }
 
         [HttpPut]
         public string Put()
         {
-            throw new NotImplementedException("Method not yet implemented");
+            throw new NotImplementedException();
         }
 
         [HttpDelete("{id}")]
         public string Delete(string id)
         {
-            throw new NotImplementedException("Method not yet implemented");
+            throw new NotImplementedException();
         }
     }
 }

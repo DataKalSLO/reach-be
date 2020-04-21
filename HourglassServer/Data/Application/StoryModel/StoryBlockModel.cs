@@ -11,6 +11,9 @@ using Newtonsoft.Json.Converters;
  */
 namespace HourglassServer.Data.Application.StoryModel
 {
+    /*TODO: Make this an abstract class with child StoryBlocks (e.g. TextBlock)
+     * and create custom binder to redirect to child constructor.
+     */
     public class StoryBlockModel : IComparable<StoryBlockModel>
     {
         [Key]
