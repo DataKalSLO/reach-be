@@ -15,8 +15,8 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
     {
         public static StoryApplicationModel GetStoryApplicationModelById(HourglassContext db, string storyId)
         {
-            return GetStoryAppplicationModelFromStory(db, story);
             Story story = db.Story.First(a => a.StoryId == storyId);
+            return GetStoryApplicationModelFromStory(db, story);
         }
 
         public static IList<StoryApplicationModel> GetAllStoryApplicationModels(HourglassContext db)
@@ -24,11 +24,11 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             List<Story> stories = db.Story.ToList();
             List<StoryApplicationModel> storyModels = new List<StoryApplicationModel>();
             foreach (var story in stories)
-                storyModels.Add(GetStoryAppplicationModelFromStory(db, story));
+                storyModels.Add(GetStoryApplicationModelFromStory(db, story));
             return storyModels;
         }
 
-        public static StoryApplicationModel GetStoryAppplicationModelFromStory(HourglassContext db, Story story)
+        public static StoryApplicationModel GetStoryApplicationModelFromStory(HourglassContext db, Story story)
         {
             string storyID = story.StoryId;
             List<StoryBlockModel> storyBlocks = GetStoryBlocksByStoryID(db, storyID);
@@ -55,69 +55,66 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
          */
         public static List<StoryBlockModel> GetGraphStoryBlockByStoryID(HourglassContext db, string storyId)
         {
-            var res = from storyBlock in db.StoryBlock
+            var storyBlockGraphBlockJoin = from storyBlock in db.StoryBlock
                       join graphBlock in db.GraphBlock
                           on storyBlock.BlockId equals graphBlock.BlockId
                       where storyBlock.StoryId == storyId
                       select new
                       {
-                          storyBlock.StoryId,
                           graphBlock.BlockId,
                           position = storyBlock.BlockPosition,
                           graphBlock.GraphId
                       };
 
             List<StoryBlockModel> storyBlocks = new List<StoryBlockModel>();
-            foreach (var val in res)
+            foreach (var joinedGraphBlock in storyBlockGraphBlockJoin)
             {
-                GraphBlock graphBlock = StoryFactory.CreateGraphBlock(val.BlockId, val.GraphId);
-                storyBlocks.Add(new StoryBlockModel(graphBlock, val.position));
+                GraphBlock graphBlock = StoryFactory.CreateGraphBlock(joinedGraphBlock.BlockId, joinedGraphBlock.GraphId);
+                storyBlocks.Add(new StoryBlockModel(graphBlock, joinedGraphBlock.position));
             }
             return storyBlocks;
         }
 
         public static List<StoryBlockModel> GetGeoMapBlocksByStoryID(HourglassContext db, string storyId)
         {
-            var res = from storyBlock in db.StoryBlock
+            var storyBlockGeoMapBlockJoin = from storyBlock in db.StoryBlock
                       join geomapBlock in db.GeoMapBlock
                           on storyBlock.BlockId equals geomapBlock.BlockId
                       where storyBlock.StoryId == storyId
                       select new
                       {
-                          storyBlock.StoryId,
                           geomapBlock.BlockId,
                           position = storyBlock.BlockPosition,
                           geomapBlock.GeoMapId
                       };
 
             List<StoryBlockModel> storyBlocks = new List<StoryBlockModel>();
-            foreach (var val in res)
+            foreach (var joinedGeoMapBlock in storyBlockGeoMapBlockJoin)
             {
-                GeoMapBlock geoMapBlock = StoryFactory.CreateGeoMapBlock(val.BlockId, val.GeoMapId);
-                storyBlocks.Add(new StoryBlockModel(geoMapBlock, val.position));
+                GeoMapBlock geoMapBlock = StoryFactory.CreateGeoMapBlock(joinedGeoMapBlock.BlockId, joinedGeoMapBlock.GeoMapId);
+                storyBlocks.Add(new StoryBlockModel(geoMapBlock, joinedGeoMapBlock.position));
             }
             return storyBlocks;
         }
 
         public static List<StoryBlockModel> GetTextBlocksByStoryID(HourglassContext db, string storyId)
         {
-            var res = from storyBlock in db.StoryBlock
-                      join geomapBlock in db.TextBlock
-                          on storyBlock.BlockId equals geomapBlock.BlockId
+            var storyBlockTextBlockJoin = from storyBlock in db.StoryBlock
+                      join textBlock in db.TextBlock
+                          on storyBlock.BlockId equals textBlock.BlockId
                       where storyBlock.StoryId == storyId
                       select new
                       {
-                          storyBlock.StoryId,
-                          geomapBlock.BlockId,
+                          textBlock.BlockId,
                           position = storyBlock.BlockPosition,
-                          geomapBlock.EditorState
+                          textBlock.EditorState
                       };
 
             List<StoryBlockModel> storyBlocks = new List<StoryBlockModel>();
-            foreach (var val in res)
+            foreach (var joinedTextBlock in storyBlockTextBlockJoin)
             {
-                TextBlock textBlock = StoryFactory.CreateTextBlock(val.BlockId, val.EditorState);
-                storyBlocks.Add(new StoryBlockModel(textBlock, val.position));
+                TextBlock textBlock = StoryFactory.CreateTextBlock(joinedTextBlock.BlockId, joinedTextBlock.EditorState);
+                storyBlocks.Add(new StoryBlockModel(textBlock, joinedTextBlock.position));
             }
             return storyBlocks;
         }
