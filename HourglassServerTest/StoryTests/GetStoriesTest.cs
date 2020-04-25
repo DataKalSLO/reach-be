@@ -41,9 +41,9 @@ namespace HourglassServerTest.StoryTests
         public void GetStoryWithIdFromController()
         {
             StoryTestData SampleData = new StoryTestData();
-            StoryApplicationModel story = storyController.GetStoryWithId(SampleData.StoryId);
             HourglassContext mockContext = sampleData.GetMockContext();
             StoryController storyController = new StoryController(mockContext);
+            StoryApplicationModel story = storyController.GetStoryById(sampleData.StoryId);
             Assert.IsNotNull(story);
             GeneralAssertions.AssertListHasMinimumCount(story.StoryBlocks, 1);
             Assert.AreEqual(SampleData.StoryId, story.Id);

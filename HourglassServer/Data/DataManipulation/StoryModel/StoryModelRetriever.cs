@@ -13,7 +13,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
 {
     public static class StoryModelRetriever
     {
-        public static StoryApplicationModel GetStoryModelByID(HourglassContext db, string storyID)
+        public static StoryApplicationModel GetStoryApplicationModelById(HourglassContext db, string storyId)
         {
             Story story = db.Story.First(a => a.StoryId == storyID);
             return GetStoryAppplicationModelFromStory(db, story);
@@ -31,17 +31,17 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
         public static StoryApplicationModel GetStoryAppplicationModelFromStory(HourglassContext db, Story story)
         {
             string storyID = story.StoryId;
-            List<StoryBlockModel> storyBlocks = GetStoryBlocksWithStoryID(db, storyID);
+            List<StoryBlockModel> storyBlocks = GetStoryBlocksByStoryID(db, storyID);
             StoryApplicationModel model = new StoryApplicationModel(story);
             model.StoryBlocks = storyBlocks;
             return model;
         }
 
-        public static List<StoryBlockModel> GetStoryBlocksWithStoryID(HourglassContext db, string StoryID)
+        public static List<StoryBlockModel> GetStoryBlocksByStoryID(HourglassContext db, string storyId)
         {
-            List<StoryBlockModel> graphBlocks = GetGraphStoryBlockOnStoryID(db, StoryID);
-            List<StoryBlockModel> mapBlocks = GetMapBlocksWithStoryID(db, StoryID);
-            List<StoryBlockModel> textBlocks = GetTextBlocksWithStoryID(db, StoryID);
+            List<StoryBlockModel> graphBlocks = GetGraphStoryBlockByStoryID(db, storyId);
+            List<StoryBlockModel> mapBlocks = GetGeoMapBlocksByStoryID(db, storyId);
+            List<StoryBlockModel> textBlocks = GetTextBlocksByStoryID(db, storyId);
             List<StoryBlockModel> allStories = graphBlocks.Concat(textBlocks)
                                     .Concat(mapBlocks)
                                     .ToList();
@@ -53,7 +53,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
          * declared for StoryBlocks. The script we use to generate the classes specifically
          * mentions this as one of its limitations.
          */
-        public static List<StoryBlockModel> GetGraphStoryBlockOnStoryID(HourglassContext db, string StoryID)
+        public static List<StoryBlockModel> GetGraphStoryBlockByStoryID(HourglassContext db, string storyId)
         {
             var res = from storyBlock in db.StoryBlock
                       join graphBlock in db.GraphBlock
@@ -76,7 +76,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             return storyBlocks;
         }
 
-        public static List<StoryBlockModel> GetMapBlocksWithStoryID(HourglassContext db, string StoryID)
+        public static List<StoryBlockModel> GetGeoMapBlocksByStoryID(HourglassContext db, string storyId)
         {
             var res = from storyBlock in db.StoryBlock
                       join geomapBlock in db.GeoMapBlock
@@ -99,7 +99,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             return storyBlocks;
         }
 
-        public static List<StoryBlockModel> GetTextBlocksWithStoryID(HourglassContext db, string StoryID)
+        public static List<StoryBlockModel> GetTextBlocksByStoryID(HourglassContext db, string storyId)
         {
             var res = from storyBlock in db.StoryBlock
                       join geomapBlock in db.TextBlock

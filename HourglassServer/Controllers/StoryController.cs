@@ -25,9 +25,9 @@ namespace HourglassServer.Controllers
         }
 
         [HttpGet("{StoryId}")]
-        public StoryApplicationModel GetStoryWithId(string StoryId)
+        public StoryApplicationModel GetStoryById(string storyId)
         {
-            return StoryModelRetriever.GetStoryModelByID(_context, StoryId);
+            return StoryModelRetriever.GetStoryApplicationModelById(_context, storyId);
         }
 
         [HttpPost]
