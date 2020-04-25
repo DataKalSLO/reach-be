@@ -12,7 +12,7 @@ namespace HourglassServerTest.StoryTests
     {
 
         [TestMethod]
-        public void GetAllStoriesFromRetriever()
+        public void TestGetStoriesFromStoryRetrieverContainingSampleData()
         {
             StoryTestData SampleData = new StoryTestData();
             HourglassContext mockContent = sampleData.GetMockContext();
@@ -26,7 +26,7 @@ namespace HourglassServerTest.StoryTests
         }
 
         [TestMethod]
-        public void GetAllStoriesFromController()
+        public void TestGetStoriesFromControllerContainingSampleData()
         {
             StoryTestData SampleData = new StoryTestData();
             HourglassContext mockContext = sampleData.GetMockContext();
@@ -38,7 +38,7 @@ namespace HourglassServerTest.StoryTests
         }
 
         [TestMethod]
-        public void GetStoryWithIdFromController()
+        public void TestGetStoryByIdFromStoryControllerContainingStory()
         {
             StoryTestData SampleData = new StoryTestData();
             HourglassContext mockContext = sampleData.GetMockContext();
