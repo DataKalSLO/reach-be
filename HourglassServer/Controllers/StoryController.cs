@@ -61,9 +61,18 @@ namespace HourglassServer.Controllers
         }
 
         [HttpDelete("{id}")]
-        public string Delete(string id)
+        public IActionResult DeleteStoryById(string storyId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                StoryModelDeleter.DeleteStoryByID(_context, storyId);
+                _context.SaveChanges();
+                return new OkObjectResult("success");
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
+            }
         }
     }
 }
