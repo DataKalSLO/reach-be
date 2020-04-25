@@ -15,8 +15,8 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
     {
         public static StoryApplicationModel GetStoryApplicationModelById(HourglassContext db, string storyId)
         {
-            Story story = db.Story.First(a => a.StoryId == storyID);
             return GetStoryAppplicationModelFromStory(db, story);
+            Story story = db.Story.First(a => a.StoryId == storyId);
         }
 
         public static IList<StoryApplicationModel> GetAllStoryApplicationModels(HourglassContext db)
@@ -58,7 +58,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             var res = from storyBlock in db.StoryBlock
                       join graphBlock in db.GraphBlock
                           on storyBlock.BlockId equals graphBlock.BlockId
-                      where storyBlock.StoryId == StoryID
+                      where storyBlock.StoryId == storyId
                       select new
                       {
                           storyBlock.StoryId,
@@ -81,7 +81,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             var res = from storyBlock in db.StoryBlock
                       join geomapBlock in db.GeoMapBlock
                           on storyBlock.BlockId equals geomapBlock.BlockId
-                      where storyBlock.StoryId == StoryID
+                      where storyBlock.StoryId == storyId
                       select new
                       {
                           storyBlock.StoryId,
@@ -104,7 +104,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             var res = from storyBlock in db.StoryBlock
                       join geomapBlock in db.TextBlock
                           on storyBlock.BlockId equals geomapBlock.BlockId
-                      where storyBlock.StoryId == StoryID
+                      where storyBlock.StoryId == storyId
                       select new
                       {
                           storyBlock.StoryId,

@@ -52,7 +52,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             return newTextBlock;
         }
 
-        public static StoryBlock CreateStoryBlockFromStoryBlockModel(StoryBlockModel model, string StoryId)
+        public static StoryBlock CreateStoryBlockFromStoryBlockModel(StoryBlockModel model, string storyId)
         {
             StoryBlock newStoryBlock = new StoryBlock
             {
@@ -63,7 +63,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             return newStoryBlock;
         }
 
-        public static GraphBlock CreateGraphBlock(string BlockId, string GraphId)
+        public static GraphBlock CreateGraphBlock(string blockId, string graphId)
         {
             GraphBlock graphBlock = new GraphBlock
             {
@@ -73,7 +73,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             return graphBlock;
         }
 
-        public static TextBlock CreateTextBlock(string BlockId, string EditorState)
+        public static TextBlock CreateTextBlock(string blockId, string editorState)
         {
             TextBlock textBlock = new TextBlock
             {
@@ -83,7 +83,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             return textBlock;
         }
 
-        public static GeoMapBlock CreateGeoMapBlock(string BlockId, string GeoMapId)
+        public static GeoMapBlock CreateGeoMapBlock(string blockId, string geoMapId)
         {
             GeoMapBlock geoMapBlock = new GeoMapBlock
             {
