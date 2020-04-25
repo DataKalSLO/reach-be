@@ -15,8 +15,8 @@ namespace HourglassServerTest.StoryTests
         public void GetAllStoriesFromRetriever()
         {
             StoryTestData SampleData = new StoryTestData();
-            HourglassContext context = SampleData.GetMockContext();
-            IList<StoryApplicationModel> stories = StoryModelRetriever.GetAllStoryApplicationModels(context);
+            HourglassContext mockContent = sampleData.GetMockContext();
+            IList<StoryApplicationModel> stories = StoryModelRetriever.GetAllStoryApplicationModels(mockContent);
             GeneralAssertions.AssertListHasMinimumCount(stories, 1);
             StoryApplicationModel story = stories[0];
             int expectedStoryBlockCount = 3;
@@ -29,8 +29,8 @@ namespace HourglassServerTest.StoryTests
         public void GetAllStoriesFromController()
         {
             StoryTestData SampleData = new StoryTestData();
-            HourglassContext context = SampleData.GetMockContext();
-            StoryController storyController = new StoryController(context);
+            HourglassContext mockContext = sampleData.GetMockContext();
+            StoryController storyController = new StoryController(mockContext);
             IList<StoryApplicationModel> stories = storyController.GetAllStories();
 
             GeneralAssertions.AssertListHasMinimumCount(stories, 1);
@@ -41,9 +41,9 @@ namespace HourglassServerTest.StoryTests
         public void GetStoryWithIdFromController()
         {
             StoryTestData SampleData = new StoryTestData();
-            HourglassContext context = SampleData.GetMockContext();
-            StoryController storyController = new StoryController(context);
             StoryApplicationModel story = storyController.GetStoryWithId(SampleData.StoryId);
+            HourglassContext mockContext = sampleData.GetMockContext();
+            StoryController storyController = new StoryController(mockContext);
             Assert.IsNotNull(story);
             GeneralAssertions.AssertListHasMinimumCount(story.StoryBlocks, 1);
             Assert.AreEqual(SampleData.StoryId, story.Id);
