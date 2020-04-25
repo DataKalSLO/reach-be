@@ -22,11 +22,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             {
                 var storyBlockModel = storyModel.StoryBlocks[position];
                 storyBlockModel.BlockPosition = position;
-
-                StoryBlock newStoryBlock = StoryFactory.CreateStoryBlockFromStoryBlockModel(storyBlockModel, storyModel.Id);
-                db.StoryBlock.Add(newStoryBlock);
-
-                TypeBlockOperations.PerformOperationOnTypeBlock(db, storyBlockModel, TypeBlockOperations.TypeBlockOperation.ADD);
+                TypeBlockOperations.PerformOperationOnTypeBlock(db, storyBlockModel, TypeBlockOperations.TypeBlockOperation.ADD, storyModel.Id);
             }
             return storyModel;
         }
