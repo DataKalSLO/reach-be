@@ -46,9 +46,18 @@ namespace HourglassServer.Controllers
         }
 
         [HttpPut]
-        public string Put()
+        public IActionResult UpdateStory(StoryApplicationModel story)
         {
-            throw new NotImplementedException();
+            try
+            {
+                StoryApplicationModel storyCreated = StoryModelUpdater.UpdateStoryApplicationModel(_context, story);
+                _context.SaveChanges();
+                return new OkObjectResult(storyCreated.Id);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
+            }
         }
 
         [HttpDelete("{id}")]
