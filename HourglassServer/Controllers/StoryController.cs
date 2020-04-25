@@ -19,15 +19,15 @@ namespace HourglassServer.Controllers
         }
 
         [HttpGet]
-        public IList<StoryApplicationModel> Get()
+        public IList<StoryApplicationModel> GetAllStories()
         {
-            throw new NotImplementedException();
+            return StoryModelRetriever.GetAllStoryApplicationModels(_context);
         }
 
-        [HttpGet("{id}")]
-        public StoryApplicationModel Get(string id)
+        [HttpGet("{StoryId}")]
+        public StoryApplicationModel GetStoryById(string storyId)
         {
-            throw new NotImplementedException();
+            return StoryModelRetriever.GetStoryApplicationModelById(_context, storyId);
         }
 
         [HttpPost]
