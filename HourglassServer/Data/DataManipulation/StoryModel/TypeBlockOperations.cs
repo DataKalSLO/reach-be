@@ -10,7 +10,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
     {
         public enum TypeBlockOperation { UPDATE, ADD, DELETE };
 
-        public static void PerformOperationOnTypeBlock(HourglassContext db, StoryBlockModel model, TypeBlockOperation operation)
+        public static void PerformOperationOnTypeBlock(HourglassContext db, StoryBlockModel model, TypeBlockOperation operation, string storyId)
         {
             StoryBlockType storyType = model.Type;
             switch (storyType)
@@ -30,6 +30,8 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
                 default:
                     throw new ArgumentException("Could not recognize type of story block: " + storyType);
             }
+            StoryBlock storyBlock = StoryFactory.CreateStoryBlockFromStoryBlockModel(model, storyId);
+            PerformOperationOnDbSet<StoryBlock>(db.StoryBlock, operation, storyBlock);
         }
 
         public static void PerformOperationOnDbSet<T>(DbSet<T> dbSet, TypeBlockOperation operation, T model) where T : class
