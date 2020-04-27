@@ -14,9 +14,9 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
         public static string DeleteStoryByID(HourglassContext db, string storyId)
         {
             StoryApplicationModel storyApplicationModelToDelete = StoryModelRetriever.GetStoryApplicationModelById(db, storyId);
-            Story storyToDelete = StoryFactory.CreateStoryFromStoryModel(storyApplicationModelToDelete);
             db.Remove(storyToDelete);
 
+            Story storyToDelete = StoryFactory.ExtractPersistentStoryFromApplicationStory(storyApplicationModelToDelete);
             foreach (StoryBlockModel storyBlockModel in storyApplicationModelToDelete.StoryBlocks)
                 TypeBlockOperations.PerformOperationOnTypeBlock(db, storyBlockModel, TypeBlockOperations.TypeBlockOperation.DELETE, storyId);
             return storyId;

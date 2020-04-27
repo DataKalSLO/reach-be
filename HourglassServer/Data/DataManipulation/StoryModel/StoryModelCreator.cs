@@ -16,7 +16,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
     {
         public static StoryApplicationModel AddStoryApplicationModelToDatabaseContext(HourglassContext db, StoryApplicationModel storyModel)
         {
-            Story newStory = StoryFactory.CreateStoryFromStoryModel(storyModel);
+            Story newStory = StoryFactory.ExtractPersistentStoryFromApplicationStory(storyModel);
             db.Story.Add(newStory);
             for (int position = 0; position < storyModel.StoryBlocks.Count; position++)
             {

@@ -6,7 +6,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
 {
     public class StoryFactory
     {
-        public static Story CreateStoryFromStoryModel(StoryApplicationModel model)
+        public static Story ExtractPersistentStoryFromApplicationStory(StoryApplicationModel model)
         {
             Story newStory = new Story();
             DateTime nowTimeStamp = new DateTime();
