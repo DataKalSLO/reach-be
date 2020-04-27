@@ -23,13 +23,13 @@ namespace HourglassServerTest
         public static void AssertListHasMinimumCount<T>(IList<T> list, int expectedMinimum) where T : class
         {
             Assert.IsNotNull(list);
-            Assert.IsTrue(list.Count >= expectedMinimum, typeof(T).FullName + " does not contain an item.");
+            Assert.IsTrue(list.Count >= expectedMinimum);
         }
 
         public static void AssertListHasCount<T>(IList<T> list, int expectedCount) where T : class
         {
             Assert.IsNotNull(list);
-            Assert.AreEqual(expectedCount, list.Count, typeof(T).FullName + " does not contain an item.");
+            Assert.AreEqual(expectedCount, list.Count);
         }
     }
 }
