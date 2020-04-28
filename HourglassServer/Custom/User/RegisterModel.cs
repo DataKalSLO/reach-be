@@ -15,5 +15,7 @@ namespace HourglassServer
 
         [Required]
         public string Role { get; set; }
+
+        public string Occupation { get; set; }
     }
 }
