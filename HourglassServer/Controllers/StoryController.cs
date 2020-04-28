@@ -11,7 +11,7 @@ namespace HourglassServer.Controllers
     [DefaultControllerRoute]
     public class StoryController : Controller
     {
-        private HourglassContext _context;
+        private readonly HourglassContext _context;
 
         public StoryController(HourglassContext context)
         {
@@ -19,15 +19,33 @@ namespace HourglassServer.Controllers
         }
 
         [HttpGet]
-        public IList<StoryApplicationModel> GetAllStories()
+        public IActionResult GetAllStories()
         {
-            return StoryModelRetriever.GetAllStoryApplicationModels(_context);
+            try
+            {
+                IList<StoryApplicationModel> storyWithId = StoryModelRetriever.GetAllStoryApplicationModels(_context);
+                _context.SaveChanges();
+                return new OkObjectResult(storyWithId);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
+            }
         }
 
         [HttpGet("{StoryId}")]
-        public StoryApplicationModel GetStoryById(string storyId)
+        public IActionResult GetStoryById(string storyId)
         {
-            return StoryModelRetriever.GetStoryApplicationModelById(_context, storyId);
+            try
+            {
+                StoryApplicationModel storyWithId = StoryModelRetriever.GetStoryApplicationModelById(_context, storyId);
+                _context.SaveChanges();
+                return new OkObjectResult(storyWithId);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
+            }
         }
 
         [HttpPost]
