@@ -30,8 +30,8 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
 
         public static StoryApplicationModel GetStoryApplicationModelFromStory(HourglassContext db, Story story)
         {
-            string storyID = story.StoryId;
-            List<StoryBlockModel> storyBlocks = GetStoryBlocksByStoryId(db, storyID);
+            string storyId = story.StoryId;
+            List<StoryBlockModel> storyBlocks = GetStoryBlocksByStoryId(db, storyId);
             StoryApplicationModel model = new StoryApplicationModel(story);
             model.StoryBlocks = storyBlocks;
             return model;
@@ -39,7 +39,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
 
         public static List<StoryBlockModel> GetStoryBlocksByStoryId(HourglassContext db, string storyId)
         {
-            List<StoryBlockModel> graphBlocks = GetGraphStoryBlockByStoryID(db, storyId);
+            List<StoryBlockModel> graphBlocks = GetGraphStoryBlockByStoryId(db, storyId);
             List<StoryBlockModel> mapBlocks = GetGeoMapBlocksByStoryId(db, storyId);
             List<StoryBlockModel> textBlocks = GetTextBlocksByStoryId(db, storyId);
             List<StoryBlockModel> allStories = graphBlocks.Concat(textBlocks)
@@ -53,7 +53,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
          * declared for StoryBlocks. The script we use to generate the classes specifically
          * mentions this as one of its limitations.
          */
-        public static List<StoryBlockModel> GetGraphStoryBlockByStoryID(HourglassContext db, string storyId)
+        public static List<StoryBlockModel> GetGraphStoryBlockByStoryId(HourglassContext db, string storyId)
         {
             var storyBlockGraphBlockJoin = from storyBlock in db.StoryBlock
                       join graphBlock in db.GraphBlock
