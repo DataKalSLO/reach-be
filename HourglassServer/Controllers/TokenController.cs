@@ -36,15 +36,17 @@ namespace HourglassServer
                 }
 
                 loggedInUser = userWithEmail;
+
+                string token = _jwtTokenService.BuildToken(loggedInUser);
+
+                return Ok(new { email = tokenModel.Email, name = userWithEmail.Name, token });
             }
             catch (InvalidOperationException)
             {
                 return Unauthorized(new { tag = "badLogin" });
             }
 
-            string token = _jwtTokenService.BuildToken(loggedInUser);
-
-            return Ok(new { email = tokenModel.Email, token });
+            
         }
     }
 }

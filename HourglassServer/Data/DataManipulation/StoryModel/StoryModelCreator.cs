@@ -1,6 +1,6 @@
 ﻿using HourglassServer.Models.Persistent;
-using HourglassServer.Data;
 using HourglassServer.Data.Application.StoryModel;
+using HourglassServer.Data.DataManipulation.DbSetOperations;
 
 /* Responsibility: Map creation actions from the StoryModel (application) to Story
  * (persistent/database).
@@ -22,7 +22,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             {
                 var storyBlockModel = storyModel.StoryBlocks[position];
                 storyBlockModel.BlockPosition = position;
-                TypeBlockOperations.PerformOperationOnTypeBlock(db, storyBlockModel, TypeBlockOperations.TypeBlockOperation.ADD, storyModel.Id);
+                TypeBlockOperations.MutateTypeBlock(db, storyBlockModel, MutatorOperations.ADD, storyModel.Id);
             }
             return storyModel;
         }

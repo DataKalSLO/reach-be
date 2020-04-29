@@ -16,12 +16,13 @@ namespace HourglassServerTest.StoryTests
         public string TextBlockId { get; }
         public string GeoMapBlockId { get; }
 
-        public readonly Mock<HourglassContext> MockContext;
-        public Mock<DbSet<Story>> StoryDbSet;
-        public Mock<DbSet<TextBlock>> TextBlockDbSet;
-        public Mock<DbSet<GraphBlock>> GraphBlockDbSet;
-        public Mock<DbSet<GeoMapBlock>> GeoMapBlockDbDSet;
-        public Mock<DbSet<StoryBlock>> StoryBlockDbSet;
+        //TODO: Prefix these variables with `Mock`
+        private readonly Mock<HourglassContext> MockContext;
+        private Mock<DbSet<Story>> StoryDbSet;
+        private Mock<DbSet<TextBlock>> TextBlockDbSet;
+        private Mock<DbSet<GraphBlock>> GraphBlockDbSet;
+        private Mock<DbSet<GeoMapBlock>> GeoMapBlockDbDSet;
+        private Mock<DbSet<StoryBlock>> StoryBlockDbSet;
 
         private const string EditorState = "{\"MeaningOfLife\": 42}";
         private const string UserId = "test@test.com";

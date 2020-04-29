@@ -27,7 +27,7 @@ namespace HourglassServerTest.StoryTests
             StoryBlockModel newTextBlock = new StoryBlockModel()
             {
                 Id = System.Guid.NewGuid().ToString(),
-                EditorState = "Gibber",
+                EditorState = "{\"TheMeaningOfLife\": 42}",
                 Type = StoryBlockType.TEXTDB
             };
             exampleStory = new StoryApplicationModel()
