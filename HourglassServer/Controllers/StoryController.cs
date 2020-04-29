@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using HourglassServer.Data.Application.StoryModel;
 using HourglassServer.Data;
+using HourglassServer.Data.DataManipulation.StoryModel;
 
 namespace HourglassServer.Controllers
 {
@@ -30,9 +31,18 @@ namespace HourglassServer.Controllers
         }
 
         [HttpPost]
-        public string Post([FromBody] StoryApplicationModel story)
+        public IActionResult CreateStory([FromBody] StoryApplicationModel story)
         {
-            throw new NotImplementedException();
+            try
+            {
+                StoryApplicationModel storyCreated = StoryModelCreator.AddStoryApplicationModelToDatabaseContext(_context, story);
+                _context.SaveChanges();
+                return new OkObjectResult(storyCreated.Id);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
+            }
         }
 
         [HttpPut]
