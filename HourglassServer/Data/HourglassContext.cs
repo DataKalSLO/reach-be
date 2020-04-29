@@ -189,6 +189,10 @@ namespace HourglassServer.Data
                     .HasMaxLength(36)
                     .IsFixedLength();
 
+                entity.Property(e => e.GraphMetadata)
+                    .HasColumnName("graph_metadata")
+                    .HasColumnType("json");
+
                 entity.Property(e => e.Title)
                     .IsRequired()
                     .HasColumnName("title")
