@@ -16,6 +16,7 @@ namespace HourglassServerTest.StoryTests
         public string TextBlockId { get; }
         public string GeoMapBlockId { get; }
 
+        //TODO: Prefix these variables with `Mock`
         private readonly Mock<HourglassContext> MockContext;
         private Mock<DbSet<Story>> StoryDbSet;
         private Mock<DbSet<TextBlock>> TextBlockDbSet;
