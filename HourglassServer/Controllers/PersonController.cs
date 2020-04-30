@@ -69,7 +69,8 @@ namespace HourglassServer
                 Email = model.Email,
                 Role = (int) newRole,
                 Salt = salt,
-                PasswordHash = hash
+                PasswordHash = hash,
+                Occupation = model.Occupation == "" ? null : model.Occupation
             });
 
             return Ok(new { email = model.Email });
