@@ -17,7 +17,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             {
                 var storyBlockModel = storyModel.StoryBlocks[position];
                 storyBlockIds.Add(storyBlockModel.Id);
-                TypeBlockOperations.PerformOperationOnTypeBlock(db, storyBlockModel, TypeBlockOperations.TypeBlockOperation.UPDATE, storyModel.Id);
+                TypeBlockOperations.MutateTypeBlock(db, storyBlockModel, DbSetOperations.MutatorOperations.UPDATE, storyModel.Id);
             }
             //TODO: Query storyblocks and gather BlockIds missing in given storyModel
             //TODO: Call delete on StoryBlockIds above
