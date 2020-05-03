@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using HourglassServer.Models.Persistent;
 using HourglassServer.Data.Application.StoryModel;
 using HourglassServer.Data;
 using HourglassServer.Data.DataManipulation.StoryModel;
@@ -49,28 +50,18 @@ namespace HourglassServer.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateStory([FromBody] StoryApplicationModel story)
+        public IActionResult ModifyStory([FromBody] StoryApplicationModel storyFromBody)
         {
             try
             {
-                StoryApplicationModel storyCreated = StoryModelCreator.AddStoryApplicationModelToDatabaseContext(_context, story);
+                StoryApplicationModel storyResultAfterModification;
+                bool storyExists = _context.Story.Any(story => story.StoryId == storyFromBody.Id);
+                if (storyExists)
+                    storyResultAfterModification = StoryModelUpdater.UpdateStoryApplicationModel(_context, storyFromBody);
+                else
+                    storyResultAfterModification = StoryModelCreator.AddStoryApplicationModelToDatabaseContext(_context, storyFromBody);
                 _context.SaveChanges();
-                return new OkObjectResult(storyCreated.Id);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
-            }
-        }
-
-        [HttpPut]
-        public IActionResult UpdateStory(StoryApplicationModel story)
-        {
-            try
-            {
-                StoryApplicationModel storyCreated = StoryModelUpdater.UpdateStoryApplicationModel(_context, story);
-                _context.SaveChanges();
-                return new OkObjectResult(storyCreated.Id);
+                return new OkObjectResult(storyResultAfterModification.Id);
             }
             catch (Exception e)
             {
