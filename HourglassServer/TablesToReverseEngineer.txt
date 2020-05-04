@@ -1,6 +1,8 @@
 ﻿person
 area
 category
+census_data
+census_variables
 dataset_meta_data
 geo_map_tables
 geo_map
