@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Moq;
+using System.Collections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using HourglassServer.Models.Persistent;
 using HourglassServer.Data;
 using HourglassServer.Controllers;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
+using HourglassServer.Data.Application.StoryModel;
 using System.Linq;
-using HourglassServer.Models.Persistent;
 
 namespace HourglassServerTest.StoryTests
 {
@@ -27,6 +28,7 @@ namespace HourglassServerTest.StoryTests
             testData.TextBlockDbSet.Verify(mock => mock.Remove(It.IsAny<TextBlock>()), Times.Once());
             testData.GraphBlockDbSet.Verify(mock => mock.Remove(It.IsAny<GraphBlock>()), Times.Once());
             testData.GeoMapBlockDbDSet.Verify(mock => mock.Remove(It.IsAny<GeoMapBlock>()), Times.Once());
+            testData.StoryBlockDbSet.Verify(mock => mock.Remove(It.IsAny<StoryBlock>()), Times.Exactly(3));
         }
     }
 }
