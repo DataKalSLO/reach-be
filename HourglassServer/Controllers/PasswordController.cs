@@ -19,8 +19,7 @@ namespace HourglassServer
             _configuration = configuration;
         }
 
-        [HttpPut("{email}")]
-        public void Put(string email, [FromBody]string value)
+        public void Post([FromBody]string email)
         {
             string host = _configuration["Smtp:Host"];
             int port = 25;
