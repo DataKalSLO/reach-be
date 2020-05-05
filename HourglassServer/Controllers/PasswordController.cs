@@ -1,12 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using HourglassServer.Data;
-using HourglassServer.Models.Persistent;
+﻿using HourglassServer.Data;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 
 
@@ -18,13 +11,11 @@ namespace HourglassServer
     public class PasswordController : ControllerBase
     {
         private HourglassContext _context;
-        private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
 
-        public PasswordController(HourglassContext context, ILogger<PersonController> logger, IConfiguration configuration)
+        public PasswordController(HourglassContext context, IConfiguration configuration)
         {
             _context = context;
-            _logger = logger;
             _configuration = configuration;
         }
 
