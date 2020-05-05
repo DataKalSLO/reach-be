@@ -77,7 +77,7 @@ namespace HourglassServer
         }
 
         [HttpPut("{email}")]
-        public async Task<IActionResult> Put(string email, [FromBody]PasswordChangeModel model)
+        public async Task<IActionResult> Put(string email, [FromBody]PasswordChangeModel model) // enforce user has permissions
         {
             Person person;
             try
