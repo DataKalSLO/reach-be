@@ -59,7 +59,7 @@ namespace HourglassServer
             }
             if (await DuplicateEmail(model))
             {
-                return BadRequest(new { errorName = "duplicateEmail" });
+                return BadRequest(new { tag = "duplicateEmail" });
             }
 
             var (salt, hash) = Utilities.HashPassword(model.Password);
