@@ -1,6 +1,8 @@
 ﻿using HourglassServer.Data;
+using HourglassServer.Models.Persistent;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using System.Linq;
 using System.Net.Mail;
 
 
@@ -13,17 +15,28 @@ namespace HourglassServer
     {
         private HourglassContext _context;
         private readonly IConfiguration _configuration;
+        private readonly IJwtTokenService _jwtTokenService;
 
-        public PasswordController(HourglassContext context, IConfiguration configuration)
+        public PasswordController(HourglassContext context, IConfiguration configuration,
+            IJwtTokenService jwtTokenService)
         {
             _context = context;
             _configuration = configuration;
+            _jwtTokenService = jwtTokenService;
         }
 
         public IActionResult Post([FromBody]string email)
         {
             string host = _configuration["Smtp:Host"];
             int port = 25;
+
+            Person userWithEmail = _context.Person.First(p => p.Email == email);
+            if (userWithEmail == null)
+            {
+                return Ok(); // Don't tell user email was invalid
+            }
+
+            string token = _jwtTokenService.BuildToken(userWithEmail);
 
             using (var client = new SmtpClient(host, port))
             {
@@ -40,7 +53,9 @@ namespace HourglassServer
                         "do-not-reply@reach-central-coast.com", // Sender address
                         email,
                         "Reach - Change your password",
-                        "Follow this link to change your password: \nIf you did not make a password change request, ignore this email."
+                        @"Follow this link to change your password:
+                        If you did not make a password change request, ignore this email.
+                        https://joinreach.org/passwordreset?token=" + token
                     );
                 }
                 catch (SmtpFailedRecipientException e)
