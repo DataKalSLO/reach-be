@@ -26,6 +26,12 @@ namespace HourglassServer
             return await context.SaveChangesAsync();
         }
 
+        public static async Task<int> UpdateAsync<TEntity>(this DbContext context, TEntity entity) where TEntity : class
+        {
+            context.Set<TEntity>().Update(entity);
+            return await context.SaveChangesAsync();
+        }
+
         public static bool UserHasPermission(ClaimsPrincipal user, int id)
         {
             return user.HasRole(Role.Admin) || user.FindFirstValue(ClaimTypes.PrimarySid) == id.ToString();

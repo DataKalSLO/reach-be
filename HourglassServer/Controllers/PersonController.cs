@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using HourglassServer.Data;
 using HourglassServer.Models.Persistent;
+using HourglassServer.Custom.User;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -75,9 +76,25 @@ namespace HourglassServer
             return Ok(new { email = model.Email });
         }
 
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        [HttpPut("{email}")]
+        public async Task<IActionResult> Put(string email, [FromBody]PasswordChangeModel model)
         {
+            Person person;
+            try
+            {
+                person = await _context.Person.SingleAsync(p => p.Email == email);
+            }
+            catch
+            {
+                return NotFound();
+            }
+
+            var (salt, hash) = Utilities.HashPassword(model.Password); // enforce password restrictions
+            person.Salt = salt;
+            person.PasswordHash = hash;
+
+            await _context.UpdateAsync(person);
+            return Ok();
         }
 
         [UserExists]
