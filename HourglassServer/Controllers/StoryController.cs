@@ -11,6 +11,7 @@ namespace HourglassServer.Controllers
     [DefaultControllerRoute]
     public class StoryController : Controller
     {
+        private const string successMessage = "success";
         private readonly HourglassContext _context;
 
         public StoryController(HourglassContext context)
@@ -69,10 +70,19 @@ namespace HourglassServer.Controllers
             throw new NotImplementedException();
         }
 
-        [HttpDelete("{id}")]
-        public string Delete(string id)
+        [HttpDelete("{storyId}")]
+        public IActionResult DeleteStoryById(string storyId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                StoryModelDeleter.DeleteStoryByID(_context, storyId);
+                _context.SaveChanges();
+                return new OkObjectResult(successMessage);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
+            }
         }
     }
 }
