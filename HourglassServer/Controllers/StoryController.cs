@@ -75,7 +75,7 @@ namespace HourglassServer.Controllers
         {
             try
             {
-                StoryModelDeleter.DeleteStoryByID(_context, storyId);
+                StoryModelDeleter.DeleteStoryById(_context, storyId);
                 _context.SaveChanges();
                 return new OkObjectResult(successMessage);
             }

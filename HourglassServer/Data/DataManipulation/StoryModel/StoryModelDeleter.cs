@@ -7,7 +7,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
 {
     public static class StoryModelDeleter
     {
-        public static void DeleteStoryByID(HourglassContext db, string storyId)
+        public static void DeleteStoryById(HourglassContext db, string storyId)
         {
             StoryApplicationModel storyApplicationModelToDelete = StoryModelRetriever.GetStoryApplicationModelById(db, storyId);            
             foreach (StoryBlockModel storyBlockModel in storyApplicationModelToDelete.StoryBlocks)
