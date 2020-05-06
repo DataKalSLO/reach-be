@@ -7,14 +7,12 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
 {
     public static class StoryModelDeleter
     {
-        public static string DeleteStoryByID(HourglassContext db, string storyId)
+        public static void DeleteStoryByID(HourglassContext db, string storyId)
         {
-            StoryApplicationModel storyApplicationModelToDelete = StoryModelRetriever.GetStoryApplicationModelById(db, storyId);
-            Story storyToDelete = StoryFactory.ExtractPersistentStoryFromApplicationStory(storyApplicationModelToDelete);
-            db.Story.Remove(storyToDelete);
+            StoryApplicationModel storyApplicationModelToDelete = StoryModelRetriever.GetStoryApplicationModelById(db, storyId);            
             foreach (StoryBlockModel storyBlockModel in storyApplicationModelToDelete.StoryBlocks)
-                TypeBlockOperations.PerformOperationOnTypeBlock(db, storyBlockModel, TypeBlockOperations.TypeBlockOperation.DELETE, storyId);
-            return storyId;
+                TypeBlockOperations.MutateTypeBlock(db, storyBlockModel, DbSetOperations.MutatorOperations.DELETE, storyId);
+            db.Story.Remove(db.Story.Find(storyId));
         }
     }
 }
