@@ -55,7 +55,6 @@ namespace HourglassServer.Controllers
         {
             try
             {
-                StoryApplicationModel storyResultAfterModification;
                 bool storyExists = _context.Story.Any(story => story.StoryId == storyFromBody.Id);
                 if (storyExists)
                    StoryModelUpdater.UpdateStoryApplicationModel(_context, storyFromBody);
@@ -71,7 +70,7 @@ namespace HourglassServer.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(string storyId)
+        public IActionResult DeleteStoryById(string storyId)
         {
             try
             {
