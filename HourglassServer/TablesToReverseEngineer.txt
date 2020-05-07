@@ -7,7 +7,7 @@ geo_map
 geo_map_block
 graph
 graph_block
-graph_series
+graph_sources
 location
 point
 story
