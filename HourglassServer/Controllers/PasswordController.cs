@@ -1,7 +1,9 @@
-﻿using HourglassServer.Data;
+﻿using HourglassServer.Custom.User;
+using HourglassServer.Data;
 using HourglassServer.Models.Persistent;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
@@ -26,12 +28,12 @@ namespace HourglassServer
             _jwtTokenService = jwtTokenService;
         }
 
-        public async Task<IActionResult> Post([FromBody]string email)
+        public async Task<IActionResult> Post([FromBody]EmailModel model)
         {
             string host = _configuration["Smtp:Host"];
             int port = 25;
 
-            string token = _jwtTokenService.BuildPasswordResetToken(email);
+            string token= _jwtTokenService.BuildPasswordResetToken(model.Email);
 
             using (var client = new SmtpClient(host, port))
             {
@@ -46,7 +48,7 @@ namespace HourglassServer
                     await client.SendMailAsync
                     (
                         "reachcentralcoast@gmail.com", // Sender address
-                        email,
+                        model.Email,
                         "Reach - Change your password",
                         @"Follow this link to change your password:
                         If you did not make a password change request, ignore this email.
