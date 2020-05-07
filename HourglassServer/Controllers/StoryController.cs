@@ -69,7 +69,7 @@ namespace HourglassServer.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{storyId}")]
         public IActionResult DeleteStoryById(string storyId)
         {
             try
