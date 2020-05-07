@@ -307,6 +307,8 @@ namespace HourglassServer.Data
                     .HasColumnName("name")
                     .HasMaxLength(50);
 
+                entity.Property(e => e.NotificationsEnabled).HasColumnName("notifications_enabled");
+
                 entity.Property(e => e.Occupation)
                     .HasColumnName("occupation")
                     .HasMaxLength(50);
