@@ -42,7 +42,7 @@ namespace HourglassServer
                 return Unauthorized(new { tag = "badLogin" });
             }
 
-            string token = _jwtTokenService.BuildToken(loggedInUser);
+            string token = _jwtTokenService.BuildLoginToken(loggedInUser);
 
             return Ok(new { email = tokenModel.Email, token });
         }

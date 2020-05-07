@@ -31,13 +31,7 @@ namespace HourglassServer
             string host = _configuration["Smtp:Host"];
             int port = 25;
 
-            Person userWithEmail = _context.Person.First(p => p.Email == email);
-            if (userWithEmail == null)
-            {
-                return Ok(); // Don't tell user email was invalid
-            }
-
-            string token = _jwtTokenService.BuildToken(userWithEmail);
+            string token = _jwtTokenService.BuildPasswordResetToken(email);
 
             using (var client = new SmtpClient(host, port))
             {
@@ -51,7 +45,7 @@ namespace HourglassServer
                 {
                     await client.SendMailAsync
                     (
-                        "do-not-reply@reach-central-coast.com", // Sender address
+                        "reachcentralcoast@gmail.com", // Sender address
                         email,
                         "Reach - Change your password",
                         @"Follow this link to change your password:
@@ -59,13 +53,13 @@ namespace HourglassServer
                         https://joinreach.org/passwordreset?token=" + token
                     );
                 }
-                catch (SmtpFailedRecipientException e)
+                catch (SmtpFailedRecipientException)
                 {
-                    return BadRequest(new { errorName = "failedEmailRecipient" });
+                    return BadRequest(new { tag = "failedEmailRecipient" });
                 }
-                catch (SmtpException e)
+                catch (SmtpException)
                 {
-                    return BadRequest(new { errorName = "smtpError" });
+                    return BadRequest(new { tag = "smtpError" });
                 }
             }
 

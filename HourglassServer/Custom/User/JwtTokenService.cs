@@ -17,15 +17,8 @@ namespace HourglassServer
             this._configuration = configuration;
         }
 
-        public string BuildToken(Person person)
+        private string BuildToken(Claim[] claims)
         {
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.Email, person.Email),
-                new Claim(ClaimTypes.Role, person.Role.ToString()),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
 
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -40,6 +33,30 @@ namespace HourglassServer
                 );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public string BuildLoginToken(Person person)
+        {
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Email, person.Email),
+                new Claim(ClaimTypes.Role, person.Role.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            return BuildToken(claims);
+        }
+
+        public string BuildPasswordResetToken(string email)
+        {
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Email, email),
+                new Claim(ClaimTypes.Role, "PasswordResetOnly"),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            return BuildToken(claims);
         }
     }
 }
