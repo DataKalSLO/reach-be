@@ -13,7 +13,7 @@ namespace HourglassServer.Data.Application.Maps
         {
             this.Type = "Feature";
             this.Geometry = new PointGeometry(location.Point.Longitude, location.Point.Latitude);
-            this.Property = new Property(location.Name);
+            //this.Property = new Property(location.Name);
         }
 
         public override string ToString()

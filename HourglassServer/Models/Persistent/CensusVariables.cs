@@ -7,12 +7,12 @@ namespace HourglassServer.Models.Persistent
     {
         public CensusVariables()
         {
-            //CensusData = new HashSet<CensusData>();
+            CensusData = new HashSet<CensusData>();
         }
 
         public string Name { get; set; }
         public string Description { get; set; }
 
-        //public virtual ICollection<CensusData> CensusData { get; set; }
+        public virtual ICollection<CensusData> CensusData { get; set; }
     }
 }

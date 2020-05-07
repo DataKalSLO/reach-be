@@ -10,11 +10,11 @@ namespace HourglassServer.Data.Application.Maps
         public PolygonGeometry Geometry { get; set; }
         public Property Property { get; set; }
 
-        public PolygonFeature(List<Point> points, string name)
+        public PolygonFeature(List<Point> points, string name, int? value)
         {
             this.Type = "Feature";
             this.Geometry = new PolygonGeometry(points);
-            this.Property = new Property(name);
+            this.Property = new Property(name, value);
         }
 
         public override string ToString()

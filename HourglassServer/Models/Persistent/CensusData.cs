@@ -11,6 +11,6 @@ namespace HourglassServer.Models.Persistent
         public string GeoName { get; set; }
         public int? Value { get; set; }
 
-        //public virtual CensusVariables VariableNameNavigation { get; set; }
+        public virtual CensusVariables VariableNameNavigation { get; set; }
     }
 }
