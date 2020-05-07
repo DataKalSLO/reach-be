@@ -392,10 +392,6 @@ namespace HourglassServer.Data
 
                 entity.ToTable("story_block");
 
-                entity.HasIndex(e => new { e.StoryId, e.BlockPosition })
-                    .HasName("story_block_story_id_block_position_key")
-                    .IsUnique();
-
                 entity.Property(e => e.BlockId)
                     .HasColumnName("block_id")
                     .HasMaxLength(36)

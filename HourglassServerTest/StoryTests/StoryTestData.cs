@@ -6,7 +6,16 @@ using HourglassServer.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
+/* Reminder to reader: This class is instantiated with the following entities
+ * in the DbContext:
+ *
+ * - Story
+ * - TextBlock + StoryBlock
+ * - GraphBlock + StoryBlock
+ * - GeoMapBlock + StoryBlock
+ */
 namespace HourglassServerTest.StoryTests
 {
     public class StoryTestData
@@ -17,12 +26,12 @@ namespace HourglassServerTest.StoryTests
         public string GeoMapBlockId { get; }
 
         //TODO: Prefix these variables with `Mock`
-        private readonly Mock<HourglassContext> MockContext;
-        private Mock<DbSet<Story>> StoryDbSet;
-        private Mock<DbSet<TextBlock>> TextBlockDbSet;
-        private Mock<DbSet<GraphBlock>> GraphBlockDbSet;
-        private Mock<DbSet<GeoMapBlock>> GeoMapBlockDbDSet;
-        private Mock<DbSet<StoryBlock>> StoryBlockDbSet;
+        public readonly Mock<HourglassContext> MockContext;
+        public Mock<DbSet<Story>> StoryDbSet;
+        public Mock<DbSet<TextBlock>> TextBlockDbSet;
+        public Mock<DbSet<GraphBlock>> GraphBlockDbSet;
+        public Mock<DbSet<GeoMapBlock>> GeoMapBlockDbDSet;
+        public Mock<DbSet<StoryBlock>> StoryBlockDbSet;
 
         private const string EditorState = "{\"MeaningOfLife\": 42}";
         private const string UserId = "test@test.com";
@@ -100,6 +109,7 @@ namespace HourglassServerTest.StoryTests
             mockSet.As<IQueryable<T>>().Setup(m => m.GetEnumerator()).Returns(queryableList.GetEnumerator());
             mockSet.Setup(d => d.Add(It.IsAny<T>())).Callback<T>((s) => sourceList.Add(s));
             mockSet.Setup(d => d.Remove(It.IsAny<T>())).Callback<T>((s) => sourceList.Remove(s));
+            //TODO: Find a way to mock both `Find` AND `Any` DbSet methods for testing updating stories.
             //TODO: Find a way to moq updating items in list.
             return mockSet;
         }
