@@ -9,6 +9,7 @@ namespace HourglassServer.Models.Persistent
         public int Role { get; set; }
         public string Salt { get; set; }
         public string PasswordHash { get; set; }
+        public string Occupation { get; set; }
         public virtual ICollection<Story> Story { get; set; }
    }
 }
