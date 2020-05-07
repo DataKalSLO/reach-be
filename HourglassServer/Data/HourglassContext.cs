@@ -105,8 +105,6 @@ namespace HourglassServer.Data
                     .HasColumnName("data_types")
                     .HasColumnType("character varying(500)[]");
 
-                entity.Property(e => e.LocationValues).HasColumnName("location_values");
-
                 entity.Property(e => e.ZipCodeColumn).HasColumnName("zip_code_column");
             });
 

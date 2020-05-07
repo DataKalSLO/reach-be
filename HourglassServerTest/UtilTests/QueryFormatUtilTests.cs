@@ -2,13 +2,14 @@ using HourglassServer.Data;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System;
+using HourglassServer.Models.Persistent;
 
 namespace HourglassServerTest
 {
     [TestClass]
     public class QueryFormatUtilTest
     {
-        private List<DatasetMetadata> _metadata = new List<DatasetMetadata>()
+        private List<DatasetMetaData> _metadata = new List<DatasetMetaData>()
         {
             new DatasetMetadata() {
                 TableName = "table_1",
