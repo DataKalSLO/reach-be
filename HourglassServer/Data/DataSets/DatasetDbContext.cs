@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using HourglassServer.Models.Persistent;
 
 /**
  *----------------------------------------
@@ -59,8 +60,8 @@ namespace HourglassServer.Data
             QueryFormatUtil queryUtil = new QueryFormatUtil();
 
             // Get a copy of the metadata from the cache
-            Task<List<DatasetMetadata>> getMetadataCache = getDatasetMetadata();
-            List<DatasetMetadata> metadata = await getMetadataCache;
+            Task<List<DatasetMetaData>> getMetadataCache = getDatasetMetadata();
+            List<DatasetMetaData> metadata = await getMetadataCache;
 
             // Invoke query util to format a full dataset select query using the table name
             if (!queryUtil.formatSelectFullDatasetQuery(tableName, metadata)) {
@@ -111,16 +112,16 @@ namespace HourglassServer.Data
 
         // Gets the dataset metadata from the internal memory cache
         // Fetches a fresh copy on expiration
-        public async Task<List<DatasetMetadata>> getDatasetMetadata() {
-            List<DatasetMetadata> dsMetadata = new List<DatasetMetadata>();
+        public async Task<List<DatasetMetaData>> getDatasetMetadata() {
+            List<DatasetMetaData> dsMetadata = new List<DatasetMetaData>();
             
             // Look for the cache key
-            if (!_cache.TryGetValue<List<DatasetMetadata>>(CacheKeys.MetadataKey, out dsMetadata)) {
+            if (!_cache.TryGetValue<List<DatasetMetaData>>(CacheKeys.MetadataKey, out dsMetadata)) {
                 // The metadata key does not exist in the cache
                 _logger.LogDebug($"{nameof(getDatasetMetadata)}: No metadata exists in cache.");
 
                 // Update the metadata with a fresh call to the database
-                Task<List<DatasetMetadata>> updateMetadata = getDatasetMetadataFromDB();
+                Task<List<DatasetMetaData>> updateMetadata = getDatasetMetadataFromDB();
                 dsMetadata = await updateMetadata;
 
                 // Set options on the cache
@@ -129,7 +130,7 @@ namespace HourglassServer.Data
                     .SetAbsoluteExpiration(TimeSpan.FromHours(1));
 
                 // Save the new metadata value in the cache
-                _cache.Set<List<DatasetMetadata>>(CacheKeys.MetadataKey, dsMetadata, cacheEntryOptions);
+                _cache.Set<List<DatasetMetaData>>(CacheKeys.MetadataKey, dsMetadata, cacheEntryOptions);
                 _logger.LogInformation($"{nameof(getDatasetMetadata)}: Succesfully updated cached metadata.");
             }
 
@@ -140,13 +141,16 @@ namespace HourglassServer.Data
         //
         // Note: This function should only be used when updating the cache.
         // All other usages of metadata should use the cached value from getDatasetMetadata()
-        private async Task<List<DatasetMetadata>> getDatasetMetadataFromDB() {
+        private async Task<List<DatasetMetaData>> getDatasetMetadataFromDB() {
 
-            List<DatasetMetadata> dsMetadata = new List<DatasetMetadata>();
-            DatasetMetadata meta_data;
+            List<DatasetMetaData> dsMetadata = new List<DatasetMetaData>();
+            DatasetMetaData meta_data;
             string tableName;
             string[] columnNames;
             string[] columnTypes;
+            string[] cityColumn;
+            string[] zipCodeColumn;
+            string[] countyColumn;
             var conn = getConnection();
             await conn.OpenAsync();
 
@@ -157,11 +161,17 @@ namespace HourglassServer.Data
                 tableName = reader.GetString(0);
                 columnNames = (string[])reader.GetValue(1);
                 columnTypes = (string[])reader.GetValue(2);
+                cityColumn = (string[])reader.GetValue(3);
+                countyColumn = (string[])reader.GetValue(4);
+                zipCodeColumn = (string[])reader.GetValue(5);
 
-                meta_data = new DatasetMetadata{
+                meta_data = new DatasetMetaData{
                     TableName = tableName,
                     ColumnNames = columnNames,
-                    ColumnTypes = columnTypes
+                    DataTypes = columnTypes,
+                    CityColumn = cityColumn,
+                    CountyColumn = countyColumn,
+                    ZipCodeColumn = zipCodeColumn
                 };
                 dsMetadata.Add(meta_data);
             }

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using HourglassServer.Models.Persistent;
 using HourglassServer.Data.Application.StoryModel;
 using HourglassServer.Data;
 using HourglassServer.Data.DataManipulation.StoryModel;
@@ -50,13 +51,18 @@ namespace HourglassServer.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateStory([FromBody] StoryApplicationModel story)
+        public IActionResult ModifyStory([FromBody] StoryApplicationModel storyFromBody)
         {
             try
             {
-                StoryApplicationModel storyCreated = StoryModelCreator.AddStoryApplicationModelToDatabaseContext(_context, story);
+                StoryApplicationModel storyResultAfterModification;
+                bool storyExists = _context.Story.Any(story => story.StoryId == storyFromBody.Id);
+                if (storyExists)
+                   StoryModelUpdater.UpdateStoryApplicationModel(_context, storyFromBody);
+                else
+                    StoryModelCreator.AddStoryApplicationModelToDatabaseContext(_context, storyFromBody);
                 _context.SaveChanges();
-                return new OkObjectResult(storyCreated.Id);
+                return new OkObjectResult(successMessage);
             }
             catch (Exception e)
             {
@@ -64,14 +70,8 @@ namespace HourglassServer.Controllers
             }
         }
 
-        [HttpPut]
-        public string Put()
-        {
-            throw new NotImplementedException();
-        }
-
-        [HttpDelete("{storyId}")]
-        public IActionResult DeleteStoryById(string storyId)
+        [HttpDelete("{id}")]
+        public string Delete(string id)
         {
             try
             {

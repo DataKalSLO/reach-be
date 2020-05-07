@@ -105,8 +105,6 @@ namespace HourglassServer.Data
                     .HasColumnName("data_types")
                     .HasColumnType("character varying(500)[]");
 
-                entity.Property(e => e.LocationValues).HasColumnName("location_values");
-
                 entity.Property(e => e.ZipCodeColumn).HasColumnName("zip_code_column");
             });
 
@@ -307,6 +305,8 @@ namespace HourglassServer.Data
                     .HasColumnName("name")
                     .HasMaxLength(50);
 
+                entity.Property(e => e.NotificationsEnabled).HasColumnName("notifications_enabled");
+
                 entity.Property(e => e.Occupation)
                     .HasColumnName("occupation")
                     .HasMaxLength(50);
@@ -391,10 +391,6 @@ namespace HourglassServer.Data
                     .HasName("story_block_pkey");
 
                 entity.ToTable("story_block");
-
-                entity.HasIndex(e => new { e.StoryId, e.BlockPosition })
-                    .HasName("story_block_story_id_block_position_key")
-                    .IsUnique();
 
                 entity.Property(e => e.BlockId)
                     .HasColumnName("block_id")

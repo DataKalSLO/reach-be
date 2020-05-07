@@ -7,6 +7,7 @@ using System.Collections.Generic;
 //using System.IO;
 //using System.Linq;
 //using Npgsql;
+using HourglassServer.Models.Persistent;
 
 /**
  *----------------------------------------
@@ -37,7 +38,7 @@ namespace HourglassServer.Controllers{
 
         // GET: api/MetaData
         [HttpGet]
-        public ActionResult<List<DatasetMetadata>> GetMetaData(){
+        public ActionResult<List<DatasetMetaData>> GetMetaData(){
 
             return _context.getDatasetMetadata().Result;
         }
