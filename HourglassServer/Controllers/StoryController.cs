@@ -12,6 +12,7 @@ namespace HourglassServer.Controllers
     [DefaultControllerRoute]
     public class StoryController : Controller
     {
+        private const string successMessage = "success";
         private readonly HourglassContext _context;
 
         public StoryController(HourglassContext context)
@@ -57,11 +58,11 @@ namespace HourglassServer.Controllers
                 StoryApplicationModel storyResultAfterModification;
                 bool storyExists = _context.Story.Any(story => story.StoryId == storyFromBody.Id);
                 if (storyExists)
-                    storyResultAfterModification = StoryModelUpdater.UpdateStoryApplicationModel(_context, storyFromBody);
+                   StoryModelUpdater.UpdateStoryApplicationModel(_context, storyFromBody);
                 else
-                    storyResultAfterModification = StoryModelCreator.AddStoryApplicationModelToDatabaseContext(_context, storyFromBody);
+                    StoryModelCreator.AddStoryApplicationModelToDatabaseContext(_context, storyFromBody);
                 _context.SaveChanges();
-                return new OkObjectResult(storyResultAfterModification.Id);
+                return new OkObjectResult(successMessage);
             }
             catch (Exception e)
             {

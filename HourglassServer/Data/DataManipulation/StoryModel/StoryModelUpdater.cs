@@ -16,7 +16,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
 {
     public static class StoryModelUpdater
     {
-        public static StoryApplicationModel UpdateStoryApplicationModel(HourglassContext db, StoryApplicationModel storyModel)
+        public static void UpdateStoryApplicationModel(HourglassContext db, StoryApplicationModel storyModel)
         {
             Story storyWithId = StoryFactory.CreateStoryFromStoryModel(storyModel); //Isolates the Story part
             db.Story.Update(storyWithId);
@@ -33,7 +33,6 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
                 DeleteStoryBlockModelByBlockId(db, storyBlockId);
 
             UpdateExistingOrAddNewStoryBlocks(db, storyModel.StoryBlocks, storyModel.Id);
-            return storyModel;
         }
 
         private static void UpdateExistingOrAddNewStoryBlocks(HourglassContext db, List<StoryBlockModel> storyBlocks, string storyId)
