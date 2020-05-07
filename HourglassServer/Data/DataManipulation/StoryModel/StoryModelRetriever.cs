@@ -15,7 +15,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
     {
         public static StoryApplicationModel GetStoryApplicationModelById(HourglassContext db, string storyId)
         {
-            Story story = db.Story.First(story => story.StoryId == storyId);
+            Story story = db.Story.First(story => story.StoryId == storyId); //TODO: Replace with `Find`
             return GetStoryApplicationModelFromStory(db, story);
         }
 

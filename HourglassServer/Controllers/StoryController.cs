@@ -55,7 +55,6 @@ namespace HourglassServer.Controllers
         {
             try
             {
-                StoryApplicationModel storyResultAfterModification;
                 bool storyExists = _context.Story.Any(story => story.StoryId == storyFromBody.Id);
                 if (storyExists)
                    StoryModelUpdater.UpdateStoryApplicationModel(_context, storyFromBody);
@@ -70,10 +69,19 @@ namespace HourglassServer.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
-        public string Delete(string id)
+        [HttpDelete("{storyId}")]
+        public IActionResult DeleteStoryById(string storyId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                StoryModelDeleter.DeleteStoryById(_context, storyId);
+                _context.SaveChanges();
+                return new OkObjectResult(successMessage);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
+            }
         }
     }
 }
