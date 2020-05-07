@@ -20,6 +20,12 @@ namespace HourglassServer
             return await context.SaveChangesAsync();
         }
 
+        public static async Task<int> UpdateAsync<TEntity>(this DbContext context, TEntity entity) where TEntity : class
+        {
+            context.Set<TEntity>().Update(entity);
+            return await context.SaveChangesAsync();
+        }
+
         public static async Task<int> DeleteAsync<TEntity>(this DbContext context, TEntity entity) where TEntity : class
         {
             context.Set<TEntity>().Remove(entity);
