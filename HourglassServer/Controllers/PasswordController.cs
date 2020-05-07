@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
 using System.Net.Mail;
+using System.Threading.Tasks;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -25,7 +26,7 @@ namespace HourglassServer
             _jwtTokenService = jwtTokenService;
         }
 
-        public IActionResult Post([FromBody]string email)
+        public async Task<IActionResult> Post([FromBody]string email)
         {
             string host = _configuration["Smtp:Host"];
             int port = 25;
@@ -48,7 +49,7 @@ namespace HourglassServer
 
                 try
                 {
-                    client.Send
+                    await client.SendMailAsync
                     (
                         "do-not-reply@reach-central-coast.com", // Sender address
                         email,
