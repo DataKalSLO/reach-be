@@ -8,7 +8,7 @@ namespace HourglassServer.Models.Persistent
         public DatasetMetaData()
         {
             GeoMapTables = new HashSet<GeoMapTables>();
-            GraphSources = new HashSet<GraphSources>();
+            GraphSource = new HashSet<GraphSource>();
             Location = new HashSet<Location>();
         }
 
@@ -20,7 +20,7 @@ namespace HourglassServer.Models.Persistent
         public string[] CountyColumn { get; set; }
 
         public virtual ICollection<GeoMapTables> GeoMapTables { get; set; }
-        public virtual ICollection<GraphSources> GraphSources { get; set; }
+        public virtual ICollection<GraphSource> GraphSource { get; set; }
         public virtual ICollection<Location> Location { get; set; }
     }
 }

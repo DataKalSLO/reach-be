@@ -8,7 +8,7 @@ namespace HourglassServer.Models.Persistent
         public Graph()
         {
             GraphBlock = new HashSet<GraphBlock>();
-            GraphSources = new HashSet<GraphSources>();
+            GraphSource = new HashSet<GraphSource>();
         }
 
         public string GraphId { get; set; }
@@ -20,6 +20,6 @@ namespace HourglassServer.Models.Persistent
 
         public virtual Person User { get; set; }
         public virtual ICollection<GraphBlock> GraphBlock { get; set; }
-        public virtual ICollection<GraphSources> GraphSources { get; set; }
+        public virtual ICollection<GraphSource> GraphSource { get; set; }
     }
 }

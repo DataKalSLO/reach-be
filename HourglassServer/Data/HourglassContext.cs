@@ -28,7 +28,7 @@ namespace HourglassServer.Data
         public virtual DbSet<GeoMapTables> GeoMapTables { get; set; }
         public virtual DbSet<Graph> Graph { get; set; }
         public virtual DbSet<GraphBlock> GraphBlock { get; set; }
-        public virtual DbSet<GraphSources> GraphSources { get; set; }
+        public virtual DbSet<GraphSource> GraphSource { get; set; }
         public virtual DbSet<Location> Location { get; set; }
         public virtual DbSet<Person> Person { get; set; }
         public virtual DbSet<Point> Point { get; set; }
@@ -99,9 +99,7 @@ namespace HourglassServer.Data
 
                 entity.Property(e => e.CountyColumn).HasColumnName("county_column");
 
-                entity.Property(e => e.DataTypes)
-                    .HasColumnName("data_types")
-                    .HasColumnType("character varying(500)[]");
+                entity.Property(e => e.DataTypes).HasColumnName("data_types");
 
                 entity.Property(e => e.ZipCodeColumn).HasColumnName("zip_code_column");
             });
@@ -241,12 +239,12 @@ namespace HourglassServer.Data
                     .HasConstraintName("graph_block_graph_id_fkey");
             });
 
-            modelBuilder.Entity<GraphSources>(entity =>
+            modelBuilder.Entity<GraphSource>(entity =>
             {
                 entity.HasKey(e => new { e.GraphId, e.SeriesType })
-                    .HasName("graph_sources_pkey");
+                    .HasName("graph_source_pkey");
 
-                entity.ToTable("graph_sources");
+                entity.ToTable("graph_source");
 
                 entity.Property(e => e.GraphId)
                     .HasColumnName("graph_id")
@@ -256,23 +254,21 @@ namespace HourglassServer.Data
                     .HasColumnName("series_type")
                     .HasMaxLength(10);
 
-                entity.Property(e => e.ColumnNames)
-                    .HasColumnName("column_names")
-                    .HasColumnType("character varying(500)[]");
+                entity.Property(e => e.ColumnNames).HasColumnName("column_names");
 
                 entity.Property(e => e.DatasetName)
                     .HasColumnName("dataset_name")
                     .HasMaxLength(500);
 
                 entity.HasOne(d => d.DatasetNameNavigation)
-                    .WithMany(p => p.GraphSources)
+                    .WithMany(p => p.GraphSource)
                     .HasForeignKey(d => d.DatasetName)
-                    .HasConstraintName("graphsources_datasetname_fkey");
+                    .HasConstraintName("graph_source_datasetname_fkey");
 
                 entity.HasOne(d => d.Graph)
-                    .WithMany(p => p.GraphSources)
+                    .WithMany(p => p.GraphSource)
                     .HasForeignKey(d => d.GraphId)
-                    .HasConstraintName("graphsources_graphid_fkey");
+                    .HasConstraintName("graph_source_graphid_fkey");
             });
 
             modelBuilder.Entity<Location>(entity =>
