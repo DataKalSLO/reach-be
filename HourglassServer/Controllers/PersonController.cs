@@ -92,7 +92,7 @@ namespace HourglassServer
 
             person.Name = userSettings.Name ?? person.Name;
             person.Occupation = userSettings.Occupation ?? person.Occupation;
-            person.NotificationsEnabled = userSettings.NotificationsEnabled;
+            person.NotificationsEnabled = userSettings.NotificationsEnabled ?? person.NotificationsEnabled;
 
             await _context.UpdateAsync(person);
             return Ok(new { email });
