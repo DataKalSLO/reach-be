@@ -1,54 +1,51 @@
 using System;
 using HourglassServer.Models.Persistent;
 using HourglassServer.Data.Application.GraphModel;
+using Newtonsoft.Json;
 
 namespace HourglassServer.Data.DataManipulation.GraphOperations
 {
     public class GraphFactory
     {
+        public static string GenerateNewGraphId() 
+        {
+            return Guid.NewGuid().ToString();
+        }
+
         public static Graph CreateGraphFromGraphModel(GraphModel model) 
         {
-            var guid = Guid.NewGuid().ToString();
-            var graphOptions = model.GraphOptions.ToString();
+            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            var graphOptions = model.GraphOptions.ToString(Formatting.None);
+            var snapshotUrl = GraphSnapshotOperations.UploadSnapshotToS3(model.GraphSVG);
 
             return new Graph() 
             {
-                GraphId = guid,
+                GraphId = model.GraphId,
                 GraphTitle = model.GraphTitle,
                 UserId = model.UserId,
-                Timestamp = model.Timestamp,
-                SnapshotUrl = "NOT_IMPLEMENTED",
+                Timestamp = timestamp,
+                SnapshotUrl = snapshotUrl,
                 GraphOptions = graphOptions
             };
         }
 
-        /*
-        public static GraphSources[] CreateGraphSourcesFromGraphModel(GraphModel model) 
+        public static GraphSource[] CreateGraphSourcesFromGraphSourceModel(
+            GraphSourceModel[] sourceModels, 
+            string graphId) 
         {
-            GraphSources[] sources = new GraphSources[model.DataSources.Length];
+            GraphSource[] graphSources = new GraphSource[sourceModels.Length];
 
-            for (int i = 0; i < model.DataSources.Length; i++)
+            for (int i = 0; i < sourceModels.Length; i++)
             {
-                sources[i] = new GraphSources {
-                    GraphId = model.GraphId.ToString(),
-                    SeriesType = model.DataSources[i].SeriesType.ToString(),
-                    DatasetName = model.DataSources[i].DatasetName,
-                    ColumnNames = model.DataSources[i].ColumnNames
+                graphSources[i] = new GraphSource {
+                    GraphId = graphId,
+                    SeriesType = sourceModels[i].SeriesType.ToString(),
+                    DatasetName = sourceModels[i].DatasetName,
+                    ColumnNames = sourceModels[i].ColumnNames
                 };
             }
 
-            foreach (GraphSourceModel m in model.DataSources) {
-                sources.
-            }
-
-            GraphSources[] sources = new GraphSources[numSeries];
-
-            foreach (int i in numSeries) {
-                
-            }
-
-            
-            */
-        
+            return graphSources;
+        }
     }
 }

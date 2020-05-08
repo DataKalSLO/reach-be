@@ -5,26 +5,49 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
 {
     public class GraphSnapshotOperations
     {
-        // Creates a file path in the temp file directory for the svg file
-        public static string GetTempFilePath(string graphId) {
-            return System.IO.Path.GetTempPath() + graphId + ".svg";
+        public static string UploadSnapshotToS3(string encodedGraphSVG) 
+        {
+            string path = GraphSnapshotOperations.GetTempFilePath();
+
+            if (GraphSnapshotOperations.WriteSvgFile(encodedGraphSVG, path)) 
+            {
+                // TODO: Connect backend with S3 bucket and add upload functionality
+                string snapshotURL = "NOT_IMPLEMENTED";
+
+                File.Delete(path);
+
+                // Return the URL to the image in S3
+                return snapshotURL;
+            }
+
+            return String.Empty;
+        }
+
+        // Returns a new random file name in the temp file directory
+        private static string GetTempFilePath() 
+        {
+            return Path.GetTempPath() + Path.GetRandomFileName() + ".svg";
         }
 
         // Decode the base64 encoded SVG string and write bytes as an SVG file
-        public static string WriteSvgFile(string encodedGraphSVG, string path) {
-            byte[] data = Convert.FromBase64String(encodedGraphSVG);
-
-            File.WriteAllBytes(path, data);
-
-            return path;
-        }
-
-        public static string UploadSnapshotToS3(string path) {
-            // TODO: Connect backend with S3 bucket and add upload functionality
-            File.Delete(path);
-
-            // Return the URL to the image in S3
-            return "NOT_IMPLEMENTED";
+        private static bool WriteSvgFile(string encodedGraphSVG, string path) 
+        {
+            try 
+            {
+                byte[] data = Convert.FromBase64String(encodedGraphSVG);
+                File.WriteAllBytes(path, data);
+                return true;
+            }
+            catch (FormatException)
+            {
+                // TODO: Implement static logging to be able to log the error from this function
+                return false;
+            }
+            catch (Exception)
+            {
+                // TODO: Implement static logging to be able to log the error from this function
+                return false;
+            }
         }
     }
 }
