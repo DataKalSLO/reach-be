@@ -28,7 +28,7 @@ namespace HourglassServer.Controllers
             try
             {
                 Graph requestedGraph = _context.Graph.Include(g => g.GraphSource).Single(g => g.GraphId == graphId);
-                GraphSourceModel[] graphSources = GraphSourceModel.convertGraphSources(requestedGraph.GraphSource.ToArray());
+                GraphSourceModel[] sources = GraphSourceModel.convertGraphSources(requestedGraph.GraphSource.ToArray());
                 
                 return new OkObjectResult(new GraphResponseModel {
                     GraphId = requestedGraph.GraphId,
@@ -36,7 +36,7 @@ namespace HourglassServer.Controllers
                     TimeStamp = requestedGraph.Timestamp.Value,
                     GraphTitle = requestedGraph.GraphTitle,
                     SnapshotUrl = requestedGraph.SnapshotUrl,
-                    DataSources = graphSources,
+                    DataSources = sources,
                     GraphOptions = requestedGraph.GraphOptions
                 });
             }
@@ -110,8 +110,7 @@ namespace HourglassServer.Controllers
         {
             try 
             {
-                Graph graphToModify = _context.Graph.Include(g => g.GraphSource).Single(g => g.GraphId == graphModel.GraphId);
-                List<GraphSource> existingGraphSources = graphToModify.GraphSource.ToList();
+                Graph graphToModify = _context.Graph.Single(g => g.GraphId == graphModel.GraphId);
 
                 var currentUserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).First().Value;
 
@@ -128,71 +127,7 @@ namespace HourglassServer.Controllers
 
                 // Append the userId from the session token to the graph model
                 graphModel.UserId = currentUserId;
-                                
-                Graph updatedGraph = GraphFactory.CreateGraphFromGraphModel(graphModel);
-
-                _context.Entry(graphToModify).State = EntityState.Detached;
-                DbSetMutator.PerformOperationOnDbSet<Graph>(_context.Graph, MutatorOperations.UPDATE, updatedGraph);
-                _context.SaveChanges();
-
-                // Create a list of the updated graph sources
-                List<GraphSource> updatedSources = GraphFactory.CreateGraphSourcesFromGraphSourceModel
-                (
-                    graphModel.DataSources, 
-                    graphModel.GraphId
-                ).ToList();
-
-                // Delete all existing GraphSource that are not being updated 
-                var updatedSourcesSeriesTypes = updatedSources.Select(s => s.SeriesType).ToList();
-                foreach (GraphSource oldSource in existingGraphSources) {
-                    if (!updatedSourcesSeriesTypes.Contains(oldSource.SeriesType)) 
-                    {
-                        DbSetMutator.PerformOperationOnDbSet<GraphSource>
-                        (
-                            _context.GraphSource, 
-                            MutatorOperations.DELETE, 
-                            oldSource
-                        );
-                    }
-                    else
-                    {
-                        // Perform the update for the series if it has not been dropped
-                        GraphSource updateSource = updatedSources.Single(s => s.SeriesType == oldSource.SeriesType);
-                        DbSetMutator.PerformOperationOnDbSet<GraphSource>
-                        (
-                            _context.GraphSource, 
-                            MutatorOperations.UPDATE, 
-                            updateSource
-                        );
-
-                        updatedSources.Remove(updateSource);
-                    }
-                }
-
-                // Add any remaining new sources that are added with the update
-                foreach (GraphSource newSource in updatedSources)
-                {
-                    DbSetMutator.PerformOperationOnDbSet<GraphSource>
-                        (
-                            _context.GraphSource, 
-                            MutatorOperations.ADD, 
-                            newSource
-                        );
-                }
-
-                _context.SaveChanges();
-
-                return new OkObjectResult(new GraphResponseModel {
-                    GraphId = updatedGraph.GraphId,
-                    UserId = updatedGraph.UserId,
-                    TimeStamp = updatedGraph.Timestamp.Value,
-                    GraphTitle = updatedGraph.GraphTitle,
-                    SnapshotUrl = updatedGraph.SnapshotUrl,
-                    DataSources = graphModel.DataSources,
-                    GraphOptions = updatedGraph.GraphOptions
-                });
-
-                /*
+                
                 Graph updatedGraph = GraphFactory.CreateGraphFromGraphModel(graphModel);
 
                 _context.Entry(graphToModify).State = EntityState.Detached;
@@ -261,7 +196,7 @@ namespace HourglassServer.Controllers
                     SnapshotUrl = updatedGraph.SnapshotUrl,
                     DataSources = graphModel.DataSources,
                     GraphOptions = updatedGraph.GraphOptions
-                });*/
+                });
             }
             catch (InvalidOperationException) 
             {
