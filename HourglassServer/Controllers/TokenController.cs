@@ -39,7 +39,7 @@ namespace HourglassServer
 
                 string token = _jwtTokenService.BuildToken(loggedInUser);
 
-                return Ok(new { email = tokenModel.Email, name = userWithEmail.Name, occupation = userWithEmail.Occupation, role = userWithEmail.Role, token });
+                return Ok(new { email = tokenModel.Email, name = userWithEmail.Name, token });
             }
             catch (InvalidOperationException)
             {
