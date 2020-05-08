@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using HourglassServer.Models.Persistent;
 using HourglassServer.Data.Application.StoryModel;
 using HourglassServer.Data;
 using HourglassServer.Data.DataManipulation.StoryModel;
@@ -11,6 +12,7 @@ namespace HourglassServer.Controllers
     [DefaultControllerRoute]
     public class StoryController : Controller
     {
+        private const string successMessage = "success";
         private readonly HourglassContext _context;
 
         public StoryController(HourglassContext context)
@@ -49,13 +51,17 @@ namespace HourglassServer.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateStory([FromBody] StoryApplicationModel story)
+        public IActionResult ModifyStory([FromBody] StoryApplicationModel storyFromBody)
         {
             try
             {
-                StoryApplicationModel storyCreated = StoryModelCreator.AddStoryApplicationModelToDatabaseContext(_context, story);
+                bool storyExists = _context.Story.Any(story => story.StoryId == storyFromBody.Id);
+                if (storyExists)
+                   StoryModelUpdater.UpdateStoryApplicationModel(_context, storyFromBody);
+                else
+                    StoryModelCreator.AddStoryApplicationModelToDatabaseContext(_context, storyFromBody);
                 _context.SaveChanges();
-                return new OkObjectResult(storyCreated.Id);
+                return new OkObjectResult(successMessage);
             }
             catch (Exception e)
             {
@@ -63,16 +69,19 @@ namespace HourglassServer.Controllers
             }
         }
 
-        [HttpPut]
-        public string Put()
+        [HttpDelete("{storyId}")]
+        public IActionResult DeleteStoryById(string storyId)
         {
-            throw new NotImplementedException();
-        }
-
-        [HttpDelete("{id}")]
-        public string Delete(string id)
-        {
-            throw new NotImplementedException();
+            try
+            {
+                StoryModelDeleter.DeleteStoryById(_context, storyId);
+                _context.SaveChanges();
+                return new OkObjectResult(successMessage);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
+            }
         }
     }
 }

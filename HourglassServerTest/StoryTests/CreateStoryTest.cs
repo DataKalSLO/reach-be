@@ -53,7 +53,7 @@ namespace HourglassServerTest.StoryTests
         {
             sampleData.ClearDataInContext();
             StoryController storyController = new StoryController(context);
-            storyController.CreateStory(exampleStory);
+            storyController.ModifyStory(exampleStory);
             AssertItemsCreated();
         }
         

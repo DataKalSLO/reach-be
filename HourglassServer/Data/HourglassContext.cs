@@ -99,7 +99,13 @@ namespace HourglassServer.Data
 
                 entity.Property(e => e.CountyColumn).HasColumnName("county_column");
 
+<<<<<<< HEAD
                 entity.Property(e => e.DataTypes).HasColumnName("data_types");
+=======
+                entity.Property(e => e.DataTypes)
+                    .HasColumnName("data_types")
+                    .HasColumnType("character varying(500)[]");
+>>>>>>> 9f88822b53c0ad5fb7e51562991548a7f94a2b57
 
                 entity.Property(e => e.ZipCodeColumn).HasColumnName("zip_code_column");
             });

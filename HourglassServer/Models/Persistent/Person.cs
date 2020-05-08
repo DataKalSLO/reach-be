@@ -18,7 +18,6 @@ namespace HourglassServer.Models.Persistent
         public string PasswordHash { get; set; }
         public string Occupation { get; set; }
         public bool NotificationsEnabled { get; set; }
-
         public virtual ICollection<Graph> Graph { get; set; }
         public virtual ICollection<Story> Story { get; set; }
     }
