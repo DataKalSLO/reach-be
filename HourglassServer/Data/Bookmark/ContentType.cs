@@ -1,5 +1,5 @@
 ﻿using System;
-namespace HourglassServer.Data.BookmarkModel
+namespace HourglassServer.Data.Bookmark
 {
     public enum ContentType
     {

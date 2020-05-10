@@ -23,7 +23,4 @@
     <ProjectReference Include="..\HourglassServer\HourglassServer.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="BookmarkTests\" />
-  </ItemGroup>
 </Project>

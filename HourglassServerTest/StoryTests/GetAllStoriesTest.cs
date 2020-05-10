@@ -10,21 +10,20 @@ namespace HourglassServerTest.StoryTests
     [TestClass]
     public class GetAllStoriesTest
     {
-        StoryTestData testData;
+        StoryTestData SampleData;
         HourglassContext MockContext;
 
         [TestInitialize]
         public void TestInit()
         {
-            testData = new StoryTestData();
-            testData.AddItemToMockContext();
-            MockContext = testData.GetMockContext();
+            SampleData = new StoryTestData();
+            MockContext = SampleData.GetMockContext();
         }
 
         [TestMethod]
         public void GetAllStoriesFromRetriever()
         {
-            HourglassContext context = testData.GetMockContext();
+            HourglassContext context = SampleData.GetMockContext();
 
             IList<StoryApplicationModel> stories = StoryModelRetriever.GetAllStoryApplicationModels(context);
             GeneralAssertions.AssertListHasMinimumCount(stories, 1);
@@ -35,7 +34,7 @@ namespace HourglassServerTest.StoryTests
         [TestMethod]
         public void GetAllStoriesFromController()
         {
-            HourglassContext context = testData.GetMockContext();
+            HourglassContext context = SampleData.GetMockContext();
             StoryController storyController = new StoryController(context);
             IList<StoryApplicationModel> stories = storyController.GetAllStories();
 
