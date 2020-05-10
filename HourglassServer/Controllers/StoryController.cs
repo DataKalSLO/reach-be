@@ -6,6 +6,7 @@ using HourglassServer.Models.Persistent;
 using HourglassServer.Data.Application.StoryModel;
 using HourglassServer.Data;
 using HourglassServer.Data.DataManipulation.StoryModel;
+using System.Net;
 
 namespace HourglassServer.Controllers
 {
@@ -25,9 +26,9 @@ namespace HourglassServer.Controllers
         {
             try
             {
-                IList<StoryApplicationModel> storyWithId = StoryModelRetriever.GetAllStoryApplicationModels(_context);
+                IList<StoryApplicationModel> allStories = StoryModelRetriever.GetAllStoryApplicationModels(_context);
                 _context.SaveChanges();
-                return new OkObjectResult(storyWithId);
+                return new OkObjectResult(allStories);
             }
             catch (Exception e)
             {
@@ -35,7 +36,7 @@ namespace HourglassServer.Controllers
             }
         }
 
-        [HttpGet("{StoryId}")]
+        [HttpGet("{storyId}", Name = nameof(GetStoryById))]
         public IActionResult GetStoryById(string storyId)
         {
             try
@@ -55,13 +56,20 @@ namespace HourglassServer.Controllers
         {
             try
             {
+                IActionResult response; 
                 bool storyExists = _context.Story.Any(story => story.StoryId == storyFromBody.Id);
                 if (storyExists)
-                   StoryModelUpdater.UpdateStoryApplicationModel(_context, storyFromBody);
+                {
+                    StoryModelUpdater.UpdateStoryApplicationModel(_context, storyFromBody);
+                    response = new NoContentResult();
+                }
                 else
+                {
                     StoryModelCreator.AddStoryApplicationModelToDatabaseContext(_context, storyFromBody);
+                    response = new CreatedAtRouteResult(nameof(GetStoryById),new { storyId = storyFromBody.Id }, storyFromBody) ;
+                }
                 _context.SaveChanges();
-                return new OkObjectResult(successMessage);
+                return response;
             }
             catch (Exception e)
             {
@@ -76,7 +84,7 @@ namespace HourglassServer.Controllers
             {
                 StoryModelDeleter.DeleteStoryById(_context, storyId);
                 _context.SaveChanges();
-                return new OkObjectResult(successMessage);
+                return new NoContentResult();
             }
             catch (Exception e)
             {
