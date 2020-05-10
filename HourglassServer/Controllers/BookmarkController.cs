@@ -8,7 +8,7 @@ using HourglassServer.Data.DataManipulation.DbSetOperations;
 using HourglassServer.Data.DataManipulation.StoryModel;
 using HourglassServer.Models.Persistent;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.EntityFrameworkCore;
 
 namespace HourglassServer.Controllers
 {
@@ -30,7 +30,7 @@ namespace HourglassServer.Controllers
         {
             try
             {
-                List<string> geoMapIdsBookmarked = _context.BookmarkGeoMap.Where(geoMapBookmark => geoMapBookmark.UserId == userId).Select(bs => bs.GeoMapId).ToList();
+                List<string> geoMapIdsBookmarked = _context.BookmarkGeoMap.Include(bg => bg.GeoMap).Where(geoMapBookmark => geoMapBookmark.UserId == userId).Select(bs => bs.GeoMapId).ToList();
                 List<GeoMap> geoMapBookmarked = _context.GeoMap.Where(geoMap => geoMapIdsBookmarked.Contains(geoMap.GeoMapId)).ToList(); //TODO: Route to application model when logic exists.
                 return new OkObjectResult(geoMapBookmarked);
             }catch(Exception e)
@@ -44,7 +44,7 @@ namespace HourglassServer.Controllers
         {
             try
             {
-                List<string> graphIdsBookmarked = _context.BookmarkGraph.Where(graphBookmark => graphBookmark.UserId == userId).Select(bs => bs.GraphId).ToList();
+                List<string> graphIdsBookmarked = _context.BookmarkGraph.Include(bg => bg.Graph).Where(graphBookmark => graphBookmark.UserId == userId).Select(bs => bs.GraphId).ToList();
                 List<Graph> graphsBookmarked = _context.Graph.Where(graph => graphIdsBookmarked.Contains(graph.GraphId)).ToList();  //TODO: Route to application model when logic exists.
                 return new OkObjectResult(graphsBookmarked);
             }catch (Exception e)
