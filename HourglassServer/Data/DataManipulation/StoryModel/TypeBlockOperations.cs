@@ -13,22 +13,20 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             switch (storyType)
             {
                 case StoryBlockType.TEXTDB:
-                    TextBlock textBlock = StoryFactory.CreateTextBlockFromStoryBlockModel(model);
+                    TextBlock textBlock = StoryFactory.CreateTextBlockFromStoryBlockModel(model, storyId);
                     DbSetMutator.PerformOperationOnDbSet<TextBlock>(db.TextBlock, operation, textBlock);
                     break;
                 case StoryBlockType.GRAPH:
-                    GraphBlock graphBlock = StoryFactory.CreateGraphBlockFromStoryBlockModel(model);
+                    GraphBlock graphBlock = StoryFactory.CreateGraphBlockFromStoryBlockModel(model, storyId);
                     DbSetMutator.PerformOperationOnDbSet<GraphBlock>(db.GraphBlock, operation, graphBlock);
                     break;
                 case StoryBlockType.GEOMAP:
-                    GeoMapBlock geoMapBlock = StoryFactory.CreateGeoMapBlockFromStoryBlockModel(model);
+                    GeoMapBlock geoMapBlock = StoryFactory.CreateGeoMapBlockFromStoryBlockModel(model, storyId);
                     DbSetMutator.PerformOperationOnDbSet<GeoMapBlock>(db.GeoMapBlock, operation, geoMapBlock);
                     break;
                 default:
                     throw new ArgumentException("Could not recognize type of story block: " + storyType);
             }
-            StoryBlock storyBlock = StoryFactory.CreateStoryBlockFromStoryBlockModel(model, storyId);
-            DbSetMutator.PerformOperationOnDbSet<StoryBlock>(db.StoryBlock, operation, storyBlock);
         }
     }
 }
