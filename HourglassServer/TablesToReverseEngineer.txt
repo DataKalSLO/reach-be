@@ -1,5 +1,8 @@
 ﻿person
 area
+bookmark_story
+bookmark_graph
+bookmark_geo_map
 category
 dataset_meta_data
 geo_map_tables
