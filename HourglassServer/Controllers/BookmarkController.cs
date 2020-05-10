@@ -8,8 +8,7 @@ using HourglassServer.Data.DataManipulation.DbSetOperations;
 using HourglassServer.Data.DataManipulation.StoryModel;
 using HourglassServer.Models.Persistent;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using HourglassServer.Data.DataManipulation.DbSetOperations;
+
 
 namespace HourglassServer.Controllers
 {
@@ -17,6 +16,7 @@ namespace HourglassServer.Controllers
     public class BookmarkController : Controller
     {
         private readonly HourglassContext _context;
+        private const string errorType = "badValue";
 
         public BookmarkController(HourglassContext context)
         {
@@ -35,7 +35,7 @@ namespace HourglassServer.Controllers
                 return new OkObjectResult(geoMapBookmarked);
             }catch(Exception e)
             {
-                return BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
+                return BadRequest(new[] { new HourglassError(e.ToString(), errorType) });
             }
         }
         
@@ -49,7 +49,7 @@ namespace HourglassServer.Controllers
                 return new OkObjectResult(graphsBookmarked);
             }catch (Exception e)
             {
-                return BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
+                return BadRequest(new[] { new HourglassError(e.ToString(), errorType) });
             }
         }
 
@@ -66,11 +66,12 @@ namespace HourglassServer.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
+                return BadRequest(new[] { new HourglassError(e.ToString(), errorType) });
             }
         }
 
         // TODO: Consider merging creating/deleting. Delete if bookmark already exists and add if not.
+        // Reasoning: FEND can then just map a button to a single http route.
 
         [HttpPost]
         public IActionResult CreateBookmark([FromBody] BookmarkApplicationModel bookmark)
@@ -81,7 +82,7 @@ namespace HourglassServer.Controllers
                 _context.SaveChanges();
                 return new OkResult();
             } catch(Exception e){
-                return BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
+                return BadRequest(new[] { new HourglassError(e.ToString(), errorType) });
             }
         }
 
@@ -96,7 +97,7 @@ namespace HourglassServer.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
+                return BadRequest(new[] { new HourglassError(e.ToString(), errorType) });
             }
         }
 
