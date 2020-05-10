@@ -31,8 +31,7 @@ namespace HourglassServer.Controllers
             try
             {
                 List<string> geoMapIdsBookmarked = _context.BookmarkGeoMap.Include(bg => bg.GeoMap).Where(geoMapBookmark => geoMapBookmark.UserId == userId).Select(bs => bs.GeoMapId).ToList();
-                List<GeoMap> geoMapBookmarked = _context.GeoMap.Where(geoMap => geoMapIdsBookmarked.Contains(geoMap.GeoMapId)).ToList(); //TODO: Route to application model when logic exists.
-                return new OkObjectResult(geoMapBookmarked);
+                return new OkObjectResult(geoMapIdsBookmarked);
             }catch(Exception e)
             {
                 return BadRequest(new[] { new HourglassError(e.ToString(), errorType) });
@@ -45,8 +44,7 @@ namespace HourglassServer.Controllers
             try
             {
                 List<string> graphIdsBookmarked = _context.BookmarkGraph.Include(bg => bg.Graph).Where(graphBookmark => graphBookmark.UserId == userId).Select(bs => bs.GraphId).ToList();
-                List<Graph> graphsBookmarked = _context.Graph.Where(graph => graphIdsBookmarked.Contains(graph.GraphId)).ToList();  //TODO: Route to application model when logic exists.
-                return new OkObjectResult(graphsBookmarked);
+                return new OkObjectResult(graphIdsBookmarked);
             }catch (Exception e)
             {
                 return BadRequest(new[] { new HourglassError(e.ToString(), errorType) });
@@ -59,10 +57,7 @@ namespace HourglassServer.Controllers
             try
             {
                 List<string> storiesIdsBookmarked = _context.BookmarkStory.Where(storyBookmark => storyBookmark.UserId == userId).Select(bs => bs.StoryId).ToList();
-                List<StoryApplicationModel> storiesBookmarked = new List<StoryApplicationModel>();
-                foreach (string storyId in storiesIdsBookmarked)
-                    storiesBookmarked.Add(StoryModelRetriever.GetStoryApplicationModelById(_context, storyId));
-                return new OkObjectResult(storiesBookmarked);
+                return new OkObjectResult(storiesIdsBookmarked);
             }
             catch (Exception e)
             {
