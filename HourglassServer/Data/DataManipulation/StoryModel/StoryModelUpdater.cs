@@ -30,11 +30,11 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             db.GraphBlock.RemoveRange(graphBlocksNoLongerInStory);
 
             List<GeoMapBlock> geoMapsBlocksNoLongerInStory = db.GeoMapBlock
-               .Where(graphBlock => graphBlock.StoryId == storyModel.Id && !storyBlockIdsRequestedToUpdate.Contains(graphBlock.BlockId)).ToList();
+               .Where(geoMapBlock => geoMapBlock.StoryId == storyModel.Id && !storyBlockIdsRequestedToUpdate.Contains(geoMapBlock.BlockId)).ToList();
             db.GeoMapBlock.RemoveRange(geoMapsBlocksNoLongerInStory);
 
             List<TextBlock> textBlocksNoLongerInStory = db.TextBlock
-               .Where(graphBlock => graphBlock.StoryId == storyModel.Id && !storyBlockIdsRequestedToUpdate.Contains(graphBlock.BlockId)).ToList();
+               .Where(textBlock => textBlock.StoryId == storyModel.Id && !storyBlockIdsRequestedToUpdate.Contains(textBlock.BlockId)).ToList();
             db.TextBlock.RemoveRange(textBlocksNoLongerInStory);
 
             UpdateExistingOrAddNewStoryBlocks(db, storyModel.StoryBlocks, storyModel.Id);

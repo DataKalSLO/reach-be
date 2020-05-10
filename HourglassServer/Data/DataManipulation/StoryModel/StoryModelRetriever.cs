@@ -39,9 +39,9 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
 
         public static List<StoryBlockModel> GetStoryBlocksByStoryId(HourglassContext db, string storyId)
         {
-            List<StoryBlockModel> graphBlocks = GetGraphBlocksByStoryIdInStoryBlockForm(db, storyId);
-            List<StoryBlockModel> mapBlocks = GetGeoMapBlocksByStoryIdInStoryBlockForm(db, storyId);
-            List<StoryBlockModel> textBlocks = GetTextBlocksByStoryIdInStoryBlockForm(db, storyId);
+            List<StoryBlockModel> graphBlocks = GetGraphBlockByStoryId(db, storyId);
+            List<StoryBlockModel> mapBlocks = GetGeoMapBlocksByStoryId(db, storyId);
+            List<StoryBlockModel> textBlocks = GetTextBlocksByStoryId(db, storyId);
             List<StoryBlockModel> allStories = graphBlocks.Concat(textBlocks)
                                     .Concat(mapBlocks)
                                     .ToList();
@@ -53,7 +53,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
          * declared for StoryBlocks. The script we use to generate the classes specifically
          * mentions this as one of its limitations.
          */
-        public static List<StoryBlockModel> GetGraphBlocksByStoryIdInStoryBlockForm(HourglassContext db, string storyId)
+        public static List<StoryBlockModel> GetGraphBlockByStoryId(HourglassContext db, string storyId)
         {
             List<GraphBlock> storyBlockGraphBlockJoin = db.GraphBlock.Where(graphBlock => graphBlock.StoryId == storyId).ToList();
             List<StoryBlockModel> storyBlocks = new List<StoryBlockModel>();
@@ -62,7 +62,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             return storyBlocks;
         }
 
-        public static List<StoryBlockModel> GetGeoMapBlocksByStoryIdInStoryBlockForm(HourglassContext db, string storyId)
+        public static List<StoryBlockModel> GetGeoMapBlocksByStoryId(HourglassContext db, string storyId)
         {
             List<GeoMapBlock> geoMapBlocks = db.GeoMapBlock.Where(geoMapBlock => geoMapBlock.StoryId == storyId).ToList();
             List<StoryBlockModel> storyBlocks = new List<StoryBlockModel>();
@@ -71,7 +71,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             return storyBlocks;
         }
 
-        public static List<StoryBlockModel> GetTextBlocksByStoryIdInStoryBlockForm(HourglassContext db, string storyId)
+        public static List<StoryBlockModel> GetTextBlocksByStoryId(HourglassContext db, string storyId)
         {
             List<TextBlock> textBlocks = db.TextBlock.Where(textBlock => textBlock.StoryId == storyId).ToList();
             List<StoryBlockModel> storyBlocks = new List<StoryBlockModel>();

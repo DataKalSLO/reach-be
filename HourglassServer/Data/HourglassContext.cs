@@ -448,7 +448,7 @@ namespace HourglassServer.Data
                 entity.Property(e => e.EditorState)
                     .IsRequired()
                     .HasColumnName("editor_state")
-                    .HasMaxLength(10000);
+                    .HasMaxLength(100000);
 
                 entity.Property(e => e.StoryId)
                     .IsRequired()
