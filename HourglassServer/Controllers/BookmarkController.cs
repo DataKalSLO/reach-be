@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using HourglassServer.Data;
 using HourglassServer.Data.Application.BookmarkModel;
 using HourglassServer.Data.Application.StoryModel;
@@ -23,14 +24,15 @@ namespace HourglassServer.Controllers
             _context = context;
         }
 
-        // TODO: Remove paramters for UserId and use token instead
-
-        [HttpGet("GeoMap/{userId}")]
-        public IActionResult GetGeoMapBookmarks(string userId)
+        [HttpGet("geomap")]
+        public IActionResult GetGeoMapBookmarks()
         {
             try
             {
-                List<string> geoMapIdsBookmarked = _context.BookmarkGeoMap.Include(bg => bg.GeoMap).Where(geoMapBookmark => geoMapBookmark.UserId == userId).Select(bs => bs.GeoMapId).ToList();
+                string userId = GetUserIdFromAuthenticationToken();
+                List<string> geoMapIdsBookmarked = _context.BookmarkGeoMap
+                    .Where(geoMapBookmark => geoMapBookmark.UserId == userId)
+                    .Select(bs => bs.GeoMapId).ToList();
                 return new OkObjectResult(geoMapIdsBookmarked);
             }catch(Exception e)
             {
@@ -38,12 +40,16 @@ namespace HourglassServer.Controllers
             }
         }
         
-        [HttpGet("Graph/{userId}")]
-        public IActionResult GetGraphBookmarks(string userId)
+        [HttpGet("graph")]
+        public IActionResult GetGraphBookmarks()
         {
             try
             {
-                List<string> graphIdsBookmarked = _context.BookmarkGraph.Include(bg => bg.Graph).Where(graphBookmark => graphBookmark.UserId == userId).Select(bs => bs.GraphId).ToList();
+                string userId = GetUserIdFromAuthenticationToken();
+                List<string> graphIdsBookmarked = _context.BookmarkGraph
+                    .Where(graphBookmark => graphBookmark.UserId == userId)
+                    .Select(bs => bs.GraphId)
+                    .ToList();
                 return new OkObjectResult(graphIdsBookmarked);
             }catch (Exception e)
             {
@@ -51,12 +57,16 @@ namespace HourglassServer.Controllers
             }
         }
 
-        [HttpGet("Story/{userId}")]
-        public IActionResult GetStoryBookmarks(string userId)
+        [HttpGet("story")]
+        public IActionResult GetStoryBookmarks()
         {
             try
             {
-                List<string> storiesIdsBookmarked = _context.BookmarkStory.Where(storyBookmark => storyBookmark.UserId == userId).Select(bs => bs.StoryId).ToList();
+                string userId = GetUserIdFromAuthenticationToken();
+                List<string> storiesIdsBookmarked = _context.BookmarkStory
+                    .Where(storyBookmark => storyBookmark.UserId == userId)
+                    .Select(bs => bs.StoryId)
+                    .ToList();
                 return new OkObjectResult(storiesIdsBookmarked);
             }
             catch (Exception e)
@@ -65,30 +75,25 @@ namespace HourglassServer.Controllers
             }
         }
 
-        // TODO: Consider merging creating/deleting. Delete if bookmark already exists and add if not.
-        // Reasoning: FEND can then just map a button to a single http route.
-
-        [HttpPost]
-        public IActionResult CreateBookmark([FromBody] BookmarkApplicationModel bookmark)
+        [HttpPost("graph")]
+        public IActionResult ToggleGraphBookmark([FromBody] BookmarkGraph graphBookmark)
         {
             try
             {
-                MutateBookmark(MutatorOperations.ADD, bookmark);
-                _context.SaveChanges();
-                return new OkResult();
+                AssertAuthenticationTokenUserIdMatchesString(graphBookmark.UserId);
+                return new OkObjectResult(ToggleBookmark(_context.BookmarkGraph, graphBookmark));
             } catch(Exception e){
                 return BadRequest(new[] { new HourglassError(e.ToString(), errorType) });
             }
         }
 
-        [HttpDelete]
-        public IActionResult DeleteBookmark([FromBody] BookmarkApplicationModel bookmark)
+        [HttpPost("geomap")]
+        public IActionResult ToggleGeoMapBookmark([FromBody] BookmarkGeoMap requestedGeoMapBookmark)
         {
             try
             {
-                MutateBookmark(MutatorOperations.DELETE, bookmark);
-                _context.SaveChanges();
-                return new OkResult();
+                AssertAuthenticationTokenUserIdMatchesString(requestedGeoMapBookmark.UserId);
+                return new OkObjectResult(ToggleBookmark(_context.BookmarkGeoMap, requestedGeoMapBookmark));
             }
             catch (Exception e)
             {
@@ -96,22 +101,63 @@ namespace HourglassServer.Controllers
             }
         }
 
-        private void MutateBookmark (MutatorOperations operation, BookmarkApplicationModel bookmark)
+
+        [HttpPost("story")]
+        public IActionResult ToggleStoryBookmark([FromBody] BookmarkStory requestStoryBookmark)
         {
-            switch (bookmark.ContentType)
+            try
             {
-                case ContentType.GEOMAP:
-                    DbSetMutator.PerformOperationOnDbSet<BookmarkGeoMap>(_context.BookmarkGeoMap, operation, new BookmarkGeoMap { GeoMapId = bookmark.ContentId, UserId = bookmark.UserId });
-                    break;
-                case ContentType.GRAPH:
-                    DbSetMutator.PerformOperationOnDbSet<BookmarkGraph>(_context.BookmarkGraph, operation, new BookmarkGraph { GraphId = bookmark.ContentId, UserId = bookmark.UserId });
-                    break;
-                case ContentType.STORY:
-                    DbSetMutator.PerformOperationOnDbSet<BookmarkStory>(_context.BookmarkStory, operation, new BookmarkStory { StoryId = bookmark.ContentId, UserId = bookmark.UserId });
-                    break;
-                default:
-                    throw new InvalidOperationException(String.Format("Could not identify content type: ", bookmark.ContentType));
+                AssertAuthenticationTokenUserIdMatchesString(requestStoryBookmark.UserId);
+                return new OkObjectResult(ToggleBookmark(_context.BookmarkStory, requestStoryBookmark));
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new[] { new HourglassError(e.ToString(), errorType) });
             }
         }
+
+        /*
+         * Private Generalized Methods. No public facing endpoints.
+         */
+
+        private string GetUserIdFromAuthenticationToken()
+        {
+            Claim userToken = HttpContext.User.Claims
+                .Where(c => c.Type == ClaimTypes.Email)
+                .FirstOrDefault();
+            if (userToken == null)
+                throw new InvalidOperationException("This operations requires a user token. None found.");
+            return userToken.Value;
+        }
+
+        private void AssertAuthenticationTokenUserIdMatchesString(string userId)
+        {
+            string tokenUserId = GetUserIdFromAuthenticationToken();
+            if (tokenUserId != userId)
+                throw new InvalidOperationException(String.Format("The authenticated user is not the owner of this UserId: {0}", userId));
+        }
+
+        private BookmarkState ToggleBookmark<T>(DbSet<T> dbSet, T requestedBookmark) where T : class
+        {
+            Boolean bookmarkIsEnabled;
+            if (dbSet.Any(dbBookmark => dbBookmark == requestedBookmark))
+            {
+                DbSetMutator.PerformOperationOnDbSet<T>(dbSet, MutatorOperations.DELETE, requestedBookmark);
+                bookmarkIsEnabled = false;
+            }
+            else
+            {
+                DbSetMutator.PerformOperationOnDbSet<T>(dbSet, MutatorOperations.ADD, requestedBookmark);
+                bookmarkIsEnabled = true;
+            }
+
+            _context.SaveChanges();
+            return new BookmarkState { Enabled = bookmarkIsEnabled };
+        }
+    }
+
+    class BookmarkState
+    {
+        public bool Enabled;
     }
 }
