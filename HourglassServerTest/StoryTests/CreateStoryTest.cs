@@ -62,7 +62,6 @@ namespace HourglassServerTest.StoryTests
         {
             int count = 1;
             GeneralAssertions.AssertDbSetHasCount(context.TextBlock, count);
-            GeneralAssertions.AssertDbSetHasCount(context.StoryBlock, count);
             GeneralAssertions.AssertDbSetHasCount(context.Story, count);
         }
     }

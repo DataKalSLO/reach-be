@@ -28,7 +28,6 @@ namespace HourglassServerTest.StoryTests
             testData.TextBlockDbSet.Verify(mock => mock.Remove(It.IsAny<TextBlock>()), Times.Once());
             testData.GraphBlockDbSet.Verify(mock => mock.Remove(It.IsAny<GraphBlock>()), Times.Once());
             testData.GeoMapBlockDbDSet.Verify(mock => mock.Remove(It.IsAny<GeoMapBlock>()), Times.Once());
-            testData.StoryBlockDbSet.Verify(mock => mock.Remove(It.IsAny<StoryBlock>()), Times.Exactly(3));
         }
     }
 }
