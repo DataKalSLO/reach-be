@@ -19,7 +19,7 @@
             newStory.DateCreated = nowTimeStamp;
             newStory.DateLastEdited = nowTimeStamp;
 
-            return newStory; 
+            return newStory;
         }
 
         public static StoryBlockModel CreateStoryBlockModel(TextBlock textBlock)

@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
+    using System.Threading.Tasks;
     using HourglassServer.Data;
     using HourglassServer.Data.Application.StoryModel;
     using HourglassServer.Data.DataManipulation.StoryModel;
@@ -14,7 +15,6 @@
     [DefaultControllerRoute]
     public class StoryController : Controller
     {
-        private const string SuccessMessage = "success";
         private readonly HourglassContext context;
 
         public StoryController(HourglassContext context)
@@ -37,12 +37,12 @@
         }
 
         [HttpGet("{storyId}", Name = nameof(GetStoryById))]
-        public IActionResult GetStoryById(string storyId)
+        public async Task<IActionResult> GetStoryById(string storyId)
         {
             try
             {
                 StoryApplicationModel storyWithId = StoryModelRetriever.GetStoryApplicationModelById(this.context, storyId);
-                this.context.SaveChanges();
+                await this.context.SaveChangesAsync();
                 return new OkObjectResult(storyWithId);
             }
             catch (Exception e)
@@ -52,7 +52,7 @@
         }
 
         [HttpPost]
-        public IActionResult ModifyStory([FromBody] StoryApplicationModel storyFromBody)
+        public async Task<IActionResult> ModifyStory([FromBody] StoryApplicationModel storyFromBody)
         {
             try
             {
@@ -66,10 +66,10 @@
                 else
                 {
                     StoryModelCreator.AddStoryApplicationModelToDatabaseContext(this.context, storyFromBody);
-                    response = new CreatedAtRouteResult(nameof(this.GetStoryById),new { storyId = storyFromBody.Id }, storyFromBody) ;
+                    response = new CreatedAtRouteResult(nameof(this.GetStoryById), new { storyId = storyFromBody.Id }, storyFromBody);
                 }
 
-                this.context.SaveChanges();
+                await this.context.SaveChangesAsync();
                 return response;
             }
             catch (Exception e)
@@ -79,12 +79,12 @@
         }
 
         [HttpDelete("{storyId}")]
-        public IActionResult DeleteStoryById(string storyId)
+        public async Task<IActionResult> DeleteStoryById(string storyId)
         {
             try
             {
                 StoryModelDeleter.DeleteStoryById(this.context, storyId);
-                this.context.SaveChanges();
+                await this.context.SaveChangesAsync();
                 return new NoContentResult();
             }
             catch (Exception e)
