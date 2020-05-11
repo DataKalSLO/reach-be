@@ -1,10 +1,10 @@
-﻿using System;
-using HourglassServer.Models.Persistent;
-using HourglassServer.Data.Application.StoryModel;
-using HourglassServer.Data.DataManipulation.DbSetOperations;
-
-namespace HourglassServer.Data.DataManipulation.StoryModel
+﻿namespace HourglassServer.Data.DataManipulation.StoryModel
 {
+    using System;
+    using HourglassServer.Data.Application.StoryModel;
+    using HourglassServer.Data.DataManipulation.DbSetOperations;
+    using HourglassServer.Models.Persistent;
+
     public class TypeBlockOperations
     {
         public static void MutateTypeBlock(HourglassContext db, StoryBlockModel model, MutatorOperations operation, string storyId)

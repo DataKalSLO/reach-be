@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using HourglassServer.Models.Persistent;
-using HourglassServer.Data.Application.StoryModel;
-using System.Linq;
-
-/* Responsibility: Update any changes to a story
+﻿/* Responsibility: Update any changes to a story
  *
  * Changes handled:
  * - Updating Story meta information
@@ -14,16 +8,24 @@ using System.Linq;
  */
 namespace HourglassServer.Data.DataManipulation.StoryModel
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using HourglassServer.Data.Application.StoryModel;
+    using HourglassServer.Models.Persistent;
+
     public static class StoryModelUpdater
     {
         public static void UpdateStoryApplicationModel(HourglassContext db, StoryApplicationModel storyModel)
         {
-            Story storyWithId = StoryFactory.CreateStoryFromStoryModel(storyModel); //Isolates the Story part
+            Story storyWithId = StoryFactory.CreateStoryFromStoryModel(storyModel); // Isolates the Story part
             db.Story.Update(storyWithId);
 
-            List<string> storyBlockIdsRequestedToUpdate = new List<String>();
+            List<string> storyBlockIdsRequestedToUpdate = new List<string>();
             foreach (StoryBlockModel storyBlockModel in storyModel.StoryBlocks)
+            {
                 storyBlockIdsRequestedToUpdate.Add(storyBlockModel.Id);
+            }
 
             List<GraphBlock> graphBlocksNoLongerInStory = db.GraphBlock
                 .Where(graphBlock => graphBlock.StoryId == storyModel.Id && !storyBlockIdsRequestedToUpdate.Contains(graphBlock.BlockId)).ToList();
@@ -47,13 +49,17 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
                 StoryBlockModel storyBlockModel = storyBlocks[blockPosition];
                 storyBlockModel.BlockPosition = blockPosition;
                 if (TypeBlockExists(db, storyBlockModel, storyBlockModel.Id))
+                {
                     TypeBlockOperations.MutateTypeBlock(db, storyBlockModel, DbSetOperations.MutatorOperations.UPDATE, storyId);
+                }
                 else
+                {
                     TypeBlockOperations.MutateTypeBlock(db, storyBlockModel, DbSetOperations.MutatorOperations.ADD, storyId);
+                }
             }
         }
 
-        private static Boolean TypeBlockExists(HourglassContext db, StoryBlockModel storyBlock, string blockId)
+        private static bool TypeBlockExists(HourglassContext db, StoryBlockModel storyBlock, string blockId)
         {
             switch (storyBlock.Type)
             {

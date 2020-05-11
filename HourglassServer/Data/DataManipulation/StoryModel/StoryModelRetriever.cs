@@ -1,21 +1,20 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using HourglassServer.Models.Persistent;
-using HourglassServer.Data.Application.StoryModel;
-
-/* Responsibility: Retrieve Stories through some query method.
+﻿/* Responsibility: Retrieve Stories through some query method.
  * 
  * Current Queries Implemented: By ID
  * Pending: Containing substring in description/title, by author, by date
  */
 namespace HourglassServer.Data.DataManipulation.StoryModel
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using HourglassServer.Data.Application.StoryModel;
+    using HourglassServer.Models.Persistent;
+
     public static class StoryModelRetriever
     {
         public static StoryApplicationModel GetStoryApplicationModelById(HourglassContext db, string storyId)
         {
-            Story story = db.Story.First(story => story.StoryId == storyId); //TODO: Replace with `Find`
+            Story story = db.Story.First(story => story.StoryId == storyId); // TODO: Replace with `Find`
             return GetStoryApplicationModelFromStory(db, story);
         }
 
@@ -24,7 +23,10 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             List<Story> stories = db.Story.ToList();
             List<StoryApplicationModel> storyModels = new List<StoryApplicationModel>();
             foreach (var story in stories)
+            {
                 storyModels.Add(GetStoryApplicationModelFromStory(db, story));
+            }
+
             return storyModels;
         }
 
@@ -58,7 +60,10 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             List<GraphBlock> storyBlockGraphBlockJoin = db.GraphBlock.Where(graphBlock => graphBlock.StoryId == storyId).ToList();
             List<StoryBlockModel> storyBlocks = new List<StoryBlockModel>();
             foreach (GraphBlock graphBlock in storyBlockGraphBlockJoin)
+            {
                 storyBlocks.Add(new StoryBlockModel(graphBlock));
+            }
+
             return storyBlocks;
         }
 
@@ -67,7 +72,10 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             List<GeoMapBlock> geoMapBlocks = db.GeoMapBlock.Where(geoMapBlock => geoMapBlock.StoryId == storyId).ToList();
             List<StoryBlockModel> storyBlocks = new List<StoryBlockModel>();
             foreach (GeoMapBlock geoMapBlock in geoMapBlocks)
+            {
                 storyBlocks.Add(new StoryBlockModel(geoMapBlock));
+            }
+
             return storyBlocks;
         }
 
@@ -76,7 +84,10 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             List<TextBlock> textBlocks = db.TextBlock.Where(textBlock => textBlock.StoryId == storyId).ToList();
             List<StoryBlockModel> storyBlocks = new List<StoryBlockModel>();
             foreach (TextBlock textBlock in textBlocks)
+            {
                 storyBlocks.Add(new StoryBlockModel(textBlock));
+            }
+
             return storyBlocks;
         }
     }

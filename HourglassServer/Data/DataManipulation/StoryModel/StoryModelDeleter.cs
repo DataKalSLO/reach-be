@@ -1,11 +1,10 @@
-﻿using System.Linq;
-using HourglassServer.Models.Persistent;
-using HourglassServer.Data.Application.StoryModel;
-using System.Collections.Generic;
-
-// Responsibility: Delete all entities associated with a Story
+﻿// Responsibility: Delete all entities associated with a Story
 namespace HourglassServer.Data.DataManipulation.StoryModel
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using HourglassServer.Data.Application.StoryModel;
+
     public static class StoryModelDeleter
     {
         public static void DeleteStoryById(HourglassContext db, string storyId)

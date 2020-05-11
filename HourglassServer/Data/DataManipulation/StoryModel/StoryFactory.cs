@@ -1,15 +1,15 @@
-﻿using HourglassServer.Models.Persistent;
-using HourglassServer.Data.Application.StoryModel;
-using System;
-
-namespace HourglassServer.Data.DataManipulation.StoryModel
+﻿namespace HourglassServer.Data.DataManipulation.StoryModel
 {
+    using System;
+    using HourglassServer.Data.Application.StoryModel;
+    using HourglassServer.Models.Persistent;
+
     public class StoryFactory
     {
         public static Story CreateStoryFromStoryModel(StoryApplicationModel model)
         {
             Story newStory = new Story();
-            DateTime nowTimeStamp = new DateTime();
+            DateTime nowTimeStamp = default(DateTime);
 
             newStory.StoryId = model.Id;
             newStory.UserId = model.UserId;
@@ -28,7 +28,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             {
                 Id = textBlock.BlockId,
                 Type = StoryBlockType.TEXTDB,
-                EditorState = textBlock.EditorState
+                EditorState = textBlock.EditorState,
             };
         }
 
@@ -38,7 +38,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             {
                 Id = graphBlock.BlockId,
                 Type = StoryBlockType.TEXTDB,
-                GraphId = graphBlock.GraphId
+                GraphId = graphBlock.GraphId,
             };
         }
 
@@ -48,7 +48,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             {
                 Id = geoMapBlock.BlockId,
                 Type = StoryBlockType.TEXTDB,
-                MapId = geoMapBlock.GeoMapId
+                MapId = geoMapBlock.GeoMapId,
             };
         }
 
@@ -59,7 +59,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
                 StoryId = storyId,
                 BlockPosition = model.BlockPosition,
                 BlockId = model.Id,
-                EditorState = model.EditorState
+                EditorState = model.EditorState,
             };
             return newTextBlock;
         }
@@ -71,7 +71,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
                 StoryId = storyId,
                 BlockPosition = model.BlockPosition,
                 BlockId = model.Id,
-                GraphId = model.GraphId
+                GraphId = model.GraphId,
             };
             return newGraphBlock;
         }
@@ -83,7 +83,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
                 StoryId = storyId,
                 BlockPosition = model.BlockPosition,
                 BlockId = model.Id,
-                GeoMapId = model.MapId
+                GeoMapId = model.MapId,
             };
             return newTextBlock;
         }
@@ -95,7 +95,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
                 StoryId = storyId,
                 BlockPosition = blockPosition,
                 BlockId = blockId,
-                GraphId = graphId
+                GraphId = graphId,
             };
             return graphBlock;
         }
@@ -107,7 +107,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
                 StoryId = storyId,
                 BlockPosition = blockPosition,
                 BlockId = blockId,
-                EditorState = editorState
+                EditorState = editorState,
             };
             return textBlock;
         }
@@ -119,7 +119,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
                 StoryId = storyId,
                 BlockPosition = blockPosition,
                 BlockId = blockId,
-                GeoMapId = geoMapId
+                GeoMapId = geoMapId,
             };
             return geoMapBlock;
         }

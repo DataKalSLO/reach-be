@@ -1,24 +1,24 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
-using HourglassServer.Models.Persistent;
-using HourglassServer.Data.Application.StoryModel;
-using HourglassServer.Data;
-using HourglassServer.Data.DataManipulation.StoryModel;
-using System.Net;
-
-namespace HourglassServer.Controllers
+﻿namespace HourglassServer.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using HourglassServer.Data;
+    using HourglassServer.Data.Application.StoryModel;
+    using HourglassServer.Data.DataManipulation.StoryModel;
+    using HourglassServer.Models.Persistent;
+    using Microsoft.AspNetCore.Mvc;
+
     [DefaultControllerRoute]
     public class StoryController : Controller
     {
-        private const string successMessage = "success";
-        private readonly HourglassContext _context;
+        private const string SuccessMessage = "success";
+        private readonly HourglassContext context;
 
         public StoryController(HourglassContext context)
         {
-            _context = context;
+            this.context = context;
         }
 
         [HttpGet]
@@ -26,13 +26,13 @@ namespace HourglassServer.Controllers
         {
             try
             {
-                IList<StoryApplicationModel> allStories = StoryModelRetriever.GetAllStoryApplicationModels(_context);
-                _context.SaveChanges();
+                IList<StoryApplicationModel> allStories = StoryModelRetriever.GetAllStoryApplicationModels(this.context);
+                this.context.SaveChanges();
                 return new OkObjectResult(allStories);
             }
             catch (Exception e)
             {
-                return BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
+                return this.BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
             }
         }
 
@@ -41,13 +41,13 @@ namespace HourglassServer.Controllers
         {
             try
             {
-                StoryApplicationModel storyWithId = StoryModelRetriever.GetStoryApplicationModelById(_context, storyId);
-                _context.SaveChanges();
+                StoryApplicationModel storyWithId = StoryModelRetriever.GetStoryApplicationModelById(this.context, storyId);
+                this.context.SaveChanges();
                 return new OkObjectResult(storyWithId);
             }
             catch (Exception e)
             {
-                return BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
+                return this.BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
             }
         }
 
@@ -57,23 +57,24 @@ namespace HourglassServer.Controllers
             try
             {
                 IActionResult response; 
-                bool storyExists = _context.Story.Any(story => story.StoryId == storyFromBody.Id);
+                bool storyExists = this.context.Story.Any(story => story.StoryId == storyFromBody.Id);
                 if (storyExists)
                 {
-                    StoryModelUpdater.UpdateStoryApplicationModel(_context, storyFromBody);
+                    StoryModelUpdater.UpdateStoryApplicationModel(this.context, storyFromBody);
                     response = new NoContentResult();
                 }
                 else
                 {
-                    StoryModelCreator.AddStoryApplicationModelToDatabaseContext(_context, storyFromBody);
-                    response = new CreatedAtRouteResult(nameof(GetStoryById),new { storyId = storyFromBody.Id }, storyFromBody) ;
+                    StoryModelCreator.AddStoryApplicationModelToDatabaseContext(this.context, storyFromBody);
+                    response = new CreatedAtRouteResult(nameof(this.GetStoryById),new { storyId = storyFromBody.Id }, storyFromBody) ;
                 }
-                _context.SaveChanges();
+
+                this.context.SaveChanges();
                 return response;
             }
             catch (Exception e)
             {
-                return BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
+                return this.BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
             }
         }
 
@@ -82,13 +83,13 @@ namespace HourglassServer.Controllers
         {
             try
             {
-                StoryModelDeleter.DeleteStoryById(_context, storyId);
-                _context.SaveChanges();
+                StoryModelDeleter.DeleteStoryById(this.context, storyId);
+                this.context.SaveChanges();
                 return new NoContentResult();
             }
             catch (Exception e)
             {
-                return BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
+                return this.BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
             }
         }
     }
