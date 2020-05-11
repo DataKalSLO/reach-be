@@ -17,7 +17,7 @@ namespace HourglassServer.Controllers
     public class BookmarkController : Controller
     {
         private readonly HourglassContext _context;
-        private const string errorType = "badValue";
+        private const string ERROR_TYPE = "badValue";
         private const string NOT_OWNER_ERROR = "The authenticated user is not the owner of this UserId: {0}";
         private const string MISSING_TOKEN_ERROR = "This operations requires a user token. None found.";
 
@@ -38,7 +38,7 @@ namespace HourglassServer.Controllers
                 return new OkObjectResult(geoMapIdsBookmarked);
             }catch(Exception e)
             {
-                return BadRequest(new[] { new HourglassError(e.ToString(), errorType) });
+                return BadRequest(new[] { new HourglassError(e.ToString(), ERROR_TYPE) });
             }
         }
         
@@ -55,7 +55,7 @@ namespace HourglassServer.Controllers
                 return new OkObjectResult(graphIdsBookmarked);
             }catch (Exception e)
             {
-                return BadRequest(new[] { new HourglassError(e.ToString(), errorType) });
+                return BadRequest(new[] { new HourglassError(e.ToString(), ERROR_TYPE) });
             }
         }
 
@@ -73,7 +73,7 @@ namespace HourglassServer.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(new[] { new HourglassError(e.ToString(), errorType) });
+                return BadRequest(new[] { new HourglassError(e.ToString(), ERROR_TYPE) });
             }
         }
 
@@ -85,7 +85,7 @@ namespace HourglassServer.Controllers
                 AssertAuthenticationTokenUserIdMatchesString(graphBookmark.UserId);
                 return new OkObjectResult(ToggleBookmark(_context.BookmarkGraph, graphBookmark));
             } catch(Exception e){
-                return BadRequest(new[] { new HourglassError(e.ToString(), errorType) });
+                return BadRequest(new[] { new HourglassError(e.ToString(), ERROR_TYPE) });
             }
         }
 
@@ -99,7 +99,7 @@ namespace HourglassServer.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(new[] { new HourglassError(e.ToString(), errorType) });
+                return BadRequest(new[] { new HourglassError(e.ToString(), ERROR_TYPE) });
             }
         }
 
@@ -114,7 +114,7 @@ namespace HourglassServer.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(new[] { new HourglassError(e.ToString(), errorType) });
+                return BadRequest(new[] { new HourglassError(e.ToString(), ERROR_TYPE) });
             }
         }
 
@@ -126,7 +126,7 @@ namespace HourglassServer.Controllers
         {
             Claim userToken = HttpContext.User.Claims
                 .Where(c => c.Type == ClaimTypes.Email)
-                .FirstOrDefault();
+                .Single();
             if (userToken == null)
                 throw new InvalidOperationException(MISSING_TOKEN_ERROR);
             return userToken.Value;
