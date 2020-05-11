@@ -1,29 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using HourglassServer.Data;
-using HourglassServer.Data.Application.BookmarkModel;
-using HourglassServer.Data.Application.StoryModel;
-using HourglassServer.Data.DataManipulation.DbSetOperations;
-using HourglassServer.Data.DataManipulation.StoryModel;
-using HourglassServer.Models.Persistent;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿// <copyright file="BookmarkController.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
 
 namespace HourglassServer.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Claims;
+    using HourglassServer.Data;
+    using HourglassServer.Data.DataManipulation.DbSetOperations;
+    using HourglassServer.Models.Persistent;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+
     [DefaultControllerRoute]
     public class BookmarkController : Controller
     {
-        private readonly HourglassContext _context;
-        private const string ERROR_TYPE = "badValue";
-        private const string NOT_OWNER_ERROR = "The authenticated user is not the owner of this UserId: {0}";
-        private const string MISSING_TOKEN_ERROR = "This operations requires a user token. None found.";
+        private const string ErrorType = "badValue";
+        private const string NoOwnershipError = "The authenticated user is not the owner of this UserId: {0}";
+        private const string MissingTokenError = "This operations requires a user token. None found.";
+        private readonly HourglassContext context;
 
         public BookmarkController(HourglassContext context)
         {
-            _context = context;
+            this.context = context;
         }
 
         [HttpGet("geomap")]
@@ -31,31 +32,32 @@ namespace HourglassServer.Controllers
         {
             try
             {
-                string userId = GetUserIdFromAuthenticationToken();
-                List<string> geoMapIdsBookmarked = _context.BookmarkGeoMap
+                string userId = this.GetUserIdFromAuthenticationToken();
+                List<string> geoMapIdsBookmarked = this.context.BookmarkGeoMap
                     .Where(geoMapBookmark => geoMapBookmark.UserId == userId)
                     .Select(bs => bs.GeoMapId).ToList();
                 return new OkObjectResult(geoMapIdsBookmarked);
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
-                return BadRequest(new[] { new HourglassError(e.ToString(), ERROR_TYPE) });
+                return this.BadRequest(new[] { new HourglassError(e.ToString(), ErrorType) });
             }
         }
-        
+
         [HttpGet("graph")]
         public IActionResult GetGraphBookmarks()
         {
             try
             {
-                string userId = GetUserIdFromAuthenticationToken();
-                List<string> graphIdsBookmarked = _context.BookmarkGraph
+                string userId = this.GetUserIdFromAuthenticationToken();
+                List<string> graphIdsBookmarked = this.context.BookmarkGraph
                     .Where(graphBookmark => graphBookmark.UserId == userId)
                     .Select(bs => bs.GraphId)
                     .ToList();
                 return new OkObjectResult(graphIdsBookmarked);
             }catch (Exception e)
             {
-                return BadRequest(new[] { new HourglassError(e.ToString(), ERROR_TYPE) });
+                return this.BadRequest(new[] { new HourglassError(e.ToString(), ErrorType) });
             }
         }
 
@@ -64,8 +66,8 @@ namespace HourglassServer.Controllers
         {
             try
             {
-                string userId = GetUserIdFromAuthenticationToken();
-                List<string> storiesIdsBookmarked = _context.BookmarkStory
+                string userId = this.GetUserIdFromAuthenticationToken();
+                List<string> storiesIdsBookmarked = this.context.BookmarkStory
                     .Where(storyBookmark => storyBookmark.UserId == userId)
                     .Select(bs => bs.StoryId)
                     .ToList();
@@ -73,7 +75,7 @@ namespace HourglassServer.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(new[] { new HourglassError(e.ToString(), ERROR_TYPE) });
+                return this.BadRequest(new[] { new HourglassError(e.ToString(), ErrorType) });
             }
         }
 
@@ -82,10 +84,12 @@ namespace HourglassServer.Controllers
         {
             try
             {
-                AssertAuthenticationTokenUserIdMatchesString(graphBookmark.UserId);
-                return new OkObjectResult(ToggleBookmark(_context.BookmarkGraph, graphBookmark));
-            } catch(Exception e){
-                return BadRequest(new[] { new HourglassError(e.ToString(), ERROR_TYPE) });
+                this.AssertAuthenticationTokenUserIdMatchesString(graphBookmark.UserId);
+                return new OkObjectResult(this.ToggleBookmark(this.context.BookmarkGraph, graphBookmark));
+            }
+            catch (Exception e)
+            {
+                return this.BadRequest(new[] { new HourglassError(e.ToString(), ErrorType) });
             }
         }
 
@@ -94,12 +98,12 @@ namespace HourglassServer.Controllers
         {
             try
             {
-                AssertAuthenticationTokenUserIdMatchesString(requestedGeoMapBookmark.UserId);
-                return new OkObjectResult(ToggleBookmark(_context.BookmarkGeoMap, requestedGeoMapBookmark));
+                this.AssertAuthenticationTokenUserIdMatchesString(requestedGeoMapBookmark.UserId);
+                return new OkObjectResult(this.ToggleBookmark(this.context.BookmarkGeoMap, requestedGeoMapBookmark));
             }
             catch (Exception e)
             {
-                return BadRequest(new[] { new HourglassError(e.ToString(), ERROR_TYPE) });
+                return this.BadRequest(new[] { new HourglassError(e.ToString(), ErrorType) });
             }
         }
 
@@ -109,12 +113,12 @@ namespace HourglassServer.Controllers
         {
             try
             {
-                AssertAuthenticationTokenUserIdMatchesString(requestStoryBookmark.UserId);
-                return new OkObjectResult(ToggleBookmark(_context.BookmarkStory, requestStoryBookmark));
+                this.AssertAuthenticationTokenUserIdMatchesString(requestStoryBookmark.UserId);
+                return new OkObjectResult(this.ToggleBookmark(this.context.BookmarkStory, requestStoryBookmark));
             }
             catch (Exception e)
             {
-                return BadRequest(new[] { new HourglassError(e.ToString(), ERROR_TYPE) });
+                return this.BadRequest(new[] { new HourglassError(e.ToString(), ErrorType) });
             }
         }
 
@@ -124,24 +128,30 @@ namespace HourglassServer.Controllers
 
         private string GetUserIdFromAuthenticationToken()
         {
-            Claim userToken = HttpContext.User.Claims
+            Claim userToken = this.HttpContext.User.Claims
                 .Where(c => c.Type == ClaimTypes.Email)
                 .Single();
             if (userToken == null)
-                throw new InvalidOperationException(MISSING_TOKEN_ERROR);
+            {
+                throw new InvalidOperationException(MissingTokenError);
+            }
+
             return userToken.Value;
         }
 
         private void AssertAuthenticationTokenUserIdMatchesString(string userId)
         {
-            string tokenUserId = GetUserIdFromAuthenticationToken();
+            string tokenUserId = this.GetUserIdFromAuthenticationToken();
             if (tokenUserId != userId)
-                throw new InvalidOperationException(String.Format(NOT_OWNER_ERROR, userId));
+            {
+                throw new InvalidOperationException(string.Format(NoOwnershipError, userId));
+            }
         }
 
-        private BookmarkState ToggleBookmark<T>(DbSet<T> dbSet, T requestedBookmark) where T : class
+        private BookmarkState ToggleBookmark<T>(DbSet<T> dbSet, T requestedBookmark)
+            where T : class
         {
-            Boolean bookmarkIsEnabled;
+            bool bookmarkIsEnabled;
             if (dbSet.Any(dbBookmark => dbBookmark == requestedBookmark))
             {
                 DbSetMutator.PerformOperationOnDbSet<T>(dbSet, MutatorOperations.DELETE, requestedBookmark);
@@ -153,13 +163,18 @@ namespace HourglassServer.Controllers
                 bookmarkIsEnabled = true;
             }
 
-            _context.SaveChanges();
-            return new BookmarkState { Enabled = bookmarkIsEnabled };
+            this.context.SaveChanges();
+            return new BookmarkState(bookmarkIsEnabled);
         }
     }
 
-    class BookmarkState
+    internal class BookmarkState
     {
-        public bool Enabled;
+        public BookmarkState(bool enabled)
+        {
+            this.Enabled = enabled;
+        }
+
+        private bool Enabled { get; set; }
     }
 }
