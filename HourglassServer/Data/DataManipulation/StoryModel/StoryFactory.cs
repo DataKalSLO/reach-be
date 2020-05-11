@@ -9,7 +9,7 @@
         public static Story CreateStoryFromStoryModel(StoryApplicationModel model)
         {
             Story newStory = new Story();
-            DateTime nowTimeStamp = default(DateTime);
+            DateTime nowTimeStamp = DateTime.UtcNow;
 
             newStory.StoryId = model.Id;
             newStory.UserId = model.UserId;

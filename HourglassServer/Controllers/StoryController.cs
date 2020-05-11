@@ -10,6 +10,7 @@
     using HourglassServer.Models.Persistent;
     using Microsoft.AspNetCore.Mvc;
 
+    // TODO: Catch different types of exceptions and return descriptive tags for all routes.
     [DefaultControllerRoute]
     public class StoryController : Controller
     {
@@ -27,7 +28,6 @@
             try
             {
                 IList<StoryApplicationModel> allStories = StoryModelRetriever.GetAllStoryApplicationModels(this.context);
-                this.context.SaveChanges();
                 return new OkObjectResult(allStories);
             }
             catch (Exception e)
