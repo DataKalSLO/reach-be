@@ -18,6 +18,8 @@ namespace HourglassServer.Controllers
     {
         private readonly HourglassContext _context;
         private const string errorType = "badValue";
+        private const string NOT_OWNER_ERROR = "The authenticated user is not the owner of this UserId: {0}";
+        private const string MISSING_TOKEN_ERROR = "This operations requires a user token. None found.";
 
         public BookmarkController(HourglassContext context)
         {
@@ -126,7 +128,7 @@ namespace HourglassServer.Controllers
                 .Where(c => c.Type == ClaimTypes.Email)
                 .FirstOrDefault();
             if (userToken == null)
-                throw new InvalidOperationException("This operations requires a user token. None found.");
+                throw new InvalidOperationException(MISSING_TOKEN_ERROR);
             return userToken.Value;
         }
 
@@ -134,7 +136,7 @@ namespace HourglassServer.Controllers
         {
             string tokenUserId = GetUserIdFromAuthenticationToken();
             if (tokenUserId != userId)
-                throw new InvalidOperationException(String.Format("The authenticated user is not the owner of this UserId: {0}", userId));
+                throw new InvalidOperationException(String.Format(NOT_OWNER_ERROR, userId));
         }
 
         private BookmarkState ToggleBookmark<T>(DbSet<T> dbSet, T requestedBookmark) where T : class
