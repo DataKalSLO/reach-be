@@ -10,6 +10,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
     using HourglassServer.Data.Application.StoryModel;
     using HourglassServer.Models.Persistent;
 
+    // TODO: Replace `ToList` to `ToListAsync` and convert to async queries
     public static class StoryModelRetriever
     {
         public static StoryApplicationModel GetStoryApplicationModelById(HourglassContext db, string storyId)
