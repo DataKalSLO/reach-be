@@ -1,17 +1,17 @@
-﻿using HourglassServer.Models.Persistent;
-using HourglassServer.Data.Application.StoryModel;
-using HourglassServer.Data.DataManipulation.DbSetOperations;
-
-/* Responsibility: Map creation actions from the StoryModel (application) to Story
+﻿/* Responsibility: Map creation actions from the StoryModel (application) to Story
  * (persistent/database).
  *
  * Mapping:
  *
  * StoryModel       -> Story + StoryBlockModel[]
- * StoryBlockModel  -> StoryBlock + [GeoMapBlock | TextBlock | GraphBlock]                            
+ * StoryBlockModel  -> StoryBlock + [GeoMapBlock | TextBlock | GraphBlock]
  */
 namespace HourglassServer.Data.DataManipulation.StoryModel
 {
+    using HourglassServer.Data.Application.StoryModel;
+    using HourglassServer.Data.DataManipulation.DbSetOperations;
+    using HourglassServer.Models.Persistent;
+
     public class StoryModelCreator
     {
         public static StoryApplicationModel AddStoryApplicationModelToDatabaseContext(HourglassContext db, StoryApplicationModel storyModel)
@@ -24,6 +24,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
                 storyBlockModel.BlockPosition = position;
                 TypeBlockOperations.MutateTypeBlock(db, storyBlockModel, MutatorOperations.ADD, storyModel.Id);
             }
+
             return storyModel;
         }
     }

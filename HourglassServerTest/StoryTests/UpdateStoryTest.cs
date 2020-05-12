@@ -46,7 +46,6 @@ namespace HourglassServerTest.StoryTests
             testData.StoryDbSet.Verify(mock => mock.Update(It.IsAny<Story>()), Times.AtLeastOnce());
             testData.TextBlockDbSet.Verify(mock => mock.Update(It.IsAny<TextBlock>()), Times.AtLeastOnce());
             testData.TextBlockDbSet.Verify(mock => mock.Add(It.IsAny<TextBlock>()), Times.Never()); // Nothing new being added
-            testData.StoryBlockDbSet.Verify(mock => mock.Update(It.IsAny<StoryBlock>()), Times.AtLeastOnce());
         }
 
         [TestMethod]
