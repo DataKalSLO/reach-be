@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using HourglassServer.Data;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -11,9 +12,19 @@ namespace HourglassServer.Controllers
     [DefaultControllerRoute]
     public class GraphController : Controller
     {
+        private DatasetDbContext _context;
+        public GraphController(DatasetDbContext context)
+        {
+            //set DatabaseContext in DataSetsController constructor
+            _context = context;
+        }
 
+        [HttpGet("{category}")]
+        public ActionResult<List<storedGraph>> getDefaultGraphs(string category){
+            return _context.getDefultGraphs(category).Result;
+        }
         // GET api/<controller>/5
-        [HttpGet("{id}")]
+        [HttpGet]
         public string Get()
         {
             return "Retrieving graphs not yet implemented";

@@ -29,10 +29,21 @@ namespace HourglassServerTest
             var util = new QueryFormatUtil();
 
             var tableName = "table_1";
+            var columns = new[] {"string_1", "string_2"};
             var expectedResult = true;
-            var expectedQuery = "SELECT * FROM datasets.table_1";
+            var expectedQuery = "SELECT string_1, string_2 FROM datasets.table_1";
+            var meta_data = new DatasetMetaData{
+                    TableName = tableName,
+                    ColumnNames = columns,
+                    DataTypes = new[] {"int", "string"},
+                    CityColumn = new[] {"none"},
+                    CountyColumn = new[] {"none"},
+                    ZipCodeColumn = new[] {"none"}
+            };
 
-            var result = util.formatSelectFullDatasetQuery(tableName, _metadata);
+            var result = util.formatTableQuery(tableName, _metadata);
+            var result2 = util.createQuery(meta_data, columns);
+
 
             Assert.AreEqual(result, expectedResult);
             Assert.AreEqual(util.getQuery(), expectedQuery);
@@ -46,7 +57,7 @@ namespace HourglassServerTest
             var tableName = "non_existant";
             var expectedResult = false;
 
-            var result = util.formatSelectFullDatasetQuery(tableName, _metadata);
+            var result = util.formatTableQuery(tableName, _metadata);
 
             Assert.AreEqual(result, expectedResult);
             Assert.ThrowsException<InvalidOperationException>(util.getQuery);
@@ -60,7 +71,7 @@ namespace HourglassServerTest
             List<DatasetMetaData> emptyMetadata = new List<DatasetMetaData>();
 
             var expectedResult = false;
-            var result = util.formatSelectFullDatasetQuery("some_table", emptyMetadata);
+            var result = util.formatTableQuery("some_table", emptyMetadata);
 
             Assert.AreEqual(result, expectedResult);
             Assert.IsNotNull(util.Error);
