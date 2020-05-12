@@ -7,8 +7,11 @@ namespace HourglassServer.Models.Persistent
     {
         public Story()
         {
+            GeoMapBlock = new HashSet<GeoMapBlock>();
+            GraphBlock = new HashSet<GraphBlock>();
             StoryBlock = new HashSet<StoryBlock>();
             StoryCategory = new HashSet<StoryCategory>();
+            TextBlock = new HashSet<TextBlock>();
         }
 
         public string StoryId { get; set; }
@@ -20,7 +23,10 @@ namespace HourglassServer.Models.Persistent
         public DateTime DateLastEdited { get; set; }
 
         public virtual Person User { get; set; }
+        public virtual ICollection<GeoMapBlock> GeoMapBlock { get; set; }
+        public virtual ICollection<GraphBlock> GraphBlock { get; set; }
         public virtual ICollection<StoryBlock> StoryBlock { get; set; }
         public virtual ICollection<StoryCategory> StoryCategory { get; set; }
+        public virtual ICollection<TextBlock> TextBlock { get; set; }
     }
 }

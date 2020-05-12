@@ -69,8 +69,8 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             List<StoryBlockModel> storyBlocks = new List<StoryBlockModel>();
             foreach (var joinedGraphBlock in storyBlockGraphBlockJoin)
             {
-                GraphBlock graphBlock = StoryFactory.CreateGraphBlock(joinedGraphBlock.BlockId, joinedGraphBlock.GraphId);
-                storyBlocks.Add(new StoryBlockModel(graphBlock, joinedGraphBlock.position));
+                //GraphBlock graphBlock = StoryFactory.CreateGraphBlock(joinedGraphBlock.BlockId, joinedGraphBlock.GraphId);
+                //storyBlocks.Add(new StoryBlockModel(graphBlock, joinedGraphBlock.position));
             }
             return storyBlocks;
         }
@@ -89,11 +89,11 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
                       };
 
             List<StoryBlockModel> storyBlocks = new List<StoryBlockModel>();
-            foreach (var joinedGeoMapBlock in storyBlockGeoMapBlockJoin)
-            {
-                GeoMapBlock geoMapBlock = StoryFactory.CreateGeoMapBlock(joinedGeoMapBlock.BlockId, joinedGeoMapBlock.GeoMapId);
-                storyBlocks.Add(new StoryBlockModel(geoMapBlock, joinedGeoMapBlock.position));
-            }
+            //    foreach (var joinedGeoMapBlock in storyBlockGeoMapBlockJoin)
+            //    {
+            //        GeoMapBlock geoMapBlock = StoryFactory.CreateGeoMapBlock(joinedGeoMapBlock.BlockId, joinedGeoMapBlock.GeoMapId);
+            //        storyBlocks.Add(new StoryBlockModel(geoMapBlock, joinedGeoMapBlock.position));
+            //    }
             return storyBlocks;
         }
 
@@ -113,8 +113,8 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             List<StoryBlockModel> storyBlocks = new List<StoryBlockModel>();
             foreach (var joinedTextBlock in storyBlockTextBlockJoin)
             {
-                TextBlock textBlock = StoryFactory.CreateTextBlock(joinedTextBlock.BlockId, joinedTextBlock.EditorState);
-                storyBlocks.Add(new StoryBlockModel(textBlock, joinedTextBlock.position));
+                //TextBlock textBlock = StoryFactory.CreateTextBlock(joinedTextBlock.BlockId, joinedTextBlock.EditorState);
+                //storyBlocks.Add(new StoryBlockModel(textBlock, joinedTextBlock.position));
             }
             return storyBlocks;
         }

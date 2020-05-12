@@ -22,7 +22,7 @@ namespace HourglassServer.Controllers
             _context = context;
         }
 
-        private async Task<List<Point>> GetPoints(string geoName)
+        private List<Point> GetPoints(string geoName)
         {
             // all rows in Area with specified zipcode name
             var points = from area in _context.Area
@@ -59,7 +59,7 @@ namespace HourglassServer.Controllers
                 // iterating through CensusData rows
                 foreach (CensusData data in cData)
                 {
-                    List<Point> points = await GetPoints(data.GeoName);
+                    List<Point> points = GetPoints(data.GeoName);
                     PolygonFeature geom = new PolygonFeature(points, data.GeoName, data.Value);
                     features.Add(geom);
                 }
