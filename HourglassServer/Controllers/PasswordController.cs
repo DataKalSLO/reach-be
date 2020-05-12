@@ -1,10 +1,7 @@
 ﻿using HourglassServer.Custom.User;
 using HourglassServer.Data;
-using HourglassServer.Models.Persistent;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
 
@@ -33,7 +30,7 @@ namespace HourglassServer
             string host = _configuration["Smtp:Host"];
             int port = 25;
 
-            string token= _jwtTokenService.BuildPasswordResetToken(model.Email);
+            string token = _jwtTokenService.BuildPasswordResetToken(model.Email);
 
             using (var client = new SmtpClient(host, port))
             {
