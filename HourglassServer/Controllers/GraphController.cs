@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using HourglassServer.Data;
 using HourglassServer.Data.Application.GraphModel;
@@ -23,14 +24,16 @@ namespace HourglassServer.Controllers
         }
 
         [HttpGet("{graphId}")]
-        public IActionResult GetGraphById(string graphId)
+        public async Task<IActionResult> GetGraphById(string graphId)
         {
             try
             {
-                Graph requestedGraph = _context.Graph.Include(g => g.GraphSource).Single(g => g.GraphId == graphId);
-                GraphSourceModel[] sources = GraphSourceModel.convertGraphSources(requestedGraph.GraphSource.ToArray());
-                
-                return new OkObjectResult(new GraphResponseModel {
+                Graph requestedGraph = await _context.Graph.Include(g => g.GraphSource).SingleAsync(g => g.GraphId == graphId);
+
+                GraphSourceModel[] sources = GraphSourceModel.convertPersistentGraphSource(requestedGraph.GraphSource.ToArray());
+
+                return new OkObjectResult(new GraphResponse
+                {
                     GraphId = requestedGraph.GraphId,
                     UserId = requestedGraph.UserId,
                     TimeStamp = requestedGraph.Timestamp.Value,
@@ -40,11 +43,11 @@ namespace HourglassServer.Controllers
                     GraphOptions = requestedGraph.GraphOptions
                 });
             }
-            catch (InvalidOperationException) 
+            catch (InvalidOperationException)
             {
                 return BadRequest(
                     new HourglassError(
-                        String.Format("No graph found with id {0}. ", graphId), 
+                        String.Format("No graph found with id {0}. ", graphId),
                         "NotFound")
                 );
             }
@@ -58,7 +61,7 @@ namespace HourglassServer.Controllers
         [HttpPost]
         public IActionResult CreateGraph([FromBody] GraphModel graphModel)
         {
-            try 
+            try
             {
                 // Append the userId from the session token to the graph model
                 graphModel.UserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).First().Value;
@@ -72,23 +75,25 @@ namespace HourglassServer.Controllers
                 Graph graph = GraphFactory.CreateGraphFromGraphModel(graphModel);
                 GraphSource[] sources = GraphFactory.CreateGraphSourcesFromGraphSourceModel
                 (
-                    graphModel.DataSources, 
+                    graphModel.DataSources,
                     graph.GraphId
                 );
 
                 DbSetMutator.PerformOperationOnDbSet<Graph>(_context.Graph, MutatorOperations.ADD, graph);
 
-                foreach (GraphSource source in sources) {
+                foreach (GraphSource source in sources)
+                {
                     DbSetMutator.PerformOperationOnDbSet<GraphSource>(
-                        _context.GraphSource, 
-                        MutatorOperations.ADD, 
+                        _context.GraphSource,
+                        MutatorOperations.ADD,
                         source
                     );
                 }
 
                 _context.SaveChanges();
-                
-                return new OkObjectResult(new GraphResponseModel {
+
+                return new OkObjectResult(new GraphResponse
+                {
                     GraphId = graph.GraphId,
                     UserId = graph.UserId,
                     TimeStamp = graph.Timestamp.Value,
@@ -108,7 +113,7 @@ namespace HourglassServer.Controllers
         [HttpPut]
         public IActionResult Put([FromBody] GraphModel graphModel)
         {
-            try 
+            try
             {
                 Graph graphToModify = _context.Graph.Single(g => g.GraphId == graphModel.GraphId);
 
@@ -118,16 +123,16 @@ namespace HourglassServer.Controllers
                 {
                     return BadRequest(
                         new HourglassError(
-                            String.Format("Unable to modify. {0} is not the owner of graph {1}.", 
-                                currentUserId, 
-                                graphModel.GraphId), 
+                            String.Format("Unable to modify. {0} is not the owner of graph {1}.",
+                                currentUserId,
+                                graphModel.GraphId),
                             "PermissionDenied")
                     );
                 }
 
                 // Append the userId from the session token to the graph model
                 graphModel.UserId = currentUserId;
-                
+
                 Graph updatedGraph = GraphFactory.CreateGraphFromGraphModel(graphModel);
 
                 _context.Entry(graphToModify).State = EntityState.Detached;
@@ -137,7 +142,7 @@ namespace HourglassServer.Controllers
                 // Create a list of the updated graph sources
                 List<GraphSource> updatedSources = GraphFactory.CreateGraphSourcesFromGraphSourceModel
                 (
-                    graphModel.DataSources, 
+                    graphModel.DataSources,
                     graphModel.GraphId
                 ).ToList();
 
@@ -150,13 +155,14 @@ namespace HourglassServer.Controllers
                 // Delete all existing GraphSource that are not being updated (for example, 
                 // if a series is dropped from the graph with the update)
                 var updatedSourcesSeriesTypes = updatedSources.Select(s => s.SeriesType).ToList();
-                foreach (GraphSource oldSource in existingGraphSources) {
-                    if (!updatedSourcesSeriesTypes.Contains(oldSource.SeriesType)) 
+                foreach (GraphSource oldSource in existingGraphSources)
+                {
+                    if (!updatedSourcesSeriesTypes.Contains(oldSource.SeriesType))
                     {
                         DbSetMutator.PerformOperationOnDbSet<GraphSource>
                         (
-                            _context.GraphSource, 
-                            MutatorOperations.DELETE, 
+                            _context.GraphSource,
+                            MutatorOperations.DELETE,
                             oldSource
                         );
                     }
@@ -166,8 +172,8 @@ namespace HourglassServer.Controllers
                         GraphSource updateSource = updatedSources.Single(s => s.SeriesType == oldSource.SeriesType);
                         DbSetMutator.PerformOperationOnDbSet<GraphSource>
                         (
-                            _context.GraphSource, 
-                            MutatorOperations.UPDATE, 
+                            _context.GraphSource,
+                            MutatorOperations.UPDATE,
                             updateSource
                         );
 
@@ -180,15 +186,16 @@ namespace HourglassServer.Controllers
                 {
                     DbSetMutator.PerformOperationOnDbSet<GraphSource>
                         (
-                            _context.GraphSource, 
-                            MutatorOperations.ADD, 
+                            _context.GraphSource,
+                            MutatorOperations.ADD,
                             newSource
                         );
                 }
 
                 _context.SaveChanges();
 
-                return new OkObjectResult(new GraphResponseModel {
+                return new OkObjectResult(new GraphResponse
+                {
                     GraphId = updatedGraph.GraphId,
                     UserId = updatedGraph.UserId,
                     TimeStamp = updatedGraph.Timestamp.Value,
@@ -198,11 +205,11 @@ namespace HourglassServer.Controllers
                     GraphOptions = updatedGraph.GraphOptions
                 });
             }
-            catch (InvalidOperationException) 
+            catch (InvalidOperationException)
             {
                 return BadRequest(
                     new HourglassError(
-                        String.Format("No graph found with id {0}. ", graphModel.GraphId), 
+                        String.Format("No graph found with id {0}. ", graphModel.GraphId),
                         "NotFound")
                 );
             }
@@ -225,7 +232,7 @@ namespace HourglassServer.Controllers
                 {
                     return BadRequest(
                         new HourglassError(
-                            String.Format("No graph found with id {0}. ", graphId), 
+                            String.Format("No graph found with id {0}. ", graphId),
                             "NotFound")
                     );
                 }
@@ -234,7 +241,7 @@ namespace HourglassServer.Controllers
                 {
                     return BadRequest(
                         new HourglassError(
-                            String.Format("Unable to delete. {0} is not the owner of graph {1}.", currentUserId, graphId), 
+                            String.Format("Unable to delete. {0} is not the owner of graph {1}.", currentUserId, graphId),
                             "PermissionDenied")
                     );
                 }
@@ -246,7 +253,7 @@ namespace HourglassServer.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(new HourglassError(e.ToString(), "Error") );
+                return BadRequest(new HourglassError(e.ToString(), "Error"));
             }
         }
     }
