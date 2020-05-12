@@ -5,6 +5,7 @@ using HourglassServer.Data.DataManipulation.StoryModel;
 using System.Collections.Generic;
 using HourglassServer.Controllers;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace HourglassServerTest.StoryTests
 {
@@ -40,12 +41,12 @@ namespace HourglassServerTest.StoryTests
         }
 
         [TestMethod]
-        public void TestGetStoryByIdFromStoryControllerContainingStory()
+        public async Task TestGetStoryByIdFromStoryControllerContainingStory()
         {
             StoryTestData sampleData = new StoryTestData();
             HourglassContext mockContext = sampleData.GetMockContext();
             StoryController storyController = new StoryController(mockContext);
-            var okResult = storyController.GetStoryById(sampleData.StoryId) as OkObjectResult;
+            var okResult = (await storyController.GetStoryById(sampleData.StoryId))as OkObjectResult;
             StoryApplicationModel story = okResult.Value as StoryApplicationModel;
             GeneralAssertions.AssertListHasMinimumCount(story.StoryBlocks, 1);
             Assert.AreEqual(sampleData.StoryId, story.Id);

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using HourglassServer.Models.Persistent;
-using HourglassServer.Data.Application.StoryModel;
-using System.Linq;
-
-/* Responsibility: Update any changes to a story
+﻿/* Responsibility: Update any changes to a story
  *
  * Changes handled:
  * - Updating Story meta information
@@ -14,23 +8,36 @@ using System.Linq;
  */
 namespace HourglassServer.Data.DataManipulation.StoryModel
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using HourglassServer.Data.Application.StoryModel;
+    using HourglassServer.Models.Persistent;
+
     public static class StoryModelUpdater
     {
         public static void UpdateStoryApplicationModel(HourglassContext db, StoryApplicationModel storyModel)
         {
-            Story storyWithId = StoryFactory.CreateStoryFromStoryModel(storyModel); //Isolates the Story part
+            Story storyWithId = StoryFactory.CreateStoryFromStoryModel(storyModel); // Isolates the Story part
             db.Story.Update(storyWithId);
 
-            List<string> storyBlockIdsRequestedToUpdate = new List<String>();
-            foreach(StoryBlockModel storyBlockModel in storyModel.StoryBlocks)
+            List<string> storyBlockIdsRequestedToUpdate = new List<string>();
+            foreach (StoryBlockModel storyBlockModel in storyModel.StoryBlocks)
+            {
                 storyBlockIdsRequestedToUpdate.Add(storyBlockModel.Id);
+            }
 
-            List<string> storyBlockIdsNoLongerInStory = db.StoryBlock
-                .Where(sb => sb.StoryId == storyModel.Id && !storyBlockIdsRequestedToUpdate.Contains(sb.BlockId))
-                .Select(storyBlock => storyBlock.BlockId).ToList();
+            List<GraphBlock> graphBlocksNoLongerInStory = db.GraphBlock
+                .Where(graphBlock => graphBlock.StoryId == storyModel.Id && !storyBlockIdsRequestedToUpdate.Contains(graphBlock.BlockId)).ToList();
+            db.GraphBlock.RemoveRange(graphBlocksNoLongerInStory);
 
-            foreach(string storyBlockId in storyBlockIdsNoLongerInStory)
-                DeleteStoryBlockModelByBlockId(db, storyBlockId);
+            List<GeoMapBlock> geoMapsBlocksNoLongerInStory = db.GeoMapBlock
+               .Where(geoMapBlock => geoMapBlock.StoryId == storyModel.Id && !storyBlockIdsRequestedToUpdate.Contains(geoMapBlock.BlockId)).ToList();
+            db.GeoMapBlock.RemoveRange(geoMapsBlocksNoLongerInStory);
+
+            List<TextBlock> textBlocksNoLongerInStory = db.TextBlock
+               .Where(textBlock => textBlock.StoryId == storyModel.Id && !storyBlockIdsRequestedToUpdate.Contains(textBlock.BlockId)).ToList();
+            db.TextBlock.RemoveRange(textBlocksNoLongerInStory);
 
             UpdateExistingOrAddNewStoryBlocks(db, storyModel.StoryBlocks, storyModel.Id);
         }
@@ -41,31 +48,30 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             {
                 StoryBlockModel storyBlockModel = storyBlocks[blockPosition];
                 storyBlockModel.BlockPosition = blockPosition;
-                if (db.StoryBlock.Any(sb => sb.BlockId == storyBlockModel.Id))
+                if (TypeBlockExists(db, storyBlockModel, storyBlockModel.Id))
+                {
                     TypeBlockOperations.MutateTypeBlock(db, storyBlockModel, DbSetOperations.MutatorOperations.UPDATE, storyId);
+                }
                 else
+                {
                     TypeBlockOperations.MutateTypeBlock(db, storyBlockModel, DbSetOperations.MutatorOperations.ADD, storyId);
+                }
             }
         }
 
-        //TODO: Merge into `StoryModelDeleter.cs` when exists (coming soon to PRs near you).
-        private static void DeleteStoryBlockModelByBlockId(HourglassContext db, string storyBlockId)
+        private static bool TypeBlockExists(HourglassContext db, StoryBlockModel storyBlock, string blockId)
         {
-            // Note, I do not store the type of a story block.
-            // Therefore, I must check to see where it exists.
-            GraphBlock graphBlock = db.GraphBlock.Find(storyBlockId);
-            GeoMapBlock geoMapBlock = db.GeoMapBlock.Find(storyBlockId);
-            TextBlock textBlock = db.TextBlock.Find(storyBlockId);
-
-            if (graphBlock != null)
-                db.GraphBlock.Remove(graphBlock);
-            else if (geoMapBlock != null)
-                db.GeoMapBlock.Remove(geoMapBlock);
-            else if (textBlock != null)
-                db.TextBlock.Remove(textBlock);
-
-            StoryBlock storyBlock = db.StoryBlock.Where(storyBlock => storyBlock.BlockId == storyBlockId).First();
-            db.StoryBlock.Remove(storyBlock);
+            switch (storyBlock.Type)
+            {
+                case StoryBlockType.TEXTDB:
+                    return db.TextBlock.Any(textBlock => textBlock.BlockId == blockId);
+                case StoryBlockType.GRAPH:
+                    return db.GraphBlock.Any(graphBlock => graphBlock.BlockId == blockId);
+                case StoryBlockType.GEOMAP:
+                    return db.GeoMapBlock.Any(geoMapBlock => geoMapBlock.BlockId == blockId);
+                default:
+                    throw new ArgumentException("Could not recognize type of story block: " + storyBlock.Type);
+            }
         }
     }
 }
