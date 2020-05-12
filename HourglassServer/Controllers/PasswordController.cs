@@ -52,7 +52,7 @@ namespace HourglassServer
                         "Reach - Change your password",
                         @"Follow this link to change your password:
                         If you did not make a password change request, ignore this email.
-                        https://joinreach.org/passwordreset?token=" + token
+                        https://joinreach.org/passwordreset?token=" + token + "&email" + model.Email
                     );
                 }
                 catch (SmtpFailedRecipientException)
