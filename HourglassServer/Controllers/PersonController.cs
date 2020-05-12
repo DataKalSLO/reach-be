@@ -85,9 +85,9 @@ namespace HourglassServer
             {
                 person = await _context.Person.SingleAsync(p => p.Email == email);
             }
-            catch
+            catch (InvalidOperationException)
             {
-                return NotFound();
+                return BadRequest(new { errorName = "unusedEmail" });
             }
 
             person.Name = userSettings.Name ?? person.Name;
