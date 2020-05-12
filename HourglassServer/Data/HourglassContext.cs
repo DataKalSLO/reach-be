@@ -21,6 +21,9 @@ namespace HourglassServer.Data
         }
 
         public virtual DbSet<Area> Area { get; set; }
+        public virtual DbSet<BookmarkGeoMap> BookmarkGeoMap { get; set; }
+        public virtual DbSet<BookmarkGraph> BookmarkGraph { get; set; }
+        public virtual DbSet<BookmarkStory> BookmarkStory { get; set; }
         public virtual DbSet<Category> Category { get; set; }
         public virtual DbSet<DatasetMetaData> DatasetMetaData { get; set; }
         public virtual DbSet<GeoMap> GeoMap { get; set; }
@@ -63,6 +66,75 @@ namespace HourglassServer.Data
                     .HasColumnType("character varying");
 
                 entity.Property(e => e.Coordinates).HasColumnName("coordinates");
+            });
+
+            modelBuilder.Entity<BookmarkGeoMap>(entity =>
+            {
+                entity.HasKey(e => new { e.UserId, e.GeoMapId })
+                    .HasName("geo_map_bookmark_pkey");
+
+                entity.ToTable("bookmark_geo_map");
+
+                entity.Property(e => e.UserId)
+                    .HasColumnName("user_id")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.GeoMapId)
+                    .HasColumnName("geo_map_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.HasOne(d => d.GeoMap)
+                    .WithMany(p => p.BookmarkGeoMap)
+                    .HasForeignKey(d => d.GeoMapId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("geo_map_bookmark_geo_map_id_fkey");
+            });
+
+            modelBuilder.Entity<BookmarkGraph>(entity =>
+            {
+                entity.HasKey(e => new { e.UserId, e.GraphId })
+                    .HasName("graph_bookmark_pkey");
+
+                entity.ToTable("bookmark_graph");
+
+                entity.Property(e => e.UserId)
+                    .HasColumnName("user_id")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.GraphId)
+                    .HasColumnName("graph_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.HasOne(d => d.Graph)
+                    .WithMany(p => p.BookmarkGraph)
+                    .HasForeignKey(d => d.GraphId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("graph_bookmark_graph_id_fkey");
+            });
+
+            modelBuilder.Entity<BookmarkStory>(entity =>
+            {
+                entity.HasKey(e => new { e.UserId, e.StoryId })
+                    .HasName("story_bookmark_pkey");
+
+                entity.ToTable("bookmark_story");
+
+                entity.Property(e => e.UserId)
+                    .HasColumnName("user_id")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.StoryId)
+                    .HasColumnName("story_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.HasOne(d => d.Story)
+                    .WithMany(p => p.BookmarkStory)
+                    .HasForeignKey(d => d.StoryId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("story_bookmark_story_id_fkey");
             });
 
             modelBuilder.Entity<Category>(entity =>
