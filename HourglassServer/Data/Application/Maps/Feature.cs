@@ -7,7 +7,7 @@ namespace HourglassServer.Data.Application.Maps
     {
         public string Type { get; set; }
         public PointGeometry Geometry { get; set; }
-        public Property Property { get; set; }
+        public Properties Property { get; set; }
 
         public Feature(Location location)
         {
