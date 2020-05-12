@@ -5,6 +5,7 @@ using HourglassServer.Data.DataManipulation.StoryModel;
 using System.Collections.Generic;
 using HourglassServer.Controllers;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace HourglassServerTest.StoryTests
 {
@@ -40,7 +41,7 @@ namespace HourglassServerTest.StoryTests
         }
 
         [TestMethod]
-        public async void TestGetStoryByIdFromStoryControllerContainingStory()
+        public async Task TestGetStoryByIdFromStoryControllerContainingStory()
         {
             StoryTestData sampleData = new StoryTestData();
             HourglassContext mockContext = sampleData.GetMockContext();
