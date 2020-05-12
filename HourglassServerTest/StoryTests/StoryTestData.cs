@@ -31,7 +31,6 @@ namespace HourglassServerTest.StoryTests
         public Mock<DbSet<TextBlock>> TextBlockDbSet;
         public Mock<DbSet<GraphBlock>> GraphBlockDbSet;
         public Mock<DbSet<GeoMapBlock>> GeoMapBlockDbDSet;
-        public Mock<DbSet<StoryBlock>> StoryBlockDbSet;
 
         private const string EditorState = "{\"MeaningOfLife\": 42}";
         private const string UserId = "test@test.com";
@@ -66,7 +65,6 @@ namespace HourglassServerTest.StoryTests
             CreateQueryableMockSetWithItem(TextBlockDbSet, CreateTextBlock());
             CreateQueryableMockSetWithItem(GraphBlockDbSet, CreateGraphBlock());
             CreateQueryableMockSetWithItem(GeoMapBlockDbDSet, CreateGeoMapBlock());
-            CreateQueryableMockDbSet(StoryBlockDbSet, CreateListOfStoryBlocks());
             AddDbSetsToMockContext();
         }
 
@@ -76,13 +74,11 @@ namespace HourglassServerTest.StoryTests
             TextBlockDbSet = new Mock<DbSet<TextBlock>>();
             GraphBlockDbSet = new Mock<DbSet<GraphBlock>>();
             GeoMapBlockDbDSet = new Mock<DbSet<GeoMapBlock>>();
-            StoryBlockDbSet = new Mock<DbSet<StoryBlock>>();
 
             CreateQueryableMockDbSet(StoryDbSet, new List<Story>());
             CreateQueryableMockDbSet(TextBlockDbSet, new List<TextBlock>());
             CreateQueryableMockDbSet(GraphBlockDbSet, new List<GraphBlock>());
             CreateQueryableMockDbSet(GeoMapBlockDbDSet, new List<GeoMapBlock>());
-            CreateQueryableMockDbSet(StoryBlockDbSet, new List<StoryBlock>());
         }
 
         private void AddDbSetsToMockContext()
@@ -91,7 +87,6 @@ namespace HourglassServerTest.StoryTests
             MockContext.Setup(m => m.TextBlock).Returns(TextBlockDbSet.Object);
             MockContext.Setup(m => m.GraphBlock).Returns(GraphBlockDbSet.Object);
             MockContext.Setup(m => m.GeoMapBlock).Returns(GeoMapBlockDbDSet.Object);
-            MockContext.Setup(m => m.StoryBlock).Returns(StoryBlockDbSet.Object);
         }
 
         private Mock<DbSet<T>> CreateQueryableMockSetWithItem<T>(Mock<DbSet<T>> mockSet,T item) where T : class
@@ -114,27 +109,6 @@ namespace HourglassServerTest.StoryTests
             return mockSet;
         }
 
-        private List<StoryBlock> CreateListOfStoryBlocks()
-        {
-            List<StoryBlockModel> storyBlockModels= CreateListOfStoryBlockModels();
-            List<StoryBlock> storyBlocks = new List<StoryBlock>
-            {
-                StoryFactory.CreateStoryBlockFromStoryBlockModel(storyBlockModels[0], StoryId),
-                StoryFactory.CreateStoryBlockFromStoryBlockModel(storyBlockModels[1], StoryId),
-                StoryFactory.CreateStoryBlockFromStoryBlockModel(storyBlockModels[2], StoryId)
-            };
-            return storyBlocks;
-        }
-
-        private List<StoryBlockModel> CreateListOfStoryBlockModels()
-        {
-            List<StoryBlockModel> storyBlocks = new List<StoryBlockModel>();
-            storyBlocks.Add(new StoryBlockModel(CreateTextBlock(), 0));
-            storyBlocks.Add(new StoryBlockModel(CreateGeoMapBlock(), 1));
-            storyBlocks.Add(new StoryBlockModel(CreateGraphBlock(), 2));
-            return storyBlocks;
-        }
-
         private Story CreateStory()
         {
             return new Story
@@ -151,6 +125,8 @@ namespace HourglassServerTest.StoryTests
         {
             return new TextBlock
             {
+                StoryId = StoryId,
+                BlockPosition = 0,
                 BlockId = this.TextBlockId,
                 EditorState = EditorState
             };
@@ -160,6 +136,8 @@ namespace HourglassServerTest.StoryTests
         {
             return new GraphBlock
             {
+                StoryId = StoryId,
+                BlockPosition = 1,
                 BlockId = GraphBlockId,
                 GraphId = CreateUUID()
             };
@@ -169,6 +147,8 @@ namespace HourglassServerTest.StoryTests
         {
             return new GeoMapBlock
             {
+                StoryId = StoryId,
+                BlockPosition = 2,
                 BlockId = GeoMapBlockId,
                 GeoMapId = CreateUUID()
             };

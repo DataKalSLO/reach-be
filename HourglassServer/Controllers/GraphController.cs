@@ -17,10 +17,18 @@ namespace HourglassServer.Controllers
     public class GraphController : Controller
     {
         private readonly HourglassContext _context;
+        private DatasetDbContext _dbContext;
 
-        public GraphController(HourglassContext context)
+        public GraphController(HourglassContext context, DatasetDbContext dbContext)
         {
             _context = context;
+            _dbContext = dbContext;
+        }
+
+        [HttpGet("{category}")]
+        public ActionResult<List<storedGraph>> getDefaultGraphs(string category)
+        {
+            return _dbContext.getDefultGraphs(category).Result;
         }
 
         [HttpGet("{graphId}")]

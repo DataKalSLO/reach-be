@@ -1,23 +1,25 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
-using HourglassServer.Models.Persistent;
-using HourglassServer.Data.Application.StoryModel;
-using HourglassServer.Data;
-using HourglassServer.Data.DataManipulation.StoryModel;
-
-namespace HourglassServer.Controllers
+﻿namespace HourglassServer.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using System.Threading.Tasks;
+    using HourglassServer.Data;
+    using HourglassServer.Data.Application.StoryModel;
+    using HourglassServer.Data.DataManipulation.StoryModel;
+    using HourglassServer.Models.Persistent;
+    using Microsoft.AspNetCore.Mvc;
+
+    // TODO: Catch different types of exceptions and return descriptive tags for all routes.
     [DefaultControllerRoute]
     public class StoryController : Controller
     {
-        private const string successMessage = "success";
-        private readonly HourglassContext _context;
+        private readonly HourglassContext context;
 
         public StoryController(HourglassContext context)
         {
-            _context = context;
+            this.context = context;
         }
 
         [HttpGet]
@@ -25,62 +27,69 @@ namespace HourglassServer.Controllers
         {
             try
             {
-                IList<StoryApplicationModel> storyWithId = StoryModelRetriever.GetAllStoryApplicationModels(_context);
-                _context.SaveChanges();
-                return new OkObjectResult(storyWithId);
+                IList<StoryApplicationModel> allStories = StoryModelRetriever.GetAllStoryApplicationModels(this.context);
+                return new OkObjectResult(allStories);
             }
             catch (Exception e)
             {
-                return BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
+                return this.BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
             }
         }
 
-        [HttpGet("{StoryId}")]
-        public IActionResult GetStoryById(string storyId)
+        [HttpGet("{storyId}", Name = nameof(GetStoryById))]
+        public async Task<IActionResult> GetStoryById(string storyId)
         {
             try
             {
-                StoryApplicationModel storyWithId = StoryModelRetriever.GetStoryApplicationModelById(_context, storyId);
-                _context.SaveChanges();
+                StoryApplicationModel storyWithId = StoryModelRetriever.GetStoryApplicationModelById(this.context, storyId);
+                await this.context.SaveChangesAsync();
                 return new OkObjectResult(storyWithId);
             }
             catch (Exception e)
             {
-                return BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
+                return this.BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
             }
         }
 
         [HttpPost]
-        public IActionResult ModifyStory([FromBody] StoryApplicationModel storyFromBody)
+        public async Task<IActionResult> ModifyStory([FromBody] StoryApplicationModel storyFromBody)
         {
             try
             {
-                bool storyExists = _context.Story.Any(story => story.StoryId == storyFromBody.Id);
+                IActionResult response; 
+                bool storyExists = this.context.Story.Any(story => story.StoryId == storyFromBody.Id);
                 if (storyExists)
-                   StoryModelUpdater.UpdateStoryApplicationModel(_context, storyFromBody);
+                {
+                    StoryModelUpdater.UpdateStoryApplicationModel(this.context, storyFromBody);
+                    response = new NoContentResult();
+                }
                 else
-                    StoryModelCreator.AddStoryApplicationModelToDatabaseContext(_context, storyFromBody);
-                _context.SaveChanges();
-                return new OkObjectResult(successMessage);
+                {
+                    StoryModelCreator.AddStoryApplicationModelToDatabaseContext(this.context, storyFromBody);
+                    response = new CreatedAtRouteResult(nameof(this.GetStoryById), new { storyId = storyFromBody.Id }, storyFromBody);
+                }
+
+                await this.context.SaveChangesAsync();
+                return response;
             }
             catch (Exception e)
             {
-                return BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
+                return this.BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
             }
         }
 
         [HttpDelete("{storyId}")]
-        public IActionResult DeleteStoryById(string storyId)
+        public async Task<IActionResult> DeleteStoryById(string storyId)
         {
             try
             {
-                StoryModelDeleter.DeleteStoryById(_context, storyId);
-                _context.SaveChanges();
-                return new OkObjectResult(successMessage);
+                StoryModelDeleter.DeleteStoryById(this.context, storyId);
+                await this.context.SaveChangesAsync();
+                return new NoContentResult();
             }
             catch (Exception e)
             {
-                return BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
+                return this.BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
             }
         }
     }

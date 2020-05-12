@@ -14,7 +14,6 @@ graph_source
 location
 point
 story
-story_block
 story_category
 text_block
 zip_area

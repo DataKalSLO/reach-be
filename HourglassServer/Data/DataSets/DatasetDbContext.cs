@@ -56,7 +56,7 @@ namespace HourglassServer.Data
             return new NpgsqlConnection(_config.GetConnectionString("HourglassDatabase"));
         }
 
-        public async Task<DataSet> getDataSet(string tableName) {
+        public async Task<DataSet> getDataSet(string tableName, string[] columns) {
             QueryFormatUtil queryUtil = new QueryFormatUtil();
 
             // Get a copy of the metadata from the cache
@@ -64,7 +64,7 @@ namespace HourglassServer.Data
             List<DatasetMetaData> metadata = await getMetadataCache;
 
             // Invoke query util to format a full dataset select query using the table name
-            if (!queryUtil.formatSelectFullDatasetQuery(tableName, metadata)) {
+            if (!queryUtil.formatTableQuery(tableName, metadata)) {
                 // The tableName provided doesn't exist in the database
                 _logger.LogError(
                     String.Format("{0}: Provided table {1} does not exist in the metadata.",
@@ -73,7 +73,15 @@ namespace HourglassServer.Data
                 
                 throw new TableNotFoundException(queryUtil.Error);
             }
-            
+            if(!queryUtil.createQuery(metadata.Find(x => x.TableName == tableName), columns)){
+                 _logger.LogError(
+                    String.Format("{0}: Provided table {1} does not contain the column {2}.",
+                    nameof(getDataSet), 
+                    tableName,
+                    queryUtil.BadColumn));
+                
+                throw new ColumnNotFoundException(queryUtil.Error);
+            }
             // Get the specified data set using the query
             try {
                 List<Object[]> datasetRows = new List<Object[]>();
@@ -179,5 +187,24 @@ namespace HourglassServer.Data
             _logger.LogDebug($"{nameof(getDatasetMetadataFromDB)}: Fetched new metadata from database.");
             return dsMetadata;
         }
+
+        public async Task<List<storedGraph>> getDefultGraphs(string category){
+            List<storedGraph> graphs = new List<storedGraph>();
+            var conn = getConnection();
+            await conn.OpenAsync();
+            await using (var cmd = new NpgsqlCommand("Select * From default_graphs Where Cast(category As text) Like '%' || :value || '%'", conn)){
+                cmd.Parameters.AddWithValue("value", category);
+                await using (var reader =  await cmd.ExecuteReaderAsync())
+                while (await reader.ReadAsync()) {
+                    storedGraph graph = new storedGraph{
+                        Id = (int)reader.GetValue(0),
+                        Category = (string)reader.GetValue(1),
+                        Chart = reader.GetValue(2)
+                    };   
+                    graphs.Add(graph);
+                }
+            }
+            return graphs;
+        } 
     }
 }
