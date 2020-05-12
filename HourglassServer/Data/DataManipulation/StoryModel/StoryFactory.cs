@@ -1,15 +1,15 @@
-﻿using HourglassServer.Models.Persistent;
-using HourglassServer.Data.Application.StoryModel;
-using System;
-
-namespace HourglassServer.Data.DataManipulation.StoryModel
+﻿namespace HourglassServer.Data.DataManipulation.StoryModel
 {
+    using System;
+    using HourglassServer.Data.Application.StoryModel;
+    using HourglassServer.Models.Persistent;
+
     public class StoryFactory
     {
         public static Story CreateStoryFromStoryModel(StoryApplicationModel model)
         {
             Story newStory = new Story();
-            DateTime nowTimeStamp = new DateTime();
+            DateTime nowTimeStamp = DateTime.UtcNow;
 
             newStory.StoryId = model.Id;
             newStory.UserId = model.UserId;
@@ -19,76 +19,107 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             newStory.DateCreated = nowTimeStamp;
             newStory.DateLastEdited = nowTimeStamp;
 
-            return newStory; 
+            return newStory;
         }
 
-        public static TextBlock CreateTextBlockFromStoryBlockModel(StoryBlockModel model)
+        public static StoryBlockModel CreateStoryBlockModel(TextBlock textBlock)
+        {
+            return new StoryBlockModel()
+            {
+                Id = textBlock.BlockId,
+                Type = StoryBlockType.TEXTDB,
+                EditorState = textBlock.EditorState,
+            };
+        }
+
+        public static StoryBlockModel CreateStoryBlockModel(GraphBlock graphBlock)
+        {
+            return new StoryBlockModel()
+            {
+                Id = graphBlock.BlockId,
+                Type = StoryBlockType.TEXTDB,
+                GraphId = graphBlock.GraphId,
+            };
+        }
+
+        public static StoryBlockModel CreateStoryBlockModel(GeoMapBlock geoMapBlock)
+        {
+            return new StoryBlockModel()
+            {
+                Id = geoMapBlock.BlockId,
+                Type = StoryBlockType.TEXTDB,
+                MapId = geoMapBlock.GeoMapId,
+            };
+        }
+
+        public static TextBlock CreateTextBlockFromStoryBlockModel(StoryBlockModel model, string storyId)
         {
             TextBlock newTextBlock = new TextBlock
             {
+                StoryId = storyId,
+                BlockPosition = model.BlockPosition,
                 BlockId = model.Id,
-                EditorState = model.EditorState
+                EditorState = model.EditorState,
             };
             return newTextBlock;
         }
 
-        public static GraphBlock CreateGraphBlockFromStoryBlockModel(StoryBlockModel model)
+        public static GraphBlock CreateGraphBlockFromStoryBlockModel(StoryBlockModel model, string storyId)
         {
             GraphBlock newGraphBlock = new GraphBlock
             {
+                StoryId = storyId,
+                BlockPosition = model.BlockPosition,
                 BlockId = model.Id,
-                GraphId = model.GraphId
+                GraphId = model.GraphId,
             };
             return newGraphBlock;
         }
 
-        public static GeoMapBlock CreateGeoMapBlockFromStoryBlockModel(StoryBlockModel model)
+        public static GeoMapBlock CreateGeoMapBlockFromStoryBlockModel(StoryBlockModel model, string storyId)
         {
             GeoMapBlock newTextBlock = new GeoMapBlock
             {
+                StoryId = storyId,
+                BlockPosition = model.BlockPosition,
                 BlockId = model.Id,
-                GeoMapId = model.MapId
+                GeoMapId = model.MapId,
             };
             return newTextBlock;
         }
 
-        public static StoryBlock CreateStoryBlockFromStoryBlockModel(StoryBlockModel model, string storyId)
-        {
-            StoryBlock newStoryBlock = new StoryBlock
-            {
-                BlockId = model.Id,
-                StoryId = storyId,
-                BlockPosition = model.BlockPosition
-            };
-            return newStoryBlock;
-        }
-
-        public static GraphBlock CreateGraphBlock(string blockId, string graphId)
+        public static GraphBlock CreateGraphBlock(string storyId, int blockPosition, string blockId, string graphId)
         {
             GraphBlock graphBlock = new GraphBlock
             {
+                StoryId = storyId,
+                BlockPosition = blockPosition,
                 BlockId = blockId,
-                GraphId = graphId
+                GraphId = graphId,
             };
             return graphBlock;
         }
 
-        public static TextBlock CreateTextBlock(string blockId, string editorState)
+        public static TextBlock CreateTextBlock(string storyId, int blockPosition, string blockId, string editorState)
         {
             TextBlock textBlock = new TextBlock
             {
+                StoryId = storyId,
+                BlockPosition = blockPosition,
                 BlockId = blockId,
-                EditorState = editorState
+                EditorState = editorState,
             };
             return textBlock;
         }
 
-        public static GeoMapBlock CreateGeoMapBlock(string blockId, string geoMapId)
+        public static GeoMapBlock CreateGeoMapBlock(string storyId, int blockPosition, string blockId, string geoMapId)
         {
             GeoMapBlock geoMapBlock = new GeoMapBlock
             {
+                StoryId = storyId,
+                BlockPosition = blockPosition,
                 BlockId = blockId,
-                GeoMapId = geoMapId
+                GeoMapId = geoMapId,
             };
             return geoMapBlock;
         }

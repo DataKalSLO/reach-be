@@ -53,7 +53,7 @@ namespace HourglassServerTest.StoryTests
         {
             sampleData.ClearDataInContext();
             StoryController storyController = new StoryController(context);
-            storyController.CreateStory(exampleStory);
+            storyController.ModifyStory(exampleStory);
             AssertItemsCreated();
         }
         
@@ -62,7 +62,6 @@ namespace HourglassServerTest.StoryTests
         {
             int count = 1;
             GeneralAssertions.AssertDbSetHasCount(context.TextBlock, count);
-            GeneralAssertions.AssertDbSetHasCount(context.StoryBlock, count);
             GeneralAssertions.AssertDbSetHasCount(context.Story, count);
         }
     }

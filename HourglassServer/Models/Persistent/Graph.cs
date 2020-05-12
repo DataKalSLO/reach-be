@@ -7,17 +7,16 @@ namespace HourglassServer.Models.Persistent
     {
         public Graph()
         {
+            BookmarkGraph = new HashSet<BookmarkGraph>();
             GraphBlock = new HashSet<GraphBlock>();
+            GraphSeries = new HashSet<GraphSeries>();
         }
 
         public string GraphId { get; set; }
-        public string GraphTitle { get; set; }
-        public string UserId { get; set; }
-        public long? Timestamp { get; set; }
-        public string SnapshotUrl { get; set; }
-        public string GraphOptions { get; set; }
+        public string Title { get; set; }
 
-        public virtual Person User { get; set; }
+        public virtual ICollection<BookmarkGraph> BookmarkGraph { get; set; }
         public virtual ICollection<GraphBlock> GraphBlock { get; set; }
+        public virtual ICollection<GraphSeries> GraphSeries { get; set; }
     }
 }
