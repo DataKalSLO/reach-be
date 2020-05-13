@@ -58,7 +58,7 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
                 TimeStamp = graph.Timestamp.Value,
                 GraphTitle = graph.GraphTitle,
                 SnapshotUrl = graph.SnapshotUrl,
-                DataSources = sources,
+                DataSources = GraphSourceModel.ConvertPersistentGraphSource(sources),
                 GraphOptions = graph.GraphOptions
             };
         }
