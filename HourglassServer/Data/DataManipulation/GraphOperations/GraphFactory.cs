@@ -7,18 +7,18 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
 {
     public class GraphFactory
     {
-        public static string GenerateNewGraphId() 
+        public static string GenerateNewGraphId()
         {
             return Guid.NewGuid().ToString();
         }
 
-        public static Graph CreateGraphFromGraphModel(GraphModel model) 
+        public static Graph CreateGraphFromGraphModel(GraphModel model)
         {
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             var graphOptions = model.GraphOptions.ToString(Formatting.None);
             var snapshotUrl = GraphSnapshotOperations.UploadSnapshotToS3(model.GraphSVG);
 
-            return new Graph() 
+            return new Graph()
             {
                 GraphId = model.GraphId,
                 GraphTitle = model.GraphTitle,
@@ -30,14 +30,15 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
         }
 
         public static GraphSource[] CreateGraphSourcesFromGraphSourceModel(
-            GraphSourceModel[] sourceModels, 
-            string graphId) 
+            GraphSourceModel[] sourceModels,
+            string graphId)
         {
             GraphSource[] graphSources = new GraphSource[sourceModels.Length];
 
             for (int i = 0; i < sourceModels.Length; i++)
             {
-                graphSources[i] = new GraphSource {
+                graphSources[i] = new GraphSource
+                {
                     GraphId = graphId,
                     SeriesType = sourceModels[i].SeriesType.ToString(),
                     DatasetName = sourceModels[i].DatasetName,
@@ -46,6 +47,20 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
             }
 
             return graphSources;
+        }
+
+        public static GraphApplicationModel CreateGraphApplicationModel(Graph graph, GraphSource[] sources)
+        {
+            return new GraphApplicationModel
+            {
+                GraphId = graph.GraphId,
+                UserId = graph.UserId,
+                TimeStamp = graph.Timestamp.Value,
+                GraphTitle = graph.GraphTitle,
+                SnapshotUrl = graph.SnapshotUrl,
+                DataSources = sources,
+                GraphOptions = graph.GraphOptions
+            };
         }
     }
 }

@@ -1,5 +1,4 @@
-using Newtonsoft.Json.Linq;
-using System;
+using HourglassServer.Models.Persistent;
 
 namespace HourglassServer.Data.Application.GraphModel
 {
@@ -10,7 +9,7 @@ namespace HourglassServer.Data.Application.GraphModel
         public long TimeStamp { get; set; }
         public string GraphTitle { get; set; }
         public string SnapshotUrl { get; set; }
-        public GraphSourceModel[] DataSources { get; set; }
+        public GraphSource[] DataSources { get; set; }
         public string GraphOptions { get; set; }
     }
 }

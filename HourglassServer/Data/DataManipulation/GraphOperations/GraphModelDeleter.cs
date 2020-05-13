@@ -32,17 +32,5 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
             DbSetMutator.PerformOperationOnDbSet<Graph>(db.Graph, MutatorOperations.DELETE, graphToDelete);
             await db.SaveChangesAsync();
         }
-
-        public static void PerformDeleteOperationForGraphSources(HourglassContext db, GraphSource[] sources)
-        {
-            foreach (GraphSource source in sources)
-            {
-                DbSetMutator.PerformOperationOnDbSet<GraphSource>(
-                    db.GraphSource,
-                    MutatorOperations.DELETE,
-                    source
-                );
-            }
-        }
     }
 }

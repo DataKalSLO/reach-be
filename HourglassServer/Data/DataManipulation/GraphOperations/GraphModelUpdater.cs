@@ -46,34 +46,13 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
                 .AsNoTracking()
                 .ToListAsync();
 
-            await updateGraphInDb(db, updatedGraph);
-            await updateGraphSourcesInDb(db, existingGraphSources, updatedGraphSources);
+            await UpdateGraphInDb(db, updatedGraph);
+            await UpdateGraphSourcesInDb(db, existingGraphSources, updatedGraphSources);
 
-            return new GraphApplicationModel
-            {
-                GraphId = updatedGraph.GraphId,
-                UserId = updatedGraph.UserId,
-                TimeStamp = updatedGraph.Timestamp.Value,
-                GraphTitle = updatedGraph.GraphTitle,
-                SnapshotUrl = updatedGraph.SnapshotUrl,
-                DataSources = graphModel.DataSources,
-                GraphOptions = updatedGraph.GraphOptions
-            };
+            return GraphFactory.CreateGraphApplicationModel(updatedGraph, updatedGraphSources.ToArray());
         }
 
-        public static void PerformUpdateOperationForGraphSources(HourglassContext db, GraphSource[] sources)
-        {
-            foreach (GraphSource source in sources)
-            {
-                DbSetMutator.PerformOperationOnDbSet<GraphSource>(
-                    db.GraphSource,
-                    MutatorOperations.UPDATE,
-                    source
-                );
-            }
-        }
-
-        private static async Task updateGraphInDb(HourglassContext db, Graph updatedGraph)
+        private static async Task UpdateGraphInDb(HourglassContext db, Graph updatedGraph)
         {
             DbSetMutator.PerformOperationOnDbSet<Graph>(db.Graph, MutatorOperations.UPDATE, updatedGraph);
             await db.SaveChangesAsync();
@@ -82,7 +61,7 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
         // SourcesToAdd = {Updated} set difference {Existing} 
         // SourcesToUpdate = {Updated} set intersect {Existing}
         // SourcesToRemove = {Existing} set difference {Updated}
-        private static async Task updateGraphSourcesInDb(
+        private static async Task UpdateGraphSourcesInDb(
                 HourglassContext db,
                 List<GraphSource> existingGraphSources,
                 List<GraphSource> updatedGraphSources)
@@ -91,40 +70,11 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
             var sourcesToUpdate = updatedGraphSources.Intersect(existingGraphSources, new GraphSourceSeriesComparor()).ToArray();
             var sourcesToRemove = existingGraphSources.Except(updatedGraphSources, new GraphSourceSeriesComparor()).ToArray();
 
-            GraphModelCreator.PerformAddOperationForGraphSources(db, sourcesToAdd);
-            GraphModelUpdater.PerformUpdateOperationForGraphSources(db, sourcesToUpdate);
-            GraphModelDeleter.PerformDeleteOperationForGraphSources(db, sourcesToRemove);
+            GraphSourceOperations.PerformOperationForGraphSources(db, MutatorOperations.ADD, sourcesToAdd);
+            GraphSourceOperations.PerformOperationForGraphSources(db, MutatorOperations.UPDATE, sourcesToUpdate);
+            GraphSourceOperations.PerformOperationForGraphSources(db, MutatorOperations.DELETE, sourcesToRemove);
 
             await db.SaveChangesAsync();
-        }
-    }
-
-    // Comparor object for comparing two graph series.
-    public class GraphSourceSeriesComparor : IEqualityComparer<GraphSource>
-    {
-        // Graph sources are considered equal if they share the same series type
-        public bool Equals(GraphSource x, GraphSource y)
-        {
-            //Check whether the compared objects reference the same data.
-            if (Object.ReferenceEquals(x, y)) return true;
-
-            //Check whether any of the compared objects is null.
-            if (Object.ReferenceEquals(x, null) || Object.ReferenceEquals(y, null))
-                return false;
-
-            //Check whether the series types are the same
-            return x.SeriesType == y.SeriesType;
-        }
-
-        // If Equals() returns true for a pair of objects
-        // then GetHashCode() must return the same value for these objects.
-        public int GetHashCode(GraphSource source)
-        {
-            //Check whether the object is null
-            if (Object.ReferenceEquals(source, null)) return 0;
-
-            //Get hash code for the SeriesType field if it is not null.
-            return source.SeriesType == null ? 0 : source.SeriesType.GetHashCode();
         }
     }
 }

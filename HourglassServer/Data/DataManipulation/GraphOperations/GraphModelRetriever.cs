@@ -14,18 +14,7 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
                     .Include(g => g.GraphSource)
                     .SingleAsync(g => g.GraphId == graphId);
 
-            GraphSourceModel[] sources = GraphSourceModel.convertPersistentGraphSource(requestedGraph.GraphSource.ToArray());
-
-            return new GraphApplicationModel
-            {
-                GraphId = requestedGraph.GraphId,
-                UserId = requestedGraph.UserId,
-                TimeStamp = requestedGraph.Timestamp.Value,
-                GraphTitle = requestedGraph.GraphTitle,
-                SnapshotUrl = requestedGraph.SnapshotUrl,
-                DataSources = sources,
-                GraphOptions = requestedGraph.GraphOptions
-            };
+            return GraphFactory.CreateGraphApplicationModel(requestedGraph, requestedGraph.GraphSource.ToArray());
         }
     }
 }

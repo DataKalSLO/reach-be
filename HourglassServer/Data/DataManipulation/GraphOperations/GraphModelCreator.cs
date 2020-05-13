@@ -28,31 +28,10 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
             );
 
             DbSetMutator.PerformOperationOnDbSet<Graph>(db.Graph, MutatorOperations.ADD, graph);
-            PerformAddOperationForGraphSources(db, sources);
+            GraphSourceOperations.PerformOperationForGraphSources(db, MutatorOperations.ADD, sources);
             await db.SaveChangesAsync();
 
-            return new GraphApplicationModel
-            {
-                GraphId = graph.GraphId,
-                UserId = graph.UserId,
-                TimeStamp = graph.Timestamp.Value,
-                GraphTitle = graph.GraphTitle,
-                SnapshotUrl = graph.SnapshotUrl,
-                DataSources = graphModel.DataSources,
-                GraphOptions = graph.GraphOptions
-            };
-        }
-
-        public static void PerformAddOperationForGraphSources(HourglassContext db, GraphSource[] sources)
-        {
-            foreach (GraphSource source in sources)
-            {
-                DbSetMutator.PerformOperationOnDbSet<GraphSource>(
-                    db.GraphSource,
-                    MutatorOperations.ADD,
-                    source
-                );
-            }
+            return GraphFactory.CreateGraphApplicationModel(graph, sources);
         }
     }
 }
