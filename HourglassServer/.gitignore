@@ -235,6 +235,9 @@ _Pvt_Extensions
 
 storage.ide-shm
 
+# Python cache
+__pycache__/
+
 # ignore appsettings configuration files
 **/appsettings.json
 **/appsettings.Development.json

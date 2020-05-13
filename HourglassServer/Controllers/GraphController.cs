@@ -1,54 +1,122 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using HourglassServer.Data;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using HourglassServer.Data.Application.GraphModel;
+using HourglassServer.Data.DataManipulation.GraphOperations;
+using System.Collections.Generic;
 
 namespace HourglassServer.Controllers
 {
     [DefaultControllerRoute]
     public class GraphController : Controller
     {
-        private DatasetDbContext _context;
-        public GraphController(DatasetDbContext context)
+        private readonly HourglassContext _context;
+        private DatasetDbContext _dbContext;
+
+        public GraphController(HourglassContext context, DatasetDbContext dbContext)
         {
-            //set DatabaseContext in DataSetsController constructor
             _context = context;
+            _dbContext = dbContext;
         }
 
-        [HttpGet("{category}")]
-        public ActionResult<List<storedGraph>> getDefaultGraphs(string category){
-            return _context.getDefultGraphs(category).Result;
-        }
-        // GET api/<controller>/5
+        [Route("getDefaultGraphs/{category}")]
         [HttpGet]
-        public string Get()
+        public ActionResult<List<storedGraph>> getDefaultGraphs(string category)
         {
-            return "Retrieving graphs not yet implemented";
+            return _dbContext.getDefultGraphs(category).Result;
         }
 
-        // POST api/<controller>
+        [HttpGet("{graphId}")]
+        public async Task<IActionResult> GetGraphById(string graphId)
+        {
+            try
+            {
+                GraphApplicationModel graph = await GraphModelRetriever.GetGraphApplicationModelById(this._context, graphId);
+                return new OkObjectResult(graph);
+            }
+            catch (InvalidOperationException)
+            {
+                return BadRequest(
+                    new HourglassError(
+                        String.Format("No graph found with id {0}. ", graphId),
+                        "NotFound")
+                );
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new HourglassError(e.ToString(), "Error"));
+            }
+        }
+
+        [UserExists]
         [HttpPost]
-        public string Post()
+        public async Task<IActionResult> CreateGraph([FromBody] GraphModel graphModel)
         {
-            return "Creating Graphs is not yet implemented";
+            try
+            {
+                var currentUserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).Single().Value;
+                GraphApplicationModel graph = await GraphModelCreator.CreateGraph(this._context, graphModel, currentUserId);
+                return new OkObjectResult(graph);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new HourglassError(e.ToString(), "UnknownError"));
+            }
         }
 
-        // PUT api/<controller>/5
+        [UserExists]
         [HttpPut]
-        public string Put()
+        public async Task<IActionResult> UpdateGraph([FromBody] GraphModel graphModel)
         {
-            return "Updating Graphs is not yet implemented";
+            try
+            {
+                var currentUserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).Single().Value;
+                GraphApplicationModel graph = await GraphModelUpdater.UpdateGraph(this._context, graphModel, currentUserId);
+                return new OkObjectResult(graph);
+            }
+            catch (PermissionDeniedException e)
+            {
+                return BadRequest(e.errorObj);
+            }
+            catch (InvalidOperationException)
+            {
+                return BadRequest(
+                    new HourglassError(
+                        String.Format("No graph found with id {0}. ", graphModel.GraphId),
+                        "NotFound")
+                );
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new HourglassError(e.ToString(), "Error"));
+            }
         }
 
-        // DELETE api/<controller>/5
-        [HttpDelete("{id}")]
-        public string Delete()
+        [UserExists]
+        [HttpDelete("{graphId}")]
+        public async Task<IActionResult> DeleteGraphById(string graphId)
         {
-            return "Deleting Graphs is not yet implemented";
+            try
+            {
+                var currentUserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).Single().Value;
+                await GraphModelDeleter.DeleteGraphById(_context, graphId, currentUserId);
+                return new OkObjectResult(String.Format("Successfully deleted graph with id {0}.", graphId));
+            }
+            catch (ItemNotFoundException e)
+            {
+                return BadRequest(e.errorObj);
+            }
+            catch (PermissionDeniedException e)
+            {
+                return BadRequest(e.errorObj);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new HourglassError(e.ToString(), "UnknownError"));
+            }
         }
     }
 }

@@ -231,6 +231,9 @@ _Pvt_Extensions
 # FAKE - F# Make
 .fake/
 
+# Python cache
+__pycache__/
+
 storage.ide-shm
 
 # ignore appsettings configuration files
