@@ -29,8 +29,7 @@ namespace HourglassServer.Controllers
             return _dbContext.getDefultGraphs(category).Result;
         }
 
-        [Route("{graphId}")]
-        [HttpGet]
+        [HttpGet("{graphId}")]
         public async Task<IActionResult> GetGraphById(string graphId)
         {
             try
