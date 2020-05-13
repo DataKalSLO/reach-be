@@ -58,7 +58,7 @@ namespace HourglassServer.Controllers
         {
             try
             {
-                var currentUserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).First().Value;
+                var currentUserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).Single().Value;
                 GraphApplicationModel graph = await GraphModelCreator.CreateGraph(this._context, graphModel, currentUserId);
                 return new OkObjectResult(graph);
             }
@@ -74,7 +74,7 @@ namespace HourglassServer.Controllers
         {
             try
             {
-                var currentUserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).First().Value;
+                var currentUserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).Single().Value;
                 GraphApplicationModel graph = await GraphModelUpdater.UpdateGraph(this._context, graphModel, currentUserId);
                 return new OkObjectResult(graph);
             }
@@ -102,7 +102,7 @@ namespace HourglassServer.Controllers
         {
             try
             {
-                var currentUserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).First().Value;
+                var currentUserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).Single().Value;
                 await GraphModelDeleter.DeleteGraphById(_context, graphId, currentUserId);
                 return new OkObjectResult(String.Format("Successfully deleted graph with id {0}.", graphId));
             }
