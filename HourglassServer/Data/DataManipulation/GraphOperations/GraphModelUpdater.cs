@@ -46,16 +46,13 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
                 .AsNoTracking()
                 .ToListAsync();
 
-            await UpdateGraphInDb(db, updatedGraph);
+            // Perform update to the graph in the DB
+            DbSetMutator.PerformOperationOnDbSet<Graph>(db.Graph, MutatorOperations.UPDATE, updatedGraph);
+            await db.SaveChangesAsync();
+
             await UpdateGraphSourcesInDb(db, existingGraphSources, updatedGraphSources);
 
             return GraphFactory.CreateGraphApplicationModel(updatedGraph, updatedGraphSources.ToArray());
-        }
-
-        private static async Task UpdateGraphInDb(HourglassContext db, Graph updatedGraph)
-        {
-            DbSetMutator.PerformOperationOnDbSet<Graph>(db.Graph, MutatorOperations.UPDATE, updatedGraph);
-            await db.SaveChangesAsync();
         }
 
         // SourcesToAdd = {Updated} set difference {Existing} 

@@ -49,6 +49,27 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
             return graphSources;
         }
 
+        public static GraphSourceModel[] CreateGraphSourceModelFromGraphSources(GraphSource[] persistentModel)
+        {
+            GraphSourceModel[] graphSources = new GraphSourceModel[persistentModel.Length];
+
+            for (int i = 0; i < persistentModel.Length; i++)
+            {
+                if (!Enum.TryParse(persistentModel[i].SeriesType, out SeriesType seriesType))
+                {
+                    throw new Exception(String.Format("Unknown series type {0}.", persistentModel[i].SeriesType));
+                }
+                graphSources[i] = new GraphSourceModel
+                {
+                    DatasetName = persistentModel[i].DatasetName,
+                    ColumnNames = persistentModel[i].ColumnNames,
+                    SeriesType = seriesType
+                };
+            }
+
+            return graphSources;
+        }
+
         public static GraphApplicationModel CreateGraphApplicationModel(Graph graph, GraphSource[] sources)
         {
             return new GraphApplicationModel
@@ -58,7 +79,7 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
                 TimeStamp = graph.Timestamp.Value,
                 GraphTitle = graph.GraphTitle,
                 SnapshotUrl = graph.SnapshotUrl,
-                DataSources = GraphSourceModel.ConvertPersistentGraphSource(sources),
+                DataSources = CreateGraphSourceModelFromGraphSources(sources),
                 GraphOptions = graph.GraphOptions
             };
         }
