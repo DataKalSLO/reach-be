@@ -3,7 +3,7 @@ using System;
 
 namespace HourglassServer.Data.Application.GraphModel
 {
-    public partial class GraphModel
+    public class GraphModel
     {
         public string GraphId { get; set; }
         public string UserId { get; set; }
