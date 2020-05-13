@@ -16,10 +16,12 @@ namespace HourglassServer.Controllers
     public class MapController : Controller
     {
         private HourglassContext _context;
+        private MapDbContext _dataContext;
 
-        public MapController(HourglassContext context)
+        public MapController(HourglassContext context, MapDbContext dataContext)
         {
             _context = context;
+            _dataContext = dataContext;
         }
 
         private List<Point> GetPoints(string geoName)
@@ -41,31 +43,46 @@ namespace HourglassServer.Controllers
 
         // GET: api/map/[censusVar]
         // get PolygonFeatureCollection for given census variable description
-        [HttpGet("{description}")]
-        public async Task<PolygonFeatureCollection> GetZipCodes(string description)
+        // get FC based on given data table name
+        [HttpGet("{tableName}")]
+        public ActionResult<PolygonFeatureCollection> GetZipCodes(string tableName)
         {
             try
             {
-                // finding variable name of given census description
-                var variables = await _context.CensusVariables.Where(v => v.Description.ToUpper().Contains(description.ToUpper())).ToListAsync();
-                string variableName = variables[0].Name;
+                // search for table name in metadata table
+                var metaData = from meta in _context.DatasetMetaData
+                               where meta.TableName == tableName
+                               select meta;
 
-                // getting all rows in CensusData with variableName
-                IEnumerable<CensusData> cData = await _context.CensusData.Where(d => d.VariableName == variableName).ToListAsync(); ;
-
-                // creating empty list of PolygonFeatures
-                List<PolygonFeature> features = new List<PolygonFeature>();
-
-                // iterating through CensusData rows
-                foreach (CensusData data in cData)
+                // if it exists, continue to query the database
+                if (metaData.First() != null)
                 {
-                    List<Point> points = GetPoints(data.GeoName);
-                    PolygonFeature geom = new PolygonFeature(points, data.GeoName, data.Value);
-                    features.Add(geom);
-                }
+                    // get location data from table
+                    List<LocationData> dataSet = _dataContext.getLocationData(tableName).Result;
+                    List<PolygonFeature> features = new List<PolygonFeature>();
 
-                PolygonFeatureCollection collection = new PolygonFeatureCollection(features);
-                return collection;
+                    // for each row of location data, get the latitude, longitude pairs
+                    foreach (LocationData row in dataSet)
+                    {
+                        List<Point> points = GetPoints(row.GeoName);
+                        // create feature from list of points
+                        PolygonFeature geom = new PolygonFeature(points, row.GeoName, row.Value);
+                        features.Add(geom);
+                    }
+
+                    PolygonFeatureCollection collection = new PolygonFeatureCollection(features);
+                    return collection;
+                }
+                // if table does not exist, return BadRequest
+                else
+                {
+                    return BadRequest(
+                        new ExceptionMessageContent()
+                        {
+                            Error = "Table does not exist",
+                            Message = "Table name not in database"
+                        });
+                }
             }
             catch (Exception e)
             {

@@ -219,9 +219,7 @@ namespace HourglassServer.Data
 
                 entity.Property(e => e.CountyColumn).HasColumnName("county_column");
 
-                entity.Property(e => e.DataTypes)
-                    .HasColumnName("data_types")
-                    .HasColumnType("character varying(500)[]");
+                entity.Property(e => e.DataTypes).HasColumnName("data_types");
 
                 entity.Property(e => e.ZipCodeColumn).HasColumnName("zip_code_column");
             });
@@ -314,10 +312,30 @@ namespace HourglassServer.Data
                     .HasMaxLength(36)
                     .IsFixedLength();
 
-                entity.Property(e => e.Title)
+                entity.Property(e => e.GraphOptions)
+                    .HasColumnName("graph_options")
+                    .HasColumnType("jsonb");
+
+                entity.Property(e => e.GraphTitle)
                     .IsRequired()
-                    .HasColumnName("title")
+                    .HasColumnName("graph_title")
                     .HasMaxLength(500);
+
+                entity.Property(e => e.SnapshotUrl)
+                    .HasColumnName("snapshot_url")
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Timestamp).HasColumnName("timestamp");
+
+                entity.Property(e => e.UserId)
+                    .IsRequired()
+                    .HasColumnName("user_id")
+                    .HasMaxLength(50);
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Graph)
+                    .HasForeignKey(d => d.UserId)
+                    .HasConstraintName("graph_user_id_fkey");
             });
 
             modelBuilder.Entity<GraphBlock>(entity =>
@@ -343,34 +361,6 @@ namespace HourglassServer.Data
                 entity.Property(e => e.StoryId)
                     .IsRequired()
                     .HasColumnName("story_id")
-<<<<<<< HEAD
-=======
-                    .HasMaxLength(36)
-                    .IsFixedLength();
-
-                entity.HasOne(d => d.Graph)
-                    .WithMany(p => p.GraphBlock)
-                    .HasForeignKey(d => d.GraphId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("graph_block_graph_id_fkey");
-
-                entity.HasOne(d => d.Story)
-                    .WithMany(p => p.GraphBlock)
-                    .HasForeignKey(d => d.StoryId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("graph_block_story_id_fkey");
-            });
-
-            modelBuilder.Entity<GraphSeries>(entity =>
-            {
-                entity.HasKey(e => new { e.GraphId, e.TableName, e.ColumnName, e.SeriesType })
-                    .HasName("graphseries_pkey");
-
-                entity.ToTable("graph_series");
-
-                entity.Property(e => e.GraphId)
-                    .HasColumnName("graph_id")
->>>>>>> 34639d374c6806d331e1fd94b89794928292641f
                     .HasMaxLength(36)
                     .IsFixedLength();
 
@@ -512,34 +502,6 @@ namespace HourglassServer.Data
                     .HasConstraintName("story_user_id_fkey");
             });
 
-<<<<<<< HEAD
-            modelBuilder.Entity<StoryBlock>(entity =>
-            {
-                entity.HasKey(e => e.BlockId)
-                    .HasName("story_block_pkey");
-
-                entity.ToTable("story_block");
-
-                entity.Property(e => e.BlockId)
-                    .HasColumnName("block_id")
-                    .HasMaxLength(36)
-                    .IsFixedLength();
-
-                entity.Property(e => e.BlockPosition).HasColumnName("block_position");
-
-                entity.Property(e => e.StoryId)
-                    .HasColumnName("story_id")
-                    .HasMaxLength(36)
-                    .IsFixedLength();
-
-                entity.HasOne(d => d.Story)
-                    .WithMany(p => p.StoryBlock)
-                    .HasForeignKey(d => d.StoryId)
-                    .HasConstraintName("story_block_story_id_fkey");
-            });
-
-=======
->>>>>>> 34639d374c6806d331e1fd94b89794928292641f
             modelBuilder.Entity<StoryCategory>(entity =>
             {
                 entity.HasKey(e => new { e.StoryId, e.CategoryName })
