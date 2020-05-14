@@ -11,7 +11,7 @@ namespace HourglassServer.Controllers {
     [DefaultControllerRoute]
     [EnableCors("SiteCorsPolicy")]
     public class SearchController : Controller {
-        private static String elasticURL = "https://search-hourglass-search-test-boatibipr2tvrekti6tuz7pghi.us-east-2.es.amazonaws.com/_search?q=";
+        private static string elasticURL = "https://search-hourglass-search-test-boatibipr2tvrekti6tuz7pghi.us-east-2.es.amazonaws.com/_search?q=";
 
         public SearchController() {}
 
@@ -19,8 +19,8 @@ namespace HourglassServer.Controllers {
 
         // POST _search/<query>
         [HttpPost]
-        async public Task<String> Search([FromBody] String query) {
-            String response = "Default Return String";
+        async public Task<string> Search([FromBody] string query) {
+            string response = "Default Return String";
             using (var client = new HttpClient()) {
                 try {
                     response = await client.GetStringAsync(elasticURL + query);
@@ -35,8 +35,8 @@ namespace HourglassServer.Controllers {
         /* Method not yet implemented */
         // GET _search/graphs
         [HttpPost]
-        public List<String> GetGraphsSearch() {
-            List<String> JSONGraphs = new List<String>();
+        public List<string> GetGraphsSearch() {
+            List<string> JSONGraphs = new List<string>();
             // TODO: Get List<Graph> object from Context
             return JSONGraphs;
         }
@@ -46,8 +46,8 @@ namespace HourglassServer.Controllers {
         /* Method not yet implemented */
         // GET _search/stories
         [HttpGet]
-        public List<String> GetStoriesSearch() {
-            List<String> JSONStories = new List<String>();
+        public List<string> GetStoriesSearch() {
+            List<string> JSONStories = new List<string>();
             // TODO: Get List<Story> object from Context
             return JSONStories;
         }
