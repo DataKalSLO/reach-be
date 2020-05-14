@@ -19,7 +19,6 @@ namespace HourglassServer.Controllers {
 
         // POST _search/<query>
         [HttpPost]
-        [EnableCors("SiteCorsPolicy")]
         async public Task<String> Search([FromBody] string query) {
             String response = "Default Return String";
             using (var client = new HttpClient()) {
@@ -36,7 +35,6 @@ namespace HourglassServer.Controllers {
         /* Method not yet implemented */
         // GET _search/graphs
         [HttpPost]
-        [EnableCors("SiteCorsPolicy")]
         public List<string> GetGraphsSearch() {
             List<string> JSONGraphs = new List<string>();
             // TODO: Get List<Graph> object from Context
@@ -48,7 +46,6 @@ namespace HourglassServer.Controllers {
         /* Method not yet implemented */
         // GET _search/stories
         [HttpGet]
-        [EnableCors("SiteCorsPolicy")]
         public List<string> GetStoriesSearch() {
             List<string> JSONStories = new List<string>();
             // TODO: Get List<Story> object from Context
