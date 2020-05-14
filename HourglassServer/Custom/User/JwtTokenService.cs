@@ -11,6 +11,7 @@ namespace HourglassServer
     public class JwtTokenService : IJwtTokenService
     {
         private readonly IConfiguration _configuration;
+        private const string PasswordResetRole = "PasswordResetOnly";
 
         public JwtTokenService(IConfiguration configuration)
         {
@@ -52,7 +53,7 @@ namespace HourglassServer
             var claims = new[]
             {
                 new Claim(ClaimTypes.Email, email),
-                new Claim(ClaimTypes.Role, "PasswordResetOnly"),
+                new Claim(ClaimTypes.Role, PasswordResetRole),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
