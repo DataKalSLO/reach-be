@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -12,14 +12,14 @@ namespace HourglassServer
 {
     public static class Utilities
     {
-        public static string GetUserIdFromToken(Controller controller)
+        public static string GetUserIdFromToken(IEnumerable<Claim> userClaims)
         {
-            IList<Claim> userClaims = controller.HttpContext.User.Claims
+            IList<Claim> userClaimsWithId = userClaims
                 .Where(c => c.Type == ClaimTypes.Email).ToList();
-            if (userClaims.Count < 1)
+            if (userClaimsWithId.Count < 1)
                 throw new PermissionDeniedException();
 
-            Claim userClaim = userClaims[0];
+            Claim userClaim = userClaimsWithId[0];
 
             if (userClaim == null)
                 throw new PermissionDeniedException();

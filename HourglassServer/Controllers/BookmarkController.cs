@@ -32,7 +32,7 @@ namespace HourglassServer.Controllers
         {
             try
             {
-                string userId = Utilities.GetUserIdFromToken(this);
+                string userId = Utilities.GetUserIdFromToken(this.HttpContext.User.Claims);
                 List<string> geoMapIdsBookmarked = this.context.BookmarkGeoMap
                     .Where(geoMapBookmark => geoMapBookmark.UserId == userId)
                     .Select(bs => bs.GeoMapId).ToList();
@@ -49,7 +49,7 @@ namespace HourglassServer.Controllers
         {
             try
             {
-                string userId = Utilities.GetUserIdFromToken(this);
+                string userId = Utilities.GetUserIdFromToken(this.HttpContext.User.Claims);
                 List<string> graphIdsBookmarked = this.context.BookmarkGraph
                     .Where(graphBookmark => graphBookmark.UserId == userId)
                     .Select(bs => bs.GraphId)
@@ -66,7 +66,7 @@ namespace HourglassServer.Controllers
         {
             try
             {
-                string userId = Utilities.GetUserIdFromToken(this);
+                string userId = Utilities.GetUserIdFromToken(this.HttpContext.User.Claims);
                 List<string> storiesIdsBookmarked = this.context.BookmarkStory
                     .Where(storyBookmark => storyBookmark.UserId == userId)
                     .Select(bs => bs.StoryId)
@@ -128,7 +128,7 @@ namespace HourglassServer.Controllers
 
         private void AssertAuthenticationTokenUserIdMatchesString(string userId)
         {
-            string tokenUserId = Utilities.GetUserIdFromToken(this);
+            string tokenUserId = Utilities.GetUserIdFromToken(this.HttpContext.User.Claims);
             if (tokenUserId != userId)
             {
                 throw new InvalidOperationException(string.Format(NoOwnershipError, userId));
