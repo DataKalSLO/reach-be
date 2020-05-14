@@ -12,7 +12,7 @@ namespace HourglassServer.Controllers {
     [DefaultControllerRoute]
     [EnableCors("SiteCorsPolicy")]
     public class SearchController : Controller {
-        private static string elasticURL = "https://search-hourglass-search-test-boatibipr2tvrekti6tuz7pghi.us-east-2.es.amazonaws.com/_search";
+        private static string elasticURL = "https://search-hourglass-search-test-boatibipr2tvrekti6tuz7pghi.us-east-2.es.amazonaws.com";
 
         public SearchController() {}
 
