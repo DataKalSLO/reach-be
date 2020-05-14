@@ -1,5 +1,8 @@
 ﻿person
 area
+bookmark_geo_map
+bookmark_graph
+bookmark_story
 category
 dataset_meta_data
 geo_map_tables
@@ -7,11 +10,10 @@ geo_map
 geo_map_block
 graph
 graph_block
-graph_series
+graph_source
 location
 point
 story
-story_block
 story_category
 text_block
 zip_area

@@ -38,28 +38,28 @@ namespace HourglassServer.Data.Application.StoryModel
 
         public StoryBlockModel() { }
 
-        public StoryBlockModel(GeoMapBlock mapBlock, int position)
+        public StoryBlockModel(GeoMapBlock mapBlock)
         {
             this.Id = mapBlock.BlockId;
             this.Type = StoryBlockType.GEOMAP;
             this.MapId = mapBlock.GeoMapId;
-            this.BlockPosition = position;
+            this.BlockPosition = mapBlock.BlockPosition;
         }
 
-        public StoryBlockModel(GraphBlock graphBlock, int position)
+        public StoryBlockModel(GraphBlock graphBlock)
         {
             this.Id = graphBlock.BlockId;
             this.Type = StoryBlockType.GRAPH;
             this.GraphId = graphBlock.GraphId;
-            this.BlockPosition = position;
+            this.BlockPosition = graphBlock.BlockPosition;
         }
 
-        public StoryBlockModel(TextBlock textBlock, int position)
+        public StoryBlockModel(TextBlock textBlock)
         {
             this.Id = textBlock.BlockId;
             this.Type = StoryBlockType.TEXTDB;
             this.EditorState = textBlock.EditorState;
-            this.BlockPosition = position;
+            this.BlockPosition = textBlock.BlockPosition;
         }
 
         public int CompareTo(StoryBlockModel other)

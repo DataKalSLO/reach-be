@@ -21,6 +21,9 @@ namespace HourglassServer.Data
         }
 
         public virtual DbSet<Area> Area { get; set; }
+        public virtual DbSet<BookmarkGeoMap> BookmarkGeoMap { get; set; }
+        public virtual DbSet<BookmarkGraph> BookmarkGraph { get; set; }
+        public virtual DbSet<BookmarkStory> BookmarkStory { get; set; }
         public virtual DbSet<Category> Category { get; set; }
         public virtual DbSet<DatasetMetaData> DatasetMetaData { get; set; }
         public virtual DbSet<GeoMap> GeoMap { get; set; }
@@ -28,12 +31,11 @@ namespace HourglassServer.Data
         public virtual DbSet<GeoMapTables> GeoMapTables { get; set; }
         public virtual DbSet<Graph> Graph { get; set; }
         public virtual DbSet<GraphBlock> GraphBlock { get; set; }
-        public virtual DbSet<GraphSeries> GraphSeries { get; set; }
+        public virtual DbSet<GraphSource> GraphSource { get; set; }
         public virtual DbSet<Location> Location { get; set; }
         public virtual DbSet<Person> Person { get; set; }
         public virtual DbSet<Point> Point { get; set; }
         public virtual DbSet<Story> Story { get; set; }
-        public virtual DbSet<StoryBlock> StoryBlock { get; set; }
         public virtual DbSet<StoryCategory> StoryCategory { get; set; }
         public virtual DbSet<TextBlock> TextBlock { get; set; }
         public virtual DbSet<ZipArea> ZipArea { get; set; }
@@ -66,6 +68,75 @@ namespace HourglassServer.Data
                 entity.Property(e => e.Coordinates).HasColumnName("coordinates");
             });
 
+            modelBuilder.Entity<BookmarkGeoMap>(entity =>
+            {
+                entity.HasKey(e => new { e.UserId, e.GeoMapId })
+                    .HasName("geo_map_bookmark_pkey");
+
+                entity.ToTable("bookmark_geo_map");
+
+                entity.Property(e => e.UserId)
+                    .HasColumnName("user_id")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.GeoMapId)
+                    .HasColumnName("geo_map_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.HasOne(d => d.GeoMap)
+                    .WithMany(p => p.BookmarkGeoMap)
+                    .HasForeignKey(d => d.GeoMapId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("geo_map_bookmark_geo_map_id_fkey");
+            });
+
+            modelBuilder.Entity<BookmarkGraph>(entity =>
+            {
+                entity.HasKey(e => new { e.UserId, e.GraphId })
+                    .HasName("graph_bookmark_pkey");
+
+                entity.ToTable("bookmark_graph");
+
+                entity.Property(e => e.UserId)
+                    .HasColumnName("user_id")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.GraphId)
+                    .HasColumnName("graph_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.HasOne(d => d.Graph)
+                    .WithMany(p => p.BookmarkGraph)
+                    .HasForeignKey(d => d.GraphId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("graph_bookmark_graph_id_fkey");
+            });
+
+            modelBuilder.Entity<BookmarkStory>(entity =>
+            {
+                entity.HasKey(e => new { e.UserId, e.StoryId })
+                    .HasName("story_bookmark_pkey");
+
+                entity.ToTable("bookmark_story");
+
+                entity.Property(e => e.UserId)
+                    .HasColumnName("user_id")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.StoryId)
+                    .HasColumnName("story_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.HasOne(d => d.Story)
+                    .WithMany(p => p.BookmarkStory)
+                    .HasForeignKey(d => d.StoryId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("story_bookmark_story_id_fkey");
+            });
+
             modelBuilder.Entity<Category>(entity =>
             {
                 entity.HasKey(e => e.CategoryName)
@@ -95,17 +166,11 @@ namespace HourglassServer.Data
 
                 entity.Property(e => e.CityColumn).HasColumnName("city_column");
 
-                entity.Property(e => e.ColumnNames)
-                    .HasColumnName("column_names")
-                    .HasColumnType("character varying(500)[]");
+                entity.Property(e => e.ColumnNames).HasColumnName("column_names");
 
                 entity.Property(e => e.CountyColumn).HasColumnName("county_column");
 
-                entity.Property(e => e.DataTypes)
-                    .HasColumnName("data_types")
-                    .HasColumnType("character varying(500)[]");
-
-                entity.Property(e => e.LocationValues).HasColumnName("location_values");
+                entity.Property(e => e.DataTypes).HasColumnName("data_types");
 
                 entity.Property(e => e.ZipCodeColumn).HasColumnName("zip_code_column");
             });
@@ -132,22 +197,31 @@ namespace HourglassServer.Data
                     .HasMaxLength(36)
                     .IsFixedLength();
 
+                entity.Property(e => e.BlockPosition).HasColumnName("block_position");
+
                 entity.Property(e => e.GeoMapId)
                     .IsRequired()
                     .HasColumnName("geo_map_id")
                     .HasMaxLength(36)
                     .IsFixedLength();
 
-                entity.HasOne(d => d.Block)
-                    .WithOne(p => p.GeoMapBlock)
-                    .HasForeignKey<GeoMapBlock>(d => d.BlockId)
-                    .HasConstraintName("geo_map_block_block_id_fkey");
+                entity.Property(e => e.StoryId)
+                    .IsRequired()
+                    .HasColumnName("story_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
 
                 entity.HasOne(d => d.GeoMap)
                     .WithMany(p => p.GeoMapBlock)
                     .HasForeignKey(d => d.GeoMapId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("geo_map_block_geo_map_id_fkey");
+
+                entity.HasOne(d => d.Story)
+                    .WithMany(p => p.GeoMapBlock)
+                    .HasForeignKey(d => d.StoryId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("geo_map_block_story_id_fkey");
             });
 
             modelBuilder.Entity<GeoMapTables>(entity =>
@@ -189,10 +263,30 @@ namespace HourglassServer.Data
                     .HasMaxLength(36)
                     .IsFixedLength();
 
-                entity.Property(e => e.Title)
+                entity.Property(e => e.GraphOptions)
+                    .HasColumnName("graph_options")
+                    .HasColumnType("jsonb");
+
+                entity.Property(e => e.GraphTitle)
                     .IsRequired()
-                    .HasColumnName("title")
+                    .HasColumnName("graph_title")
                     .HasMaxLength(500);
+
+                entity.Property(e => e.SnapshotUrl)
+                    .HasColumnName("snapshot_url")
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Timestamp).HasColumnName("timestamp");
+
+                entity.Property(e => e.UserId)
+                    .IsRequired()
+                    .HasColumnName("user_id")
+                    .HasMaxLength(50);
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Graph)
+                    .HasForeignKey(d => d.UserId)
+                    .HasConstraintName("graph_user_id_fkey");
             });
 
             modelBuilder.Entity<GraphBlock>(entity =>
@@ -207,59 +301,63 @@ namespace HourglassServer.Data
                     .HasMaxLength(36)
                     .IsFixedLength();
 
+                entity.Property(e => e.BlockPosition).HasColumnName("block_position");
+
                 entity.Property(e => e.GraphId)
                     .IsRequired()
                     .HasColumnName("graph_id")
                     .HasMaxLength(36)
                     .IsFixedLength();
 
-                entity.HasOne(d => d.Block)
-                    .WithOne(p => p.GraphBlock)
-                    .HasForeignKey<GraphBlock>(d => d.BlockId)
-                    .HasConstraintName("graph_block_block_id_fkey");
+                entity.Property(e => e.StoryId)
+                    .IsRequired()
+                    .HasColumnName("story_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
 
                 entity.HasOne(d => d.Graph)
                     .WithMany(p => p.GraphBlock)
                     .HasForeignKey(d => d.GraphId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("graph_block_graph_id_fkey");
+
+                entity.HasOne(d => d.Story)
+                    .WithMany(p => p.GraphBlock)
+                    .HasForeignKey(d => d.StoryId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("graph_block_story_id_fkey");
             });
 
-            modelBuilder.Entity<GraphSeries>(entity =>
+            modelBuilder.Entity<GraphSource>(entity =>
             {
-                entity.HasKey(e => new { e.GraphId, e.TableName, e.ColumnName, e.SeriesType })
-                    .HasName("graphseries_pkey");
+                entity.HasKey(e => new { e.GraphId, e.SeriesType })
+                    .HasName("graph_source_pkey");
 
-                entity.ToTable("graph_series");
+                entity.ToTable("graph_source");
 
                 entity.Property(e => e.GraphId)
                     .HasColumnName("graph_id")
-                    .HasMaxLength(36)
-                    .IsFixedLength();
-
-                entity.Property(e => e.TableName)
-                    .HasColumnName("table_name")
-                    .HasMaxLength(500);
-
-                entity.Property(e => e.ColumnName)
-                    .HasColumnName("column_name")
-                    .HasMaxLength(500);
+                    .HasMaxLength(36);
 
                 entity.Property(e => e.SeriesType)
                     .HasColumnName("series_type")
-                    .HasMaxLength(20);
+                    .HasMaxLength(10);
+
+                entity.Property(e => e.ColumnNames).HasColumnName("column_names");
+
+                entity.Property(e => e.DatasetName)
+                    .HasColumnName("dataset_name")
+                    .HasMaxLength(500);
+
+                entity.HasOne(d => d.DatasetNameNavigation)
+                    .WithMany(p => p.GraphSource)
+                    .HasForeignKey(d => d.DatasetName)
+                    .HasConstraintName("graph_source_datasetname_fkey");
 
                 entity.HasOne(d => d.Graph)
-                    .WithMany(p => p.GraphSeries)
+                    .WithMany(p => p.GraphSource)
                     .HasForeignKey(d => d.GraphId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("graphseries_graphid_fkey");
-
-                entity.HasOne(d => d.TableNameNavigation)
-                    .WithMany(p => p.GraphSeries)
-                    .HasForeignKey(d => d.TableName)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("graphseries_tablename_fkey");
+                    .HasConstraintName("graph_source_graphid_fkey");
             });
 
             modelBuilder.Entity<Location>(entity =>
@@ -305,6 +403,12 @@ namespace HourglassServer.Data
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasColumnName("name")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.NotificationsEnabled).HasColumnName("notifications_enabled");
+
+                entity.Property(e => e.Occupation)
+                    .HasColumnName("occupation")
                     .HasMaxLength(50);
 
                 entity.Property(e => e.PasswordHash)
@@ -381,36 +485,6 @@ namespace HourglassServer.Data
                     .HasConstraintName("story_user_id_fkey");
             });
 
-            modelBuilder.Entity<StoryBlock>(entity =>
-            {
-                entity.HasKey(e => e.BlockId)
-                    .HasName("story_block_pkey");
-
-                entity.ToTable("story_block");
-
-                entity.HasIndex(e => new { e.StoryId, e.BlockPosition })
-                    .HasName("story_block_story_id_block_position_key")
-                    .IsUnique();
-
-                entity.Property(e => e.BlockId)
-                    .HasColumnName("block_id")
-                    .HasMaxLength(36)
-                    .IsFixedLength();
-
-                entity.Property(e => e.BlockPosition).HasColumnName("block_position");
-
-                entity.Property(e => e.StoryId)
-                    .IsRequired()
-                    .HasColumnName("story_id")
-                    .HasMaxLength(36)
-                    .IsFixedLength();
-
-                entity.HasOne(d => d.Story)
-                    .WithMany(p => p.StoryBlock)
-                    .HasForeignKey(d => d.StoryId)
-                    .HasConstraintName("story_block_story_id_fkey");
-            });
-
             modelBuilder.Entity<StoryCategory>(entity =>
             {
                 entity.HasKey(e => new { e.StoryId, e.CategoryName })
@@ -452,15 +526,24 @@ namespace HourglassServer.Data
                     .HasMaxLength(36)
                     .IsFixedLength();
 
+                entity.Property(e => e.BlockPosition).HasColumnName("block_position");
+
                 entity.Property(e => e.EditorState)
                     .IsRequired()
                     .HasColumnName("editor_state")
                     .HasMaxLength(100000);
 
-                entity.HasOne(d => d.Block)
-                    .WithOne(p => p.TextBlock)
-                    .HasForeignKey<TextBlock>(d => d.BlockId)
-                    .HasConstraintName("text_block_block_id_fkey");
+                entity.Property(e => e.StoryId)
+                    .IsRequired()
+                    .HasColumnName("story_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.HasOne(d => d.Story)
+                    .WithMany(p => p.TextBlock)
+                    .HasForeignKey(d => d.StoryId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("text_block_story_id_fkey");
             });
 
             modelBuilder.Entity<ZipArea>(entity =>
