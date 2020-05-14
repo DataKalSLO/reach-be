@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -9,6 +12,21 @@ namespace HourglassServer
 {
     public static class Utilities
     {
+        public static string GetUserIdFromToken(Controller controller)
+        {
+            IList<Claim> userClaims = controller.HttpContext.User.Claims
+                .Where(c => c.Type == ClaimTypes.Email).ToList();
+            if (userClaims.Count < 1)
+                throw new PermissionDeniedException();
+
+            Claim userClaim = userClaims[0];
+
+            if (userClaim == null)
+                throw new PermissionDeniedException();
+           
+            return userClaim.Value;
+        }
+
         public static bool HasRole(this ClaimsPrincipal user, Role role)
         {
             return user.IsInRole(role.ToString());
