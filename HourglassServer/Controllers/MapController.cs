@@ -54,40 +54,30 @@ namespace HourglassServer.Controllers
                                where meta.TableName == tableName
                                select meta;
 
-                // if it exists, continue to query the database
-                if (metaData.First() != null)
-                {
-                    // get location data from table
-                    List<LocationData> dataSet = _dataContext.getLocationData(tableName).Result;
-                    List<PolygonFeature> features = new List<PolygonFeature>();
+                // get location data from table
+                List<LocationData> dataSet = _dataContext.getLocationData(tableName).Result;
+                List<PolygonFeature> features = new List<PolygonFeature>();
 
-                    // for each row of location data, get the latitude, longitude pairs
-                    foreach (LocationData row in dataSet)
-                    {
-                        List<Point> points = GetPoints(row.GeoName);
-                        // create feature from list of points
-                        PolygonFeature geom = new PolygonFeature(points, row.GeoName, row.Value);
-                        features.Add(geom);
-                    }
-
-                    PolygonFeatureCollection collection = new PolygonFeatureCollection(features);
-                    return collection;
-                }
-                // if table does not exist, return BadRequest
-                else
+                // for each row of location data, get the latitude, longitude pairs
+                foreach (LocationData row in dataSet)
                 {
-                    return BadRequest(
-                        new ExceptionMessageContent()
-                        {
-                            Error = "Table does not exist",
-                            Message = "Table name not in database"
-                        });
+                    List<Point> points = GetPoints(row.GeoName);
+                    // create feature from list of points
+                    PolygonFeature geom = new PolygonFeature(points, row.GeoName, row.Value);
+                    features.Add(geom);
                 }
+
+                PolygonFeatureCollection collection = new PolygonFeatureCollection(features);
+                return collection;
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.StackTrace);
-                return null;
+                return BadRequest(
+                        new ExceptionMessageContent()
+                        {
+                            Error = "Table does not exist",
+                            Message = e.ToString()
+                        }); ;
             }
         }
 
