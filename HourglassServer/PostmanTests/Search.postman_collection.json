@@ -1,0 +1,44 @@
+{
+	"info": {
+		"_postman_id": "af01befa-ac9b-42c1-84a7-be4d808a2021",
+		"name": "Search",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Search",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"took\": {{tookresult}},\r\n    \"timed_out\": false,\r\n    \"_shards\": {\r\n        \"total\": 11,\r\n        \"successful\": 11,\r\n        \"skipped\": 0,\r\n        \"failed\": 0\r\n    },\r\n    \"hits\": {\r\n        \"total\": {\r\n            \"value\": 1,\r\n            \"relation\": \"eq\"\r\n        },\r\n        \"max_score\": 0.9331132,\r\n        \"hits\": [\r\n            {\r\n                \"_index\": \"graph\",\r\n                \"_type\": \"_doc\",\r\n                \"_id\": \"industry\",\r\n                \"_score\": 0.9331132,\r\n                \"_source\": {\r\n                    \"title\": \"Number of Establishments by Industry (2016)\"\r\n                }\r\n            }\r\n        ]\r\n    }\r\n}\r\n{\n\t\"userid\": \"51d73193-470d-442b-a392-3e43238eb089\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/Search",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"Search"
+					]
+				},
+				"description": "Requests search query from elasticsearch and returns result"
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
