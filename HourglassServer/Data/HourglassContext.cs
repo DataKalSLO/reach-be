@@ -164,15 +164,11 @@ namespace HourglassServer.Data
                     .HasColumnName("table_name")
                     .HasMaxLength(500);
 
-                entity.Property(e => e.CityColumn).HasColumnName("city_column");
-
                 entity.Property(e => e.ColumnNames).HasColumnName("column_names");
 
-                entity.Property(e => e.CountyColumn).HasColumnName("county_column");
+                entity.Property(e => e.GeoType).HasColumnName("geo_type");
 
                 entity.Property(e => e.DataTypes).HasColumnName("data_types");
-
-                entity.Property(e => e.ZipCodeColumn).HasColumnName("zip_code_column");
             });
 
             modelBuilder.Entity<GeoMap>(entity =>
