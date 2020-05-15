@@ -12,9 +12,9 @@ namespace HourglassServer
 {
     public static class Utilities
     {
-        public static string GetUserIdFromToken(IEnumerable<Claim> userClaims)
+        public static string GetUserId(this ClaimsPrincipal user)
         {
-            IList<Claim> userClaimsWithId = userClaims
+            IList<Claim> userClaimsWithId = user.Claims
                 .Where(c => c.Type == ClaimTypes.Email).ToList();
             if (userClaimsWithId.Count < 1)
                 throw new PermissionDeniedException();
@@ -23,7 +23,7 @@ namespace HourglassServer
 
             if (userClaim == null)
                 throw new PermissionDeniedException();
-           
+
             return userClaim.Value;
         }
 
