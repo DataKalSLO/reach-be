@@ -33,5 +33,13 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
 
             return GraphFactory.CreateGraphApplicationModel(graph, sources);
         }
+
+        public static async Task CreateDefaultGraph(HourglassContext db, string graphId, string category)
+        {
+            DefaultGraph defaultGraph = GraphFactory.CreateDefaultGraph(graphId, category);
+
+            DbSetMutator.PerformOperationOnDbSet<DefaultGraph>(db.DefaultGraph, MutatorOperations.ADD, defaultGraph);
+            await db.SaveChangesAsync();
+        }
     }
 }
