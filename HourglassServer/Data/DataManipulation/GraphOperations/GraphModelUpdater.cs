@@ -55,6 +55,14 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
             return GraphFactory.CreateGraphApplicationModel(updatedGraph, updatedGraphSources.ToArray());
         }
 
+        public static async Task UpdateDefaultGraph(HourglassContext db, string graphId, string category)
+        {
+            DefaultGraph defaultGraphUpdate = GraphFactory.CreateDefaultGraph(graphId, category);
+
+            DbSetMutator.PerformOperationOnDbSet<DefaultGraph>(db.DefaultGraph, MutatorOperations.UPDATE, defaultGraphUpdate);
+            await db.SaveChangesAsync();
+        }
+
         // SourcesToAdd = {Updated} set difference {Existing} 
         // SourcesToUpdate = {Updated} set intersect {Existing}
         // SourcesToRemove = {Existing} set difference {Updated}

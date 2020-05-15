@@ -58,7 +58,6 @@ namespace HourglassServer.Controllers
             try
             {
                 var currentUserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).Single().Value;
-
                 GraphApplicationModel graph = await GraphModelCreator.CreateGraph(this._context, graphModel, currentUserId);
 
                 // Add to the default graph table if administrator requests
@@ -83,6 +82,13 @@ namespace HourglassServer.Controllers
             {
                 var currentUserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).Single().Value;
                 GraphApplicationModel graph = await GraphModelUpdater.UpdateGraph(this._context, graphModel, currentUserId);
+
+                // Update the default graph table if administrator requests
+                if (HttpContext.User.HasRole(Role.Admin) && graphModel.GraphCategory != null)
+                {
+                    await GraphModelUpdater.UpdateDefaultGraph(this._context, graph.GraphId, graphModel.GraphCategory);
+                }
+
                 return new OkObjectResult(graph);
             }
             catch (PermissionDeniedException e)
