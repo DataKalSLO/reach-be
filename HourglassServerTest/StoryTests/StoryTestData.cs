@@ -117,7 +117,7 @@ namespace HourglassServerTest.StoryTests
                 Title = StoryTitle,
                 Description = StoryDescription,
                 UserId = UserId,
-                PublicationStatus = PublicationStatus.DRAFT.ToString()
+                PublicationStatus = PublicationStatus.PUBLISHED.ToString()
             };
         }
 
