@@ -4,18 +4,16 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using HourglassServer.Custom.Constraints;
+    using Microsoft.AspNetCore.Mvc;
     using HourglassServer.Data;
     using HourglassServer.Data.Application.StoryModel;
     using HourglassServer.Data.DataManipulation.StoryModel;
-    using HourglassServer.Custom.Exceptions;
-    using Microsoft.AspNetCore.Mvc;
-    using System.Security.Claims;
 
     // TODO: Catch different types of exceptions and return descriptive tags for all routes.
     [DefaultControllerRoute]
     public class StoryController : Controller
     {
+        private const string MissingAdminPrivileges = "Admin privileges are required to access this action.";
         private readonly HourglassContext context;
 
         public StoryController(HourglassContext context)
@@ -24,11 +22,39 @@
         }
 
         [HttpGet]
-        public IActionResult GetAllStories()
+        public IActionResult GetStoriesInPublished()
+        {
+            return HandleGetStoriesInPublicationStatus(PublicationStatus.PUBLISHED);
+        }
+
+        [HttpGet("review")]
+        public IActionResult GetStoriesInReview()
+        {
+            if (!HttpContext.User.HasRole(Role.Admin))
+                return BadRequest(new HourglassError(MissingAdminPrivileges, "forbiddenRole"));
+            return HandleGetStoriesInPublicationStatus(PublicationStatus.REVIEW);
+        }
+
+        [HttpGet("draft")]
+        public IActionResult GetStoriesInDraftForUser()
         {
             try
             {
-                IList<StoryApplicationModel> allStories = StoryModelRetriever.GetAllStoryApplicationModels(this.context);
+                string userId = Utilities.GetUserIdFromToken(this.HttpContext.User.Claims);
+                IList<StoryApplicationModel> storiesInReviewForUser = StoryModelRetriever.GetStoryApplicationModelsInDraft(this.context, userId);
+                return new OkObjectResult(storiesInReviewForUser);
+            }
+            catch (Exception e)
+            {
+                return this.BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
+            }
+        }
+
+        private IActionResult HandleGetStoriesInPublicationStatus(PublicationStatus expectedStatus)
+        {
+            try
+            {
+                IList<StoryApplicationModel> allStories = StoryModelRetriever.GetStoryApplicationModelsInPublicationStatus(this.context, expectedStatus);
                 return new OkObjectResult(allStories);
             }
             catch (Exception e)
