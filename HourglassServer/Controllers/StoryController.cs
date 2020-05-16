@@ -10,6 +10,11 @@
     using HourglassServer.Data.DataManipulation.StoryModel;
 
     // TODO: Catch different types of exceptions and return descriptive tags for all routes.
+    /* TODO: Find way to mock user authentication for testing
+     * - GetStoriesInPublished()
+     * - GetStoriesInReview()
+     * - GetStoriesInDraft()
+     */
     [DefaultControllerRoute]
     public class StoryController : Controller
     {
@@ -40,7 +45,7 @@
         {
             try
             {
-                string userId = Utilities.GetUserIdFromToken(this.HttpContext.User.Claims);
+                string userId = HttpContext.User.GetUserId();
                 IList<StoryApplicationModel> storiesInReviewForUser = StoryModelRetriever.GetStoryApplicationModelsInDraft(this.context, userId);
                 return new OkObjectResult(storiesInReviewForUser);
             }
