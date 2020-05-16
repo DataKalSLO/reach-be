@@ -123,5 +123,12 @@
             };
             return geoMapBlock;
         }
+
+        public static bool StoryIsInStatus(Story story, PublicationStatus expectedStatus)
+        {
+            PublicationStatus actualPublicationStatus;
+            Enum.TryParse<PublicationStatus>(story.PublicationStatus, out actualPublicationStatus);
+            return expectedStatus == actualPublicationStatus; 
+        }
     }
 }
