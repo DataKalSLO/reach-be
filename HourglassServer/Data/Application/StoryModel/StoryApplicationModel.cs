@@ -31,6 +31,7 @@ namespace HourglassServer.Data.Application.StoryModel
 
         public string Description { get; set; }
 
+        [Required]
         [JsonConverter(typeof(StringEnumConverter))]
         public PublicationStatus PublicationStatus { get; set; }
 
