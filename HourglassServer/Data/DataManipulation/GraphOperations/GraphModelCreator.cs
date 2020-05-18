@@ -1,5 +1,3 @@
-using System;
-using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using HourglassServer.Models.Persistent;
 using HourglassServer.Data.Application.GraphModel;
@@ -16,9 +14,6 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
 
             // Generate a new graphId and append it to the graph model
             graphModel.GraphId = GraphFactory.GenerateNewGraphId();
-
-            // TODO: If category is passed with the request and the user is an adminstrator, add the
-            // graphId and category to the DefaultGraphs table
 
             Graph graph = GraphFactory.CreateGraphFromGraphModel(graphModel);
             GraphSource[] sources = GraphFactory.CreateGraphSourcesFromGraphSourceModel
