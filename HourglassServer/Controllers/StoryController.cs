@@ -108,22 +108,13 @@
 
         private IActionResult PerformStoryCreation(StoryApplicationModel storyFromBody, StoryPermissionCheckers permissionChecker)
         {
-            permissionChecker.AssertAllPermissions(new StoryActionConstraint[]
-            {
-                StoryActionConstraint.STORY_USER_MATCHES_AUTHORIZED_USER,
-                StoryActionConstraint.HAS_DRAFT_STATUS  
-            });
+            permissionChecker.AssertPermission(StoryActionConstraint.HAS_DRAFT_STATUS);
             StoryModelCreator.AddStoryApplicationModelToDatabaseContext(this.context, storyFromBody);
             return new CreatedAtRouteResult(nameof(this.GetStoryById), new { storyId = storyFromBody.Id }, storyFromBody);
         }
 
         private IActionResult PerformStoryUpdate(StoryApplicationModel storyFromBody, StoryPermissionCheckers permissionChecker)
         {
-            permissionChecker.AssertAtLeastOnePermission(new StoryActionConstraint[]
-            {
-                StoryActionConstraint.STORY_USER_MATCHES_AUTHORIZED_USER,
-                StoryActionConstraint.HAS_ADMIN_ACCOUNT
-            });
             permissionChecker.AssertPermission(StoryActionConstraint.HAS_PERMISSION_TO_CHANGE_STATUS);
             StoryModelUpdater.UpdateStoryApplicationModel(this.context, storyFromBody);
             return new NoContentResult();

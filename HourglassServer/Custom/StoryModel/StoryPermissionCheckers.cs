@@ -14,7 +14,6 @@ namespace HourglassServer.Custom.StoryModel
     {
         HAS_USER_ACCOUNT,
         HAS_ADMIN_ACCOUNT,
-        STORY_USER_MATCHES_AUTHORIZED_USER,
         AUTHORIZED_USER_OWNS_STORY,
         HAS_STORY_OWNERSHIP_OR_HAS_ADMIN_ACCOUNT,
         HAS_DRAFT_STATUS,
@@ -65,9 +64,6 @@ namespace HourglassServer.Custom.StoryModel
 
             permissions.Add(StoryActionConstraint.AUTHORIZED_USER_OWNS_STORY, HasOwnershipOfStory);
             permissionErrors.Add(StoryActionConstraint.AUTHORIZED_USER_OWNS_STORY, ("Authorized user is not owner of story", nowOwnerTag));
-
-            permissions.Add(StoryActionConstraint.STORY_USER_MATCHES_AUTHORIZED_USER, (user, context, newStory) => newStory.UserId == user.GetUserId());
-            permissionErrors.Add(StoryActionConstraint.STORY_USER_MATCHES_AUTHORIZED_USER, ("Authorized user is not owner of story", nowOwnerTag));
 
             permissions.Add(StoryActionConstraint.HAS_STORY_OWNERSHIP_OR_HAS_ADMIN_ACCOUNT,
                 (user, context, newStory) => SatisfiesAtLeastOnePermission(new StoryActionConstraint[] { StoryActionConstraint.AUTHORIZED_USER_OWNS_STORY, StoryActionConstraint.HAS_ADMIN_ACCOUNT }));
