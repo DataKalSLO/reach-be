@@ -36,7 +36,7 @@
             }
             catch (Exception e)
             {
-                return this.BadRequest(new[] { new HourglassError(e.ToString(), badValueTag) });
+                return this.BadRequest(new HourglassError(e.ToString(), badValueTag));
             }
         }
 
@@ -53,7 +53,7 @@
             }
             catch (Exception e)
             {
-                return this.BadRequest(new[] { new HourglassError(e.ToString(), badValueTag) });
+                return this.BadRequest(new HourglassError(e.ToString(), badValueTag));
             }
         }
 
@@ -64,6 +64,7 @@
             {
                 StoryPermissionCheckers permissionChecker = new StoryPermissionCheckers(HttpContext.User, this.context, storyFromBody);
                 permissionChecker.AssertPermission(StoryActionConstraint.HAS_USER_ACCOUNT);
+                storyFromBody.UserId = HttpContext.User.GetUserId();
                 IActionResult response = this.context.Story.Any(story => story.StoryId == storyFromBody.Id) ?
                     PerformStoryUpdate(storyFromBody, permissionChecker) :
                     PerformStoryCreation(storyFromBody, permissionChecker);
@@ -72,11 +73,11 @@
             }
             catch(PermissionDeniedException e)
             {
-                return this.BadRequest(new[] { new HourglassError(e.ToString(), e.errorObj.tag) });
+                return this.BadRequest(new HourglassError(e.ToString(), e.errorObj.tag));
             }
             catch (Exception e)
             {
-                return this.BadRequest(new[] { new HourglassError(e.ToString(), badValueTag) });
+                return this.BadRequest(new HourglassError(e.ToString(), badValueTag));
             }
         }
 
@@ -97,7 +98,7 @@
             }
             catch (Exception e)
             {
-                return this.BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
+                return this.BadRequest(new HourglassError(e.ToString(), "badValue"));
             }
         }
 

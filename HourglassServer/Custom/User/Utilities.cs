@@ -17,12 +17,12 @@ namespace HourglassServer
             IList<Claim> userClaimsWithId = user.Claims
                 .Where(c => c.Type == ClaimTypes.Email).ToList();
             if (userClaimsWithId.Count < 1)
-                throw new PermissionDeniedException();
+                throw new PermissionDeniedException("No email claim type found for user.", "badValue");
 
             Claim userClaim = userClaimsWithId[0];
 
             if (userClaim == null)
-                throw new PermissionDeniedException();
+                throw new PermissionDeniedException("User claim is null.", "badValue");
 
             return userClaim.Value;
         }
