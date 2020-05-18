@@ -20,6 +20,7 @@ namespace HourglassServer.Models.Persistent
         public string GraphOptions { get; set; }
 
         public virtual Person User { get; set; }
+        public virtual DefaultGraph DefaultGraph { get; set; }
         public virtual ICollection<BookmarkGraph> BookmarkGraph { get; set; }
         public virtual ICollection<GraphBlock> GraphBlock { get; set; }
         public virtual ICollection<GraphSource> GraphSource { get; set; }
