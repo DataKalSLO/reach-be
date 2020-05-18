@@ -23,7 +23,6 @@ namespace HourglassServer.Data.Application.StoryModel
         [Required]
         public string Id { get; set; }
 
-        [Required]
         public string UserId { get; set; }
 
         [Required]
@@ -32,7 +31,6 @@ namespace HourglassServer.Data.Application.StoryModel
         public string Description { get; set; }
 
         [Required]
-        [JsonConverter(typeof(StringEnumConverter))]
         public PublicationStatus PublicationStatus { get; set; }
 
         [Required]

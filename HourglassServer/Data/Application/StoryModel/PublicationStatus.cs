@@ -6,6 +6,7 @@ namespace HourglassServer.Data.Application.StoryModel
     {
         DRAFT,
         REVIEW,
+        FEEDBACK,
         PUBLISHED
     }
 }
