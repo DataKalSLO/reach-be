@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using HourglassServer.Data;
 using HourglassServer.Data.Application.GraphModel;
+using HourglassServer.Data.DataManipulation.DbSetOperations;
 using HourglassServer.Data.DataManipulation.GraphOperations;
 using System.Collections.Generic;
 
@@ -63,7 +64,11 @@ namespace HourglassServer.Controllers
                 // Add to the default graph table if administrator requests
                 if (HttpContext.User.HasRole(Role.Admin) && graphModel.GraphCategory != null)
                 {
-                    await GraphModelCreator.CreateDefaultGraph(this._context, graph.GraphId, graphModel.GraphCategory);
+                    await DefaultGraphOperations.PerformOperationForDefaultGraph(
+                        this._context,
+                        MutatorOperations.ADD,
+                        graph.GraphId,
+                        graphModel.GraphCategory);
                 }
 
                 return new OkObjectResult(graph);
@@ -86,7 +91,11 @@ namespace HourglassServer.Controllers
                 // Update the default graph table if administrator requests
                 if (HttpContext.User.HasRole(Role.Admin) && graphModel.GraphCategory != null)
                 {
-                    await GraphModelUpdater.UpdateDefaultGraph(this._context, graph.GraphId, graphModel.GraphCategory);
+                    await DefaultGraphOperations.PerformOperationForDefaultGraph(
+                        this._context,
+                        MutatorOperations.UPDATE,
+                        graph.GraphId,
+                        graphModel.GraphCategory);
                 }
 
                 return new OkObjectResult(graph);
