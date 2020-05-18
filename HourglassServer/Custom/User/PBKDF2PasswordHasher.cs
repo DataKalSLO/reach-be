@@ -3,7 +3,7 @@ using System;
 
 namespace HourglassServer
 {
-    public class PBKDF2PasswordHasher : IPasswordHasher
+    public class PBKDF2PasswordHasher : PasswordHasher
     {
         private int iterations;
 
@@ -12,7 +12,7 @@ namespace HourglassServer
             this.iterations = iterations;
         }
 
-        public string Hash(string password, byte[] salt, int hashLength)
+        protected override string Hash(string password, byte[] salt, int hashLength)
         {
             int hashByteCount = hashLength / 8;
             byte[] bytes = KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA1, iterations, hashByteCount);
