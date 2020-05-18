@@ -29,7 +29,7 @@ namespace HourglassServer
 
         public static bool HasRole(this ClaimsPrincipal user, Role role)
         {
-            return user.IsInRole(role.ToString());
+            return user.IsInRole(((int)role).ToString());
         }
 
         public static async Task<int> InsertAsync<TEntity>(this DbContext context, TEntity entity) where TEntity : class
