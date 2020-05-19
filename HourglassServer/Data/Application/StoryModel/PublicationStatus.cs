@@ -1,7 +1,7 @@
 ﻿
 namespace HourglassServer.Data.Application.StoryModel
 {
-    // ORDER MATTERS, do not change
+    // ORDER MATTERS. Values assigned by order and must match FEND order. 
     public enum PublicationStatus
     {
         DRAFT,

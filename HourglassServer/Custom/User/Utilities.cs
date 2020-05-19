@@ -1,12 +1,9 @@
-﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
+using HourglassServer.Custom.Exceptions;
 
 namespace HourglassServer
 {
@@ -17,12 +14,12 @@ namespace HourglassServer
             IList<Claim> userClaimsWithId = user.Claims
                 .Where(c => c.Type == ClaimTypes.Email).ToList();
             if (userClaimsWithId.Count < 1)
-                throw new PermissionDeniedException("No email claim type found for user.", "badValue");
+                throw new PermissionDeniedException("No email claim type found for user.", ErrorTag.BadValue);
 
             Claim userClaim = userClaimsWithId[0];
 
             if (userClaim == null)
-                throw new PermissionDeniedException("User claim is null.", "badValue");
+                throw new PermissionDeniedException("User claim is null.", ErrorTag.BadValue);
 
             return userClaim.Value;
         }

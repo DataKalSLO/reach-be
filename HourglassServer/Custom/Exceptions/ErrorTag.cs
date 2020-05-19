@@ -3,9 +3,9 @@ namespace HourglassServer.Custom.Exceptions
 {
     public class ErrorTag
     {
-        public const string badValue = "badValue";
-        public const string nowOwner = "notOwner";
-        public const string forbiddenRole = "forbiddenRole";
-        public const string queryFailed = "queryFailed";
+        public const string BadValue = "badValue";
+        public const string NotOwner = "notOwner";
+        public const string ForbiddenRole = "forbiddenRole";
+        public const string QueryFailed = "queryFailed";
     }
 }

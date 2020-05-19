@@ -33,7 +33,7 @@
             }
             catch (Exception e)
             {
-                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.badValue));
+                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.BadValue));
             }
         }
 
@@ -50,7 +50,7 @@
             }
             catch (Exception e)
             {
-                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.badValue));
+                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.BadValue));
             }
         }
 
@@ -68,13 +68,13 @@
                 await this.context.SaveChangesAsync();
                 return response;
             }
-            catch(PermissionDeniedException e)
+            catch (PermissionDeniedException e)
             {
                 return this.BadRequest(new HourglassError(e.ToString(), e.errorObj.tag));
             }
             catch (Exception e)
             {
-                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.badValue));
+                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.BadValue));
             }
         }
 
@@ -95,7 +95,7 @@
             }
             catch (Exception e)
             {
-                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.badValue));
+                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.BadValue));
             }
         }
 

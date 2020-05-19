@@ -24,8 +24,6 @@ namespace HourglassServer.Custom.StoryModel
 
     class StoryConstraintChecker
     {
-        
-
         public delegate bool permission(ClaimsPrincipal user, HourglassContext context, Story newStory);
 
         private Dictionary<StoryConstraint, permission> permissions = new Dictionary<StoryConstraint, permission>();
@@ -55,26 +53,26 @@ namespace HourglassServer.Custom.StoryModel
         private void CreatePermissions()
         {
             permissions.Add(StoryConstraint.HAS_USER_ACCOUNT, (user, context, newStory) => context.Person.Any(p => p.Email == user.GetUserId()));
-            permissionErrors.Add(StoryConstraint.HAS_USER_ACCOUNT, ("Account required for action.", ErrorTag.forbiddenRole));
+            permissionErrors.Add(StoryConstraint.HAS_USER_ACCOUNT, ("Account required for action.", ErrorTag.ForbiddenRole));
 
             permissions.Add(StoryConstraint.HAS_ADMIN_ACCOUNT, (user, context, newStory) => user.HasRole(Role.Admin));
-            permissionErrors.Add(StoryConstraint.HAS_ADMIN_ACCOUNT, ("Administrator account required for action.", ErrorTag.forbiddenRole));
+            permissionErrors.Add(StoryConstraint.HAS_ADMIN_ACCOUNT, ("Administrator account required for action.", ErrorTag.ForbiddenRole));
 
             permissions.Add(StoryConstraint.AUTHORIZED_USER_OWNS_STORY, HasOwnershipOfStory);
-            permissionErrors.Add(StoryConstraint.AUTHORIZED_USER_OWNS_STORY, ("Authorized user is not owner of story", ErrorTag.nowOwner));
+            permissionErrors.Add(StoryConstraint.AUTHORIZED_USER_OWNS_STORY, ("Authorized user is not owner of story", ErrorTag.NotOwner));
 
             permissions.Add(StoryConstraint.HAS_STORY_OWNERSHIP_OR_HAS_ADMIN_ACCOUNT,
                 (user, context, newStory) => SatisfiesAtLeastOnePermission(new StoryConstraint[] { StoryConstraint.AUTHORIZED_USER_OWNS_STORY, StoryConstraint.HAS_ADMIN_ACCOUNT }));
-            permissionErrors.Add(StoryConstraint.HAS_STORY_OWNERSHIP_OR_HAS_ADMIN_ACCOUNT, ("Authorized user is not owner of story or an administrator.", ErrorTag.forbiddenRole));
+            permissionErrors.Add(StoryConstraint.HAS_STORY_OWNERSHIP_OR_HAS_ADMIN_ACCOUNT, ("Authorized user is not owner of story or an administrator.", ErrorTag.ForbiddenRole));
 
             permissions.Add(StoryConstraint.HAS_DRAFT_STATUS, (user, context, newStory) => StoryFactory.GetPublicationStatus(newStory) == PublicationStatus.DRAFT);
-            permissionErrors.Add(StoryConstraint.HAS_DRAFT_STATUS, ("Action requires Story to be in DRAFT status.", ErrorTag.badValue));
+            permissionErrors.Add(StoryConstraint.HAS_DRAFT_STATUS, ("Action requires Story to be in DRAFT status.", ErrorTag.BadValue));
 
             permissions.Add(StoryConstraint.HAS_PERMISSION_TO_CHANGE_STATUS, HasPermissionToChangeStatus);
-            permissionErrors.Add(StoryConstraint.HAS_PERMISSION_TO_CHANGE_STATUS, ("User not permitted to update the status of this story.", ErrorTag.forbiddenRole));
+            permissionErrors.Add(StoryConstraint.HAS_PERMISSION_TO_CHANGE_STATUS, ("User not permitted to update the status of this story.", ErrorTag.ForbiddenRole));
 
             permissions.Add(StoryConstraint.STORY_EXISTS_WITH_ID, (user, context, newStory) => context.Story.Any(story => story.StoryId == newStory.StoryId));
-            permissionErrors.Add(StoryConstraint.STORY_EXISTS_WITH_ID, ("Could not find an instance of given story.", ErrorTag.queryFailed));
+            permissionErrors.Add(StoryConstraint.STORY_EXISTS_WITH_ID, ("Could not find an instance of given story.", ErrorTag.QueryFailed));
         }
 
         public void AssertAtLeastOnePermission(StoryConstraint[] constraints)
