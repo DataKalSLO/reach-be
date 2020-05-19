@@ -11,7 +11,7 @@ using HourglassServer.Models.Persistent;
 
 namespace HourglassServer.Custom.StoryModel
 {
-    enum StoryActionConstraint
+    enum StoryConstraint
     {
         HAS_USER_ACCOUNT,
         HAS_ADMIN_ACCOUNT,
@@ -22,19 +22,19 @@ namespace HourglassServer.Custom.StoryModel
         STORY_EXISTS_WITH_ID
     }
 
-    class StoryPermissionCheckers
+    class StoryConstraintChecker
     {
         
 
         public delegate bool permission(ClaimsPrincipal user, HourglassContext context, Story newStory);
 
-        private Dictionary<StoryActionConstraint, permission> permissions = new Dictionary<StoryActionConstraint, permission>();
-        private Dictionary<StoryActionConstraint, (string message, string tag)> permissionErrors = new Dictionary<StoryActionConstraint, (string message, string tag)>();
+        private Dictionary<StoryConstraint, permission> permissions = new Dictionary<StoryConstraint, permission>();
+        private Dictionary<StoryConstraint, (string message, string tag)> permissionErrors = new Dictionary<StoryConstraint, (string message, string tag)>();
         private ClaimsPrincipal user;
         private Story newStory;
         private HourglassContext context;
 
-        public StoryPermissionCheckers(ClaimsPrincipal user, HourglassContext context)
+        public StoryConstraintChecker(ClaimsPrincipal user, HourglassContext context)
         {
             this.user = user;
             this.context = context;
@@ -42,55 +42,55 @@ namespace HourglassServer.Custom.StoryModel
             CreatePermissions();
         }
 
-        public StoryPermissionCheckers(ClaimsPrincipal user, HourglassContext context, StoryApplicationModel newStory) : this(user, context)
+        public StoryConstraintChecker(ClaimsPrincipal user, HourglassContext context, StoryApplicationModel newStory) : this(user, context)
         {
             this.newStory = StoryFactory.CreateStoryFromStoryModel(newStory);
         }
 
-        public StoryPermissionCheckers(ClaimsPrincipal user, HourglassContext context, Story newStory) : this(user, context)
+        public StoryConstraintChecker(ClaimsPrincipal user, HourglassContext context, Story newStory) : this(user, context)
         {
             this.newStory = newStory;
         }
 
         private void CreatePermissions()
         {
-            permissions.Add(StoryActionConstraint.HAS_USER_ACCOUNT, (user, context, newStory) => context.Person.Any(p => p.Email == user.GetUserId()));
-            permissionErrors.Add(StoryActionConstraint.HAS_USER_ACCOUNT, ("Account required for action.", ErrorTag.forbiddenRoleTag));
+            permissions.Add(StoryConstraint.HAS_USER_ACCOUNT, (user, context, newStory) => context.Person.Any(p => p.Email == user.GetUserId()));
+            permissionErrors.Add(StoryConstraint.HAS_USER_ACCOUNT, ("Account required for action.", ErrorTag.forbiddenRole));
 
-            permissions.Add(StoryActionConstraint.HAS_ADMIN_ACCOUNT, (user, context, newStory) => user.HasRole(Role.Admin));
-            permissionErrors.Add(StoryActionConstraint.HAS_ADMIN_ACCOUNT, ("Administrator account required for action.", ErrorTag.forbiddenRoleTag));
+            permissions.Add(StoryConstraint.HAS_ADMIN_ACCOUNT, (user, context, newStory) => user.HasRole(Role.Admin));
+            permissionErrors.Add(StoryConstraint.HAS_ADMIN_ACCOUNT, ("Administrator account required for action.", ErrorTag.forbiddenRole));
 
-            permissions.Add(StoryActionConstraint.AUTHORIZED_USER_OWNS_STORY, HasOwnershipOfStory);
-            permissionErrors.Add(StoryActionConstraint.AUTHORIZED_USER_OWNS_STORY, ("Authorized user is not owner of story", ErrorTag.nowOwnerTag));
+            permissions.Add(StoryConstraint.AUTHORIZED_USER_OWNS_STORY, HasOwnershipOfStory);
+            permissionErrors.Add(StoryConstraint.AUTHORIZED_USER_OWNS_STORY, ("Authorized user is not owner of story", ErrorTag.nowOwner));
 
-            permissions.Add(StoryActionConstraint.HAS_STORY_OWNERSHIP_OR_HAS_ADMIN_ACCOUNT,
-                (user, context, newStory) => SatisfiesAtLeastOnePermission(new StoryActionConstraint[] { StoryActionConstraint.AUTHORIZED_USER_OWNS_STORY, StoryActionConstraint.HAS_ADMIN_ACCOUNT }));
-            permissionErrors.Add(StoryActionConstraint.HAS_STORY_OWNERSHIP_OR_HAS_ADMIN_ACCOUNT, ("Authorized user is not owner of story or an administrator.", ErrorTag.forbiddenRoleTag));
+            permissions.Add(StoryConstraint.HAS_STORY_OWNERSHIP_OR_HAS_ADMIN_ACCOUNT,
+                (user, context, newStory) => SatisfiesAtLeastOnePermission(new StoryConstraint[] { StoryConstraint.AUTHORIZED_USER_OWNS_STORY, StoryConstraint.HAS_ADMIN_ACCOUNT }));
+            permissionErrors.Add(StoryConstraint.HAS_STORY_OWNERSHIP_OR_HAS_ADMIN_ACCOUNT, ("Authorized user is not owner of story or an administrator.", ErrorTag.forbiddenRole));
 
-            permissions.Add(StoryActionConstraint.HAS_DRAFT_STATUS, (user, context, newStory) => StoryFactory.GetPublicationStatus(newStory) == PublicationStatus.DRAFT);
-            permissionErrors.Add(StoryActionConstraint.HAS_DRAFT_STATUS, ("Action requires Story to be in DRAFT status.", ErrorTag.badValueTag));
+            permissions.Add(StoryConstraint.HAS_DRAFT_STATUS, (user, context, newStory) => StoryFactory.GetPublicationStatus(newStory) == PublicationStatus.DRAFT);
+            permissionErrors.Add(StoryConstraint.HAS_DRAFT_STATUS, ("Action requires Story to be in DRAFT status.", ErrorTag.badValue));
 
-            permissions.Add(StoryActionConstraint.HAS_PERMISSION_TO_CHANGE_STATUS, HasPermissionToChangeStatus);
-            permissionErrors.Add(StoryActionConstraint.HAS_PERMISSION_TO_CHANGE_STATUS, ("User not permitted to update the status of this story.", ErrorTag.forbiddenRoleTag));
+            permissions.Add(StoryConstraint.HAS_PERMISSION_TO_CHANGE_STATUS, HasPermissionToChangeStatus);
+            permissionErrors.Add(StoryConstraint.HAS_PERMISSION_TO_CHANGE_STATUS, ("User not permitted to update the status of this story.", ErrorTag.forbiddenRole));
 
-            permissions.Add(StoryActionConstraint.STORY_EXISTS_WITH_ID, (user, context, newStory) => context.Story.Any(story => story.StoryId == newStory.StoryId));
-            permissionErrors.Add(StoryActionConstraint.STORY_EXISTS_WITH_ID, ("Could not find an instance of given story.", ErrorTag.queryFailedTag));
+            permissions.Add(StoryConstraint.STORY_EXISTS_WITH_ID, (user, context, newStory) => context.Story.Any(story => story.StoryId == newStory.StoryId));
+            permissionErrors.Add(StoryConstraint.STORY_EXISTS_WITH_ID, ("Could not find an instance of given story.", ErrorTag.queryFailed));
         }
 
-        public void AssertAtLeastOnePermission(StoryActionConstraint[] constraints)
+        public void AssertAtLeastOnePermission(StoryConstraint[] constraints)
         {
             if (!SatisfiesAtLeastOnePermission(constraints))
                 ThrowPermissionException(constraints[0]);
         }
 
-        public void AssertAllPermissions(StoryActionConstraint[] constraints)
+        public void AssertAllPermissions(StoryConstraint[] constraints)
         {
-            (bool result, StoryActionConstraint? potentialFailingAction) = SatisfiesAllPermissions(constraints);
-            if (potentialFailingAction is StoryActionConstraint failingAction)
+            (bool result, StoryConstraint? potentialFailingAction) = SatisfiesAllPermissions(constraints);
+            if (potentialFailingAction is StoryConstraint failingAction)
                 ThrowPermissionException(failingAction);
         }
 
-        public void AssertPermission(StoryActionConstraint action)
+        public void AssertPermission(StoryConstraint action)
         {
             if (!this.SatisfiesPermission(action))
                 ThrowPermissionException(action);
@@ -102,7 +102,7 @@ namespace HourglassServer.Custom.StoryModel
                 ThrowPermissionException(message, tag);
         }
 
-        public void ThrowPermissionException(StoryActionConstraint action)
+        public void ThrowPermissionException(StoryConstraint action)
         {
             throw new PermissionDeniedException(permissionErrors[action].message, permissionErrors[action].tag);
         }
@@ -116,11 +116,11 @@ namespace HourglassServer.Custom.StoryModel
          * Satisfies
          */
 
-        public bool SatisfiesAtLeastOnePermission(StoryActionConstraint[] constraints)
+        public bool SatisfiesAtLeastOnePermission(StoryConstraint[] constraints)
         {
             if (constraints.Count() == 0)
                 throw new InvalidOperationException("Expected at least one constraint.");
-            foreach (StoryActionConstraint constraint in constraints)
+            foreach (StoryConstraint constraint in constraints)
             {
                 if (this.SatisfiesPermission(constraint))
                     return true;
@@ -128,11 +128,11 @@ namespace HourglassServer.Custom.StoryModel
             return false;
         }
 
-        public (bool result, StoryActionConstraint? fail) SatisfiesAllPermissions(StoryActionConstraint[] constraints)
+        public (bool result, StoryConstraint? fail) SatisfiesAllPermissions(StoryConstraint[] constraints)
         {
             if (constraints.Count() == 0)
                 throw new InvalidOperationException("Expected at least one constraint.");
-            foreach (StoryActionConstraint constraint in constraints)
+            foreach (StoryConstraint constraint in constraints)
             {
                 if (!this.SatisfiesPermission(constraint))
                     return (false, constraint);
@@ -140,7 +140,7 @@ namespace HourglassServer.Custom.StoryModel
             return (true, null);
         }
 
-        public bool SatisfiesPermission(StoryActionConstraint action)
+        public bool SatisfiesPermission(StoryConstraint action)
         {
             return permissions[action](this.user, this.context, this.newStory);
         }
@@ -156,7 +156,7 @@ namespace HourglassServer.Custom.StoryModel
 
         private bool HasOwnershipOfStory(ClaimsPrincipal user, HourglassContext context, Story newStory)
         {
-            AssertPermission(StoryActionConstraint.HAS_USER_ACCOUNT);
+            AssertPermission(StoryConstraint.HAS_USER_ACCOUNT);
             return context.Story.Where(story => story.StoryId == newStory.StoryId).Select(story => story.UserId).Single() == user.GetUserId();
         }
 
@@ -170,7 +170,7 @@ namespace HourglassServer.Custom.StoryModel
             PublicationStatus newStatus = StoryFactory.GetPublicationStatus(newStory);
 
             if (newStatus == PublicationStatus.PUBLISHED) // moving to published story
-                return SatisfiesPermission(StoryActionConstraint.HAS_ADMIN_ACCOUNT);
+                return SatisfiesPermission(StoryConstraint.HAS_ADMIN_ACCOUNT);
             else
                 return true;
         }
