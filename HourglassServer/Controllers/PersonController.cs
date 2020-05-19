@@ -62,7 +62,7 @@ namespace HourglassServer
                 return BadRequest(new { errorName = "duplicateEmail" });
             }
 
-            var (salt, hash) = Utilities.HashPassword(model.Password);
+            var (salt, hash) = UserPasswordHasher.HashPassword(model.Password);
             await _context.InsertAsync(new Person
             {
                 Name = model.Name,
