@@ -8,6 +8,7 @@ using HourglassServer.Data.Application.GraphModel;
 using HourglassServer.Data.DataManipulation.DbSetOperations;
 using HourglassServer.Data.DataManipulation.GraphOperations;
 using System.Collections.Generic;
+using HourglassServer.Models.Persistent;
 
 namespace HourglassServer.Controllers
 {
@@ -15,19 +16,20 @@ namespace HourglassServer.Controllers
     public class GraphController : Controller
     {
         private readonly HourglassContext _context;
-        private DatasetDbContext _dbContext;
-
-        public GraphController(HourglassContext context, DatasetDbContext dbContext)
+        public GraphController(HourglassContext context)
         {
             _context = context;
-            _dbContext = dbContext;
         }
 
         [Route("getDefaultGraphs/{category}")]
         [HttpGet]
-        public ActionResult<List<storedGraph>> getDefaultGraphs(string category)
+        public async Task<IActionResult> getDefaultGraphs(string category)
         {
-            return _dbContext.getDefultGraphs(category).Result;
+            List<GraphApplicationModel> defaults = 
+                await DefaultGraphOperations.GetDefaultGraphsModelByCategory(this._context, category);
+
+            return new OkObjectResult(defaults);
+             
         }
 
         [HttpGet("{graphId}")]
