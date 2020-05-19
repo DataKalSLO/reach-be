@@ -36,9 +36,7 @@ namespace HourglassServerTest
                     TableName = tableName,
                     ColumnNames = columns,
                     DataTypes = new[] {"int", "string"},
-                    CityColumn = new[] {"none"},
-                    CountyColumn = new[] {"none"},
-                    ZipCodeColumn = new[] {"none"}
+                    GeoType = "none"
             };
 
             var result = util.formatTableQuery(tableName, _metadata);

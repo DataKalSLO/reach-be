@@ -26,6 +26,7 @@ namespace HourglassServer.Data
         public virtual DbSet<BookmarkStory> BookmarkStory { get; set; }
         public virtual DbSet<Category> Category { get; set; }
         public virtual DbSet<DatasetMetaData> DatasetMetaData { get; set; }
+        public virtual DbSet<DefaultGraph> DefaultGraph { get; set; }
         public virtual DbSet<GeoMap> GeoMap { get; set; }
         public virtual DbSet<GeoMapBlock> GeoMapBlock { get; set; }
         public virtual DbSet<GeoMapTables> GeoMapTables { get; set; }
@@ -164,15 +165,33 @@ namespace HourglassServer.Data
                     .HasColumnName("table_name")
                     .HasMaxLength(500);
 
-                entity.Property(e => e.CityColumn).HasColumnName("city_column");
-
                 entity.Property(e => e.ColumnNames).HasColumnName("column_names");
 
-                entity.Property(e => e.CountyColumn).HasColumnName("county_column");
+                entity.Property(e => e.GeoType).HasColumnName("geo_type");
 
                 entity.Property(e => e.DataTypes).HasColumnName("data_types");
+            });
 
-                entity.Property(e => e.ZipCodeColumn).HasColumnName("zip_code_column");
+            modelBuilder.Entity<DefaultGraph>(entity =>
+            {
+                entity.HasKey(e => e.GraphId)
+                    .HasName("default_graph_pkey");
+
+                entity.ToTable("default_graph");
+
+                entity.Property(e => e.GraphId)
+                    .HasColumnName("graph_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.Property(e => e.Category)
+                    .HasColumnName("category")
+                    .HasMaxLength(100);
+
+                entity.HasOne(d => d.Graph)
+                    .WithOne(p => p.DefaultGraph)
+                    .HasForeignKey<DefaultGraph>(d => d.GraphId)
+                    .HasConstraintName("default_graph_graph_id_fkey");
             });
 
             modelBuilder.Entity<GeoMap>(entity =>

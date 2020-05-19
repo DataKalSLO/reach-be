@@ -145,6 +145,19 @@ namespace HourglassServer.Data
             return dsMetadata;
         }
 
+        private string checkObjectString(object obj){
+             if (obj.Equals(null)){
+                return "";
+            }
+            return (string)obj;
+        }
+        private string[] checkObjectArray(object obj){
+            if (obj.Equals(null)){
+                return new string[] {};
+            }
+            return (string[])obj;
+        }
+
         // Fetch a copy of the metadata from the database
         //
         // Note: This function should only be used when updating the cache.
@@ -153,12 +166,10 @@ namespace HourglassServer.Data
 
             List<DatasetMetaData> dsMetadata = new List<DatasetMetaData>();
             DatasetMetaData meta_data;
-            string tableName;
-            string[] columnNames;
-            string[] columnTypes;
-            string[] cityColumn;
-            string[] zipCodeColumn;
-            string[] countyColumn;
+            object tableName;
+            object columnNames;
+            object columnTypes;
+            object geoType;
             var conn = getConnection();
             await conn.OpenAsync();
 
@@ -167,19 +178,16 @@ namespace HourglassServer.Data
             await using (var reader = await cmd.ExecuteReaderAsync())
             while (await reader.ReadAsync()) {
                 tableName = reader.GetString(0);
-                columnNames = (string[])reader.GetValue(1);
-                columnTypes = (string[])reader.GetValue(2);
-                cityColumn = (string[])reader.GetValue(3);
-                countyColumn = (string[])reader.GetValue(4);
-                zipCodeColumn = (string[])reader.GetValue(5);
+                columnNames = reader.GetValue(1);
+                columnTypes = reader.GetValue(2);
+                geoType = reader.GetValue(3);
 
                 meta_data = new DatasetMetaData{
-                    TableName = tableName,
-                    ColumnNames = columnNames,
-                    DataTypes = columnTypes,
-                    CityColumn = cityColumn,
-                    CountyColumn = countyColumn,
-                    ZipCodeColumn = zipCodeColumn
+                    TableName = checkObjectString(tableName),
+                    ColumnNames = checkObjectArray(columnNames),
+                    DataTypes = checkObjectArray(columnNames),
+                    GeoType = checkObjectString(geoType)
+
                 };
                 dsMetadata.Add(meta_data);
             }
