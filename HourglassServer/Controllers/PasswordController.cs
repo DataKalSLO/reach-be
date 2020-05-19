@@ -1,6 +1,8 @@
 ﻿using HourglassServer.Custom.User;
 using HourglassServer.Data;
+using HourglassServer.Models.Persistent;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Net.Mail;
 using System.Threading.Tasks;
@@ -62,6 +64,27 @@ https://joinreach.org/passwordreset?token=" + token + "&email=" + model.Email
                 }
             }
 
+            return Ok();
+        }
+
+        [HttpPut("{email}")]
+        public async Task<IActionResult> Put(string email, [FromBody]PasswordChangeModel model) // enforce user has permissions
+        {
+            Person person;
+            try
+            {
+                person = await _context.Person.SingleAsync(p => p.Email == email);
+            }
+            catch
+            {
+                return NotFound();
+            }
+
+            var (salt, hash) = Utilities.HashPassword(model.Password); // enforce password restrictions
+            person.Salt = salt;
+            person.PasswordHash = hash;
+
+            await _context.UpdateAsync(person);
             return Ok();
         }
     }

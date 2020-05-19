@@ -1,11 +1,8 @@
 using System;
 using HourglassServer.Data;
 using System.Threading.Tasks;
-//using HourglassServer.EndpointResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-//using System.IO;
-//using System.Linq;
 
 /**
  *----------------------------------------
@@ -31,11 +28,12 @@ namespace HourglassServer.Controllers{
             _context = context;
         }
 
-        // GET: api/DataSets?tableName=[string tableName]
+        // GET: api/DataSets?tableName=[string tableName]?columns=[string column] ...
+        //example api/DataSets?tableName=federal_contracts_fy2019&columns=id&columns=potential_total_value_of_award
         [HttpGet]
-        public ActionResult<DataSet> GetDataSet(string tableName) {
+        public ActionResult<DataSet> GetDataSet(string tableName, [FromQuery] string[] columns) {
             try {
-                return _context.getDataSet(tableName).Result;
+                return _context.getDataSet(tableName, columns).Result;
             }
             
             // Note: when using Task.Result on a task that faults, the exception that caused the
@@ -54,6 +52,11 @@ namespace HourglassServer.Controllers{
                     if (e is StaleRequestException) {
                         error = "Stale Request";
                         message = string.Format("Table no longer exists in database: {0}", tableName);
+                        break;
+                    }
+                    if (e is ColumnNotFoundException) {
+                        error = "Invalid Column Name";
+                        message = message = e.Message;
                         break;
                     }
                 }
