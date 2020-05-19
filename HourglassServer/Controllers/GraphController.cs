@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using HourglassServer.Data;
 using HourglassServer.Data.Application.GraphModel;
+using HourglassServer.Data.DataManipulation.DbSetOperations;
 using HourglassServer.Data.DataManipulation.GraphOperations;
 using System.Collections.Generic;
 
@@ -59,6 +60,17 @@ namespace HourglassServer.Controllers
             {
                 var currentUserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).Single().Value;
                 GraphApplicationModel graph = await GraphModelCreator.CreateGraph(this._context, graphModel, currentUserId);
+
+                // Add to the default graph table if administrator requests
+                if (HttpContext.User.HasRole(Role.Admin) && graphModel.GraphCategory != null)
+                {
+                    await DefaultGraphOperations.PerformOperationForDefaultGraph(
+                        this._context,
+                        MutatorOperations.ADD,
+                        graph.GraphId,
+                        graphModel.GraphCategory);
+                }
+
                 return new OkObjectResult(graph);
             }
             catch (Exception e)
@@ -75,6 +87,17 @@ namespace HourglassServer.Controllers
             {
                 var currentUserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).Single().Value;
                 GraphApplicationModel graph = await GraphModelUpdater.UpdateGraph(this._context, graphModel, currentUserId);
+
+                // Update the default graph table if administrator requests
+                if (HttpContext.User.HasRole(Role.Admin) && graphModel.GraphCategory != null)
+                {
+                    await DefaultGraphOperations.PerformOperationForDefaultGraph(
+                        this._context,
+                        MutatorOperations.UPDATE,
+                        graph.GraphId,
+                        graphModel.GraphCategory);
+                }
+
                 return new OkObjectResult(graph);
             }
             catch (PermissionDeniedException e)

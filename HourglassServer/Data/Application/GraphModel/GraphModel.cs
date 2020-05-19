@@ -9,6 +9,7 @@ namespace HourglassServer.Data.Application.GraphModel
         public string UserId { get; set; }
         public string GraphTitle { get; set; }
         public string GraphSVG { get; set; }
+        public string GraphCategory { get; set; }
         public GraphSourceModel[] DataSources { get; set; }
         public JObject GraphOptions { get; set; }
     }
