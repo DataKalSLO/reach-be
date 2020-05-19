@@ -3,8 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Net;
-    using System.Security.Claims;
     using System.Threading.Tasks;
     using HourglassServer.Custom.StoryModel;
     using HourglassServer.Data;
@@ -12,7 +10,6 @@
     using HourglassServer.Data.DataManipulation.StoryModel;
     using HourglassServer.Models.Persistent;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
 
     // TODO: Catch different types of exceptions and return descriptive tags for all routes.
     [DefaultControllerRoute]
