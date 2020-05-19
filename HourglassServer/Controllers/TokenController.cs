@@ -28,9 +28,7 @@ namespace HourglassServer
             try
             {
                 Person userWithEmail = _context.Person.First(p => p.Email == tokenModel.Email);
-                if (userWithEmail.Salt == null ||
-                    userWithEmail.PasswordHash == null ||
-                    !Utilities.PasswordMatches(tokenModel.Password, userWithEmail.Salt, userWithEmail.PasswordHash))
+                if (isUnauthorizedUser(tokenModel, _context))
                 {
                     return Unauthorized(new { tag = "badLogin" });
                 }
@@ -44,9 +42,14 @@ namespace HourglassServer
             catch (InvalidOperationException)
             {
                 return Unauthorized(new { tag = "badLogin" });
-            }
+            }    
+        }
 
-            
+        public static Boolean isUnauthorizedUser(TokenModel tokenModel, HourglassContext context){
+            Person userWithEmail = context.Person.First(p => p.Email == tokenModel.Email);
+            return userWithEmail.Salt == null ||
+                    userWithEmail.PasswordHash == null ||
+                    !Utilities.PasswordMatches(tokenModel.Password, userWithEmail.Salt, userWithEmail.PasswordHash);
         }
     }
 }
