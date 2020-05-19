@@ -27,6 +27,7 @@ namespace HourglassServer
             _jwtTokenService = jwtTokenService;
         }
 
+        [HttpPost]
         public async Task<IActionResult> Post([FromBody]EmailModel model)
         {
             string host = _configuration["Smtp:Host"];
@@ -67,13 +68,13 @@ https://joinreach.org/passwordreset?token=" + token + "&email=" + model.Email
             return Ok();
         }
 
-        [HttpPut("{email}")]
-        public async Task<IActionResult> Put(string email, [FromBody]PasswordChangeModel model) // enforce user has permissions
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody]PasswordChangeModel model) // enforce user has permissions
         {
             Person person;
             try
             {
-                person = await _context.Person.SingleAsync(p => p.Email == email);
+                person = await _context.Person.SingleAsync(p => p.Email == model.Email);
             }
             catch
             {
