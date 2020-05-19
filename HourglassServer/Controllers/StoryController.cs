@@ -98,7 +98,7 @@
             }
             catch (Exception e)
             {
-                return this.BadRequest(new HourglassError(e.ToString(), "badValue"));
+                return this.BadRequest(new HourglassError(e.ToString(), badValueTag));
             }
         }
 
