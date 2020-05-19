@@ -32,7 +32,7 @@ namespace HourglassServer.Controllers
         {
             try
             {
-                string userId = this.GetUserIdFromAuthenticationToken();
+                string userId = HttpContext.User.GetUserId();
                 List<string> geoMapIdsBookmarked = this.context.BookmarkGeoMap
                     .Where(geoMapBookmark => geoMapBookmark.UserId == userId)
                     .Select(bs => bs.GeoMapId).ToList();
@@ -49,13 +49,14 @@ namespace HourglassServer.Controllers
         {
             try
             {
-                string userId = this.GetUserIdFromAuthenticationToken();
+                string userId = HttpContext.User.GetUserId();
                 List<string> graphIdsBookmarked = this.context.BookmarkGraph
                     .Where(graphBookmark => graphBookmark.UserId == userId)
                     .Select(bs => bs.GraphId)
                     .ToList();
                 return new OkObjectResult(graphIdsBookmarked);
-            }catch (Exception e)
+            }
+            catch (Exception e)
             {
                 return this.BadRequest(new[] { new HourglassError(e.ToString(), ErrorType) });
             }
@@ -66,7 +67,7 @@ namespace HourglassServer.Controllers
         {
             try
             {
-                string userId = this.GetUserIdFromAuthenticationToken();
+                string userId = HttpContext.User.GetUserId();
                 List<string> storiesIdsBookmarked = this.context.BookmarkStory
                     .Where(storyBookmark => storyBookmark.UserId == userId)
                     .Select(bs => bs.StoryId)
@@ -126,22 +127,9 @@ namespace HourglassServer.Controllers
          * Private Generalized Methods. No public facing endpoints.
          */
 
-        private string GetUserIdFromAuthenticationToken()
-        {
-            Claim userToken = this.HttpContext.User.Claims
-                .Where(c => c.Type == ClaimTypes.Email)
-                .Single();
-            if (userToken == null)
-            {
-                throw new InvalidOperationException(MissingTokenError);
-            }
-
-            return userToken.Value;
-        }
-
         private void AssertAuthenticationTokenUserIdMatchesString(string userId)
         {
-            string tokenUserId = this.GetUserIdFromAuthenticationToken();
+            string tokenUserId = HttpContext.User.GetUserId();
             if (tokenUserId != userId)
             {
                 throw new InvalidOperationException(string.Format(NoOwnershipError, userId));
