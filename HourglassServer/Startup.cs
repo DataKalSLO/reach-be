@@ -32,6 +32,8 @@ namespace HourglassServer
             {
                 options.AddPolicy("UserExists", policy =>
                     policy.Requirements.Add(new UserExistsRequirement()));
+                options.AddPolicy("ValidPasswordResetToken", policy =>
+                    policy.RequireAssertion(PolicyHandlers.CheckValidPasswordResetToken));
             });
 
             services.AddTransient<IJwtTokenService, JwtTokenService>();

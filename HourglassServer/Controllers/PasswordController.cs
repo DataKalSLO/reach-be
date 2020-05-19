@@ -1,5 +1,7 @@
 ﻿using HourglassServer.Custom.User;
 using HourglassServer.Data;
+using HourglassServer.Models.Persistent;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -67,6 +69,7 @@ https://joinreach.org/passwordreset?token=" + token + "&email=" + model.Email
             return Ok();
         }
 
+        [Authorize(Policy = "ValidPasswordResetToken")]
         [HttpPut]
         public async Task<IActionResult> Put([FromBody]PasswordChangeModel model) // enforce user has permissions
         {
