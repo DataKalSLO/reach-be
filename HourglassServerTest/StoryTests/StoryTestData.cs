@@ -6,7 +6,16 @@ using HourglassServer.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
+/* Reminder to reader: This class is instantiated with the following entities
+ * in the DbContext:
+ *
+ * - Story
+ * - TextBlock + StoryBlock
+ * - GraphBlock + StoryBlock
+ * - GeoMapBlock + StoryBlock
+ */
 namespace HourglassServerTest.StoryTests
 {
     public class StoryTestData
@@ -16,12 +25,12 @@ namespace HourglassServerTest.StoryTests
         public string TextBlockId { get; }
         public string GeoMapBlockId { get; }
 
-        private readonly Mock<HourglassContext> MockContext;
-        private Mock<DbSet<Story>> StoryDbSet;
-        private Mock<DbSet<TextBlock>> TextBlockDbSet;
-        private Mock<DbSet<GraphBlock>> GraphBlockDbSet;
-        private Mock<DbSet<GeoMapBlock>> GeoMapBlockDbDSet;
-        private Mock<DbSet<StoryBlock>> StoryBlockDbSet;
+        //TODO: Prefix these variables with `Mock`
+        public readonly Mock<HourglassContext> MockContext;
+        public Mock<DbSet<Story>> StoryDbSet;
+        public Mock<DbSet<TextBlock>> TextBlockDbSet;
+        public Mock<DbSet<GraphBlock>> GraphBlockDbSet;
+        public Mock<DbSet<GeoMapBlock>> GeoMapBlockDbDSet;
 
         private const string EditorState = "{\"MeaningOfLife\": 42}";
         private const string UserId = "test@test.com";
@@ -56,7 +65,6 @@ namespace HourglassServerTest.StoryTests
             CreateQueryableMockSetWithItem(TextBlockDbSet, CreateTextBlock());
             CreateQueryableMockSetWithItem(GraphBlockDbSet, CreateGraphBlock());
             CreateQueryableMockSetWithItem(GeoMapBlockDbDSet, CreateGeoMapBlock());
-            CreateQueryableMockDbSet(StoryBlockDbSet, CreateListOfStoryBlocks());
             AddDbSetsToMockContext();
         }
 
@@ -66,13 +74,11 @@ namespace HourglassServerTest.StoryTests
             TextBlockDbSet = new Mock<DbSet<TextBlock>>();
             GraphBlockDbSet = new Mock<DbSet<GraphBlock>>();
             GeoMapBlockDbDSet = new Mock<DbSet<GeoMapBlock>>();
-            StoryBlockDbSet = new Mock<DbSet<StoryBlock>>();
 
             CreateQueryableMockDbSet(StoryDbSet, new List<Story>());
             CreateQueryableMockDbSet(TextBlockDbSet, new List<TextBlock>());
             CreateQueryableMockDbSet(GraphBlockDbSet, new List<GraphBlock>());
             CreateQueryableMockDbSet(GeoMapBlockDbDSet, new List<GeoMapBlock>());
-            CreateQueryableMockDbSet(StoryBlockDbSet, new List<StoryBlock>());
         }
 
         private void AddDbSetsToMockContext()
@@ -81,7 +87,6 @@ namespace HourglassServerTest.StoryTests
             MockContext.Setup(m => m.TextBlock).Returns(TextBlockDbSet.Object);
             MockContext.Setup(m => m.GraphBlock).Returns(GraphBlockDbSet.Object);
             MockContext.Setup(m => m.GeoMapBlock).Returns(GeoMapBlockDbDSet.Object);
-            MockContext.Setup(m => m.StoryBlock).Returns(StoryBlockDbSet.Object);
         }
 
         private Mock<DbSet<T>> CreateQueryableMockSetWithItem<T>(Mock<DbSet<T>> mockSet,T item) where T : class
@@ -99,29 +104,9 @@ namespace HourglassServerTest.StoryTests
             mockSet.As<IQueryable<T>>().Setup(m => m.GetEnumerator()).Returns(queryableList.GetEnumerator());
             mockSet.Setup(d => d.Add(It.IsAny<T>())).Callback<T>((s) => sourceList.Add(s));
             mockSet.Setup(d => d.Remove(It.IsAny<T>())).Callback<T>((s) => sourceList.Remove(s));
+            //TODO: Find a way to mock both `Find` AND `Any` DbSet methods for testing updating stories.
             //TODO: Find a way to moq updating items in list.
             return mockSet;
-        }
-
-        private List<StoryBlock> CreateListOfStoryBlocks()
-        {
-            List<StoryBlockModel> storyBlockModels= CreateListOfStoryBlockModels();
-            List<StoryBlock> storyBlocks = new List<StoryBlock>
-            {
-                StoryFactory.CreateStoryBlockFromStoryBlockModel(storyBlockModels[0], StoryId),
-                StoryFactory.CreateStoryBlockFromStoryBlockModel(storyBlockModels[1], StoryId),
-                StoryFactory.CreateStoryBlockFromStoryBlockModel(storyBlockModels[2], StoryId)
-            };
-            return storyBlocks;
-        }
-
-        private List<StoryBlockModel> CreateListOfStoryBlockModels()
-        {
-            List<StoryBlockModel> storyBlocks = new List<StoryBlockModel>();
-            storyBlocks.Add(new StoryBlockModel(CreateTextBlock(), 0));
-            storyBlocks.Add(new StoryBlockModel(CreateGeoMapBlock(), 1));
-            storyBlocks.Add(new StoryBlockModel(CreateGraphBlock(), 2));
-            return storyBlocks;
         }
 
         private Story CreateStory()
@@ -140,6 +125,8 @@ namespace HourglassServerTest.StoryTests
         {
             return new TextBlock
             {
+                StoryId = StoryId,
+                BlockPosition = 0,
                 BlockId = this.TextBlockId,
                 EditorState = EditorState
             };
@@ -149,6 +136,8 @@ namespace HourglassServerTest.StoryTests
         {
             return new GraphBlock
             {
+                StoryId = StoryId,
+                BlockPosition = 1,
                 BlockId = GraphBlockId,
                 GraphId = CreateUUID()
             };
@@ -158,6 +147,8 @@ namespace HourglassServerTest.StoryTests
         {
             return new GeoMapBlock
             {
+                StoryId = StoryId,
+                BlockPosition = 2,
                 BlockId = GeoMapBlockId,
                 GeoMapId = CreateUUID()
             };

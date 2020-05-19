@@ -70,31 +70,33 @@ namespace HourglassServer
                 Email = model.Email,
                 Role = (int) newRole,
                 Salt = salt,
-                PasswordHash = hash
+                PasswordHash = hash,
+                Occupation = model.Occupation == "" ? null : model.Occupation,
+                NotificationsEnabled = model.NotificationsEnabled
             });
 
             return Ok(new { email = model.Email });
         }
 
         [HttpPut("{email}")]
-        public async Task<IActionResult> Put(string email, [FromBody]PasswordChangeModel model) // enforce user has permissions
+        public async Task<IActionResult> Put(string email, [FromBody]UserSettingsModel userSettings)
         {
             Person person;
             try
             {
                 person = await _context.Person.SingleAsync(p => p.Email == email);
             }
-            catch
+            catch (InvalidOperationException)
             {
-                return NotFound();
+                return BadRequest(new { errorName = "unusedEmail" });
             }
 
-            var (salt, hash) = Utilities.HashPassword(model.Password); // enforce password restrictions
-            person.Salt = salt;
-            person.PasswordHash = hash;
+            person.Name = userSettings.Name ?? person.Name;
+            person.Occupation = userSettings.Occupation ?? person.Occupation;
+            person.NotificationsEnabled = userSettings.NotificationsEnabled ?? person.NotificationsEnabled;
 
             await _context.UpdateAsync(person);
-            return Ok();
+            return Ok(new { email });
         }
 
         [UserExists]

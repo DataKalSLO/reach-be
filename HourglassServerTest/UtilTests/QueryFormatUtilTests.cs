@@ -2,23 +2,24 @@ using HourglassServer.Data;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System;
+using HourglassServer.Models.Persistent;
 
 namespace HourglassServerTest
 {
     [TestClass]
     public class QueryFormatUtilTest
     {
-        private List<DatasetMetadata> _metadata = new List<DatasetMetadata>()
+        private List<DatasetMetaData> _metadata = new List<DatasetMetaData>()
         {
-            new DatasetMetadata() {
+            new DatasetMetaData() {
                 TableName = "table_1",
                 ColumnNames = new String[] {"col_1"},
-                ColumnTypes = new String[] {"type_1"}
+                DataTypes = new String[] {"type_1"}
             },
-            new DatasetMetadata() {
+            new DatasetMetaData() {
                 TableName = "table_2",
                 ColumnNames = new String[] {"col_a, col_b"},
-                ColumnTypes = new String[] {"type_2", "type_2"}
+                DataTypes = new String[] {"type_2", "type_2"}
             }
         };
 
@@ -28,10 +29,19 @@ namespace HourglassServerTest
             var util = new QueryFormatUtil();
 
             var tableName = "table_1";
+            var columns = new[] {"string_1", "string_2"};
             var expectedResult = true;
-            var expectedQuery = "SELECT * FROM table_1";
+            var expectedQuery = "SELECT string_1, string_2 FROM datasets.table_1";
+            var meta_data = new DatasetMetaData{
+                    TableName = tableName,
+                    ColumnNames = columns,
+                    DataTypes = new[] {"int", "string"},
+                    GeoType = "none"
+            };
 
-            var result = util.formatSelectFullDatasetQuery(tableName, _metadata);
+            var result = util.formatTableQuery(tableName, _metadata);
+            var result2 = util.createQuery(meta_data, columns);
+
 
             Assert.AreEqual(result, expectedResult);
             Assert.AreEqual(util.getQuery(), expectedQuery);
@@ -45,7 +55,7 @@ namespace HourglassServerTest
             var tableName = "non_existant";
             var expectedResult = false;
 
-            var result = util.formatSelectFullDatasetQuery(tableName, _metadata);
+            var result = util.formatTableQuery(tableName, _metadata);
 
             Assert.AreEqual(result, expectedResult);
             Assert.ThrowsException<InvalidOperationException>(util.getQuery);
@@ -56,10 +66,10 @@ namespace HourglassServerTest
         public void TestFormatSelectFullDatasetQuery_NoMetadata()
         {
             var util = new QueryFormatUtil();      
-            List<DatasetMetadata> emptyMetadata = new List<DatasetMetadata>();
+            List<DatasetMetaData> emptyMetadata = new List<DatasetMetaData>();
 
             var expectedResult = false;
-            var result = util.formatSelectFullDatasetQuery("some_table", emptyMetadata);
+            var result = util.formatTableQuery("some_table", emptyMetadata);
 
             Assert.AreEqual(result, expectedResult);
             Assert.IsNotNull(util.Error);

@@ -24,6 +24,8 @@ Bin/
 obj/
 Obj/
 
+*.pyc
+
 # Visual Studio 2015 cache/options directory
 .vs/
 /wwwroot/dist/
@@ -232,6 +234,9 @@ _Pvt_Extensions
 .fake/
 
 storage.ide-shm
+
+# Python cache
+__pycache__/
 
 # ignore appsettings configuration files
 **/appsettings.json

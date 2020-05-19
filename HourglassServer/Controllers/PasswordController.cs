@@ -1,6 +1,7 @@
 ﻿using HourglassServer.Custom.User;
 using HourglassServer.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Net.Mail;
 using System.Threading.Tasks;
@@ -25,6 +26,7 @@ namespace HourglassServer
             _jwtTokenService = jwtTokenService;
         }
 
+        [HttpPost]
         public async Task<IActionResult> Post([FromBody]EmailModel model)
         {
             string host = _configuration["Smtp:Host"];
@@ -48,8 +50,8 @@ namespace HourglassServer
                         model.Email,
                         "Reach - Change your password",
                         @"Follow this link to change your password:
-                        If you did not make a password change request, ignore this email.
-                        https://joinreach.org/passwordreset?token=" + token + "&email" + model.Email
+If you did not make a password change request, ignore this email.
+https://joinreach.org/passwordreset?token=" + token + "&email=" + model.Email
                     );
                 }
                 catch (SmtpFailedRecipientException)
@@ -62,6 +64,27 @@ namespace HourglassServer
                 }
             }
 
+            return Ok();
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody]PasswordChangeModel model) // enforce user has permissions
+        {
+            Person person;
+            try
+            {
+                person = await _context.Person.SingleAsync(p => p.Email == model.Email);
+            }
+            catch
+            {
+                return NotFound();
+            }
+
+            var (salt, hash) = Utilities.HashPassword(model.Password); // enforce password restrictions
+            person.Salt = salt;
+            person.PasswordHash = hash;
+
+            await _context.UpdateAsync(person);
             return Ok();
         }
     }
