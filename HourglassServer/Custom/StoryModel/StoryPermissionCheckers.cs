@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
+using HourglassServer.Custom.Exceptions;
 using HourglassServer.Data;
 using HourglassServer.Data.Application.StoryModel;
 using HourglassServer.Data.DataManipulation.StoryModel;
 using HourglassServer.Models.Persistent;
-using Microsoft.EntityFrameworkCore;
 
 namespace HourglassServer.Custom.StoryModel
 {
@@ -23,10 +24,7 @@ namespace HourglassServer.Custom.StoryModel
 
     class StoryPermissionCheckers
     {
-        public const string badValueTag = "badValue";
-        public const string nowOwnerTag = "notOwner";
-        public const string forbiddenRoleTag = "forbiddenRole";
-        public const string queryFailedTag = "queryFailed";
+        
 
         public delegate bool permission(ClaimsPrincipal user, HourglassContext context, Story newStory);
 
@@ -57,26 +55,26 @@ namespace HourglassServer.Custom.StoryModel
         private void CreatePermissions()
         {
             permissions.Add(StoryActionConstraint.HAS_USER_ACCOUNT, (user, context, newStory) => context.Person.Any(p => p.Email == user.GetUserId()));
-            permissionErrors.Add(StoryActionConstraint.HAS_USER_ACCOUNT, ("Account required for action.", forbiddenRoleTag));
+            permissionErrors.Add(StoryActionConstraint.HAS_USER_ACCOUNT, ("Account required for action.", ErrorTag.forbiddenRoleTag));
 
             permissions.Add(StoryActionConstraint.HAS_ADMIN_ACCOUNT, (user, context, newStory) => user.HasRole(Role.Admin));
-            permissionErrors.Add(StoryActionConstraint.HAS_ADMIN_ACCOUNT, ("Administrator account required for action.", forbiddenRoleTag));
+            permissionErrors.Add(StoryActionConstraint.HAS_ADMIN_ACCOUNT, ("Administrator account required for action.", ErrorTag.forbiddenRoleTag));
 
             permissions.Add(StoryActionConstraint.AUTHORIZED_USER_OWNS_STORY, HasOwnershipOfStory);
-            permissionErrors.Add(StoryActionConstraint.AUTHORIZED_USER_OWNS_STORY, ("Authorized user is not owner of story", nowOwnerTag));
+            permissionErrors.Add(StoryActionConstraint.AUTHORIZED_USER_OWNS_STORY, ("Authorized user is not owner of story", ErrorTag.nowOwnerTag));
 
             permissions.Add(StoryActionConstraint.HAS_STORY_OWNERSHIP_OR_HAS_ADMIN_ACCOUNT,
                 (user, context, newStory) => SatisfiesAtLeastOnePermission(new StoryActionConstraint[] { StoryActionConstraint.AUTHORIZED_USER_OWNS_STORY, StoryActionConstraint.HAS_ADMIN_ACCOUNT }));
-            permissionErrors.Add(StoryActionConstraint.HAS_STORY_OWNERSHIP_OR_HAS_ADMIN_ACCOUNT, ("Authorized user is not owner of story or an administrator.", forbiddenRoleTag));
+            permissionErrors.Add(StoryActionConstraint.HAS_STORY_OWNERSHIP_OR_HAS_ADMIN_ACCOUNT, ("Authorized user is not owner of story or an administrator.", ErrorTag.forbiddenRoleTag));
 
             permissions.Add(StoryActionConstraint.HAS_DRAFT_STATUS, (user, context, newStory) => StoryFactory.GetPublicationStatus(newStory) == PublicationStatus.DRAFT);
-            permissionErrors.Add(StoryActionConstraint.HAS_DRAFT_STATUS, ("Action requires Story to be in DRAFT status.", badValueTag));
+            permissionErrors.Add(StoryActionConstraint.HAS_DRAFT_STATUS, ("Action requires Story to be in DRAFT status.", ErrorTag.badValueTag));
 
             permissions.Add(StoryActionConstraint.HAS_PERMISSION_TO_CHANGE_STATUS, HasPermissionToChangeStatus);
-            permissionErrors.Add(StoryActionConstraint.HAS_PERMISSION_TO_CHANGE_STATUS, ("User not permitted to update the status of this story.", forbiddenRoleTag));
+            permissionErrors.Add(StoryActionConstraint.HAS_PERMISSION_TO_CHANGE_STATUS, ("User not permitted to update the status of this story.", ErrorTag.forbiddenRoleTag));
 
             permissions.Add(StoryActionConstraint.STORY_EXISTS_WITH_ID, (user, context, newStory) => context.Story.Any(story => story.StoryId == newStory.StoryId));
-            permissionErrors.Add(StoryActionConstraint.STORY_EXISTS_WITH_ID, ("Could not find an instance of given story.", queryFailedTag));
+            permissionErrors.Add(StoryActionConstraint.STORY_EXISTS_WITH_ID, ("Could not find an instance of given story.", ErrorTag.queryFailedTag));
         }
 
         public void AssertAtLeastOnePermission(StoryActionConstraint[] constraints)

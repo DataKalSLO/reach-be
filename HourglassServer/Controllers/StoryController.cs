@@ -9,13 +9,14 @@
     using HourglassServer.Data.Application.StoryModel;
     using HourglassServer.Data.DataManipulation.StoryModel;
     using HourglassServer.Models.Persistent;
+    using HourglassServer.Custom.Exceptions;
     using Microsoft.AspNetCore.Mvc;
 
     // TODO: Catch different types of exceptions and return descriptive tags for all routes.
     [DefaultControllerRoute]
     public class StoryController : Controller
     {
-        private const string badValueTag = "badValue";
+        
         private readonly HourglassContext context;
 
         public StoryController(HourglassContext context)
@@ -33,7 +34,7 @@
             }
             catch (Exception e)
             {
-                return this.BadRequest(new HourglassError(e.ToString(), badValueTag));
+                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.badValueTag));
             }
         }
 
@@ -50,7 +51,7 @@
             }
             catch (Exception e)
             {
-                return this.BadRequest(new HourglassError(e.ToString(), badValueTag));
+                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.badValueTag));
             }
         }
 
@@ -74,7 +75,7 @@
             }
             catch (Exception e)
             {
-                return this.BadRequest(new HourglassError(e.ToString(), badValueTag));
+                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.badValueTag));
             }
         }
 
@@ -95,7 +96,7 @@
             }
             catch (Exception e)
             {
-                return this.BadRequest(new HourglassError(e.ToString(), badValueTag));
+                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.badValueTag));
             }
         }
 
