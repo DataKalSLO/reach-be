@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using HourglassServer.Models.Persistent;
-using System;
+﻿using HourglassServer.Models.Persistent;
 using System.ComponentModel.DataAnnotations;
 
 namespace HourglassServer.Custom.Upload
@@ -8,6 +6,6 @@ namespace HourglassServer.Custom.Upload
     public class CovidUnemploymentUploadModel
     {
         [Required]
-        CovidUnemployment[] CovidUnemployment;
+        public CovidUnemployment[] CovidUnemployment;
     }
 }

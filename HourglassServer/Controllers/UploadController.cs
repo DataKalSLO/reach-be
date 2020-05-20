@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using HourglassServer.Custom.Upload;
+﻿using HourglassServer.Custom.Upload;
 using HourglassServer.Data;
 using HourglassServer.Models.Persistent;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace HourglassServer
 {
@@ -20,10 +20,7 @@ namespace HourglassServer
         [HttpPost("covid_unemployment")]
         public async Task<IActionResult> Post([FromBody] CovidUnemploymentUploadModel uploadData)
         {
-            await _context.InsertAsync(
-                uploadData.CovidUnemploymentUploadModel
-            );
-
+            await _context.InsertAsync(uploadData.CovidUnemployment);
             return Ok(new { tableName = "covid_unemployment"});
         }
     }
