@@ -20,7 +20,11 @@ namespace HourglassServer
         [HttpPost("covid_unemployment")]
         public async Task<IActionResult> Post([FromBody] CovidUnemploymentUploadModel uploadData)
         {
+            await _context.InsertAsync(
+                uploadData.CovidUnemploymentUploadModel
+            );
 
+            return Ok(new { tableName = "covid_unemployment"});
         }
     }
 }
