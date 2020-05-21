@@ -7,12 +7,13 @@ category
 census_data
 census_variables
 dataset_meta_data
+default_graph
 geo_map_tables
 geo_map
 geo_map_block
 graph
 graph_block
-graph_series
+graph_source
 location
 point
 story
