@@ -29,7 +29,6 @@ namespace HourglassServer.Controllers
                 await DefaultGraphOperations.GetDefaultGraphsModelByCategory(this._context, category);
 
             return new OkObjectResult(defaults);
-
         }
 
         [HttpGet("{graphId}")]
