@@ -21,7 +21,7 @@ namespace HourglassServer.Controllers
             _context = context;
         }
 
-        [Route("getDefaultGraphs/{category}")]
+        [Route("DefaultGraphs/{category}")]
         [HttpGet]
         public async Task<IActionResult> getDefaultGraphs(string category)
         {
@@ -29,6 +29,26 @@ namespace HourglassServer.Controllers
                 await DefaultGraphOperations.GetDefaultGraphsModelByCategory(this._context, category);
 
             return new OkObjectResult(defaults);
+        }
+
+        [UserExists]
+        [Route("UserGraphs")]
+        [HttpGet]
+        public async Task<IActionResult> getGraphsforUser()
+        {
+            try
+            {
+                var currentUserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).Single().Value;
+                List<GraphApplicationModel> graph = 
+                    await GraphModelRetriever.GetGraphApplictionModelsforUser(this._context, currentUserId);
+                return new OkObjectResult(graph);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(
+                    new HourglassError(e.ToString(), "User Error")
+                );
+            }
         }
 
         [HttpGet("{graphId}")]
