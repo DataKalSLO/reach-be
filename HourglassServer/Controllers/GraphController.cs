@@ -21,7 +21,7 @@ namespace HourglassServer.Controllers
             _context = context;
         }
 
-        [Route("getDefaultGraphs/{category}")]
+        [Route("DefaultGraphs/{category}")]
         [HttpGet]
         public async Task<IActionResult> getDefaultGraphs(string category)
         {
@@ -33,6 +33,7 @@ namespace HourglassServer.Controllers
         }
 
         [UserExists]
+        [Route("UserGraphs")]
         [HttpGet]
         public async Task<IActionResult> getGraphsforUser()
         {
