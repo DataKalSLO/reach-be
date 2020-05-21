@@ -25,11 +25,10 @@ namespace HourglassServer.Controllers
         [HttpGet]
         public async Task<IActionResult> getDefaultGraphs(string category)
         {
-            List<GraphApplicationModel> defaults = 
+            List<GraphApplicationModel> defaults =
                 await DefaultGraphOperations.GetDefaultGraphsModelByCategory(this._context, category);
 
             return new OkObjectResult(defaults);
-             
         }
 
         [UserExists]
@@ -148,7 +147,8 @@ namespace HourglassServer.Controllers
             {
                 var currentUserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).Single().Value;
                 await GraphModelDeleter.DeleteGraphById(_context, graphId, currentUserId);
-                return new OkObjectResult(String.Format("Successfully deleted graph with id {0}.", graphId));
+
+                return new OkObjectResult(new { graphId });
             }
             catch (ItemNotFoundException e)
             {
