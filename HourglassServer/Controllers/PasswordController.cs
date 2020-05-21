@@ -2,6 +2,7 @@
 using HourglassServer.Data;
 using HourglassServer.Models.Persistent;
 using Microsoft.AspNetCore.Authorization;
+using HourglassServer.Mail;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -18,14 +19,14 @@ namespace HourglassServer
     {
         private HourglassContext _context;
         private readonly IConfiguration _configuration;
-        private readonly IJwtTokenService _jwtTokenService;
+        private readonly EmailService _emailService;
 
         public PasswordController(HourglassContext context, IConfiguration configuration,
-            IJwtTokenService jwtTokenService)
+            EmailService emailService)
         {
             _context = context;
             _configuration = configuration;
-            _jwtTokenService = jwtTokenService;
+            _emailService = emailService;
         }
 
         [HttpPost]
@@ -42,16 +43,7 @@ namespace HourglassServer
                 client.Credentials = new System.Net.NetworkCredential(username, password);
                 client.EnableSsl = true;
 
-                string token = _jwtTokenService.BuildToken(ClaimBuilders.BuildPasswordResetClaims(model.Email));
-
-                var toSend = new MailMessage(
-                    "reachcentralcoast@gmail.com",
-                    model.Email,
-                    "Reach - Change your password",
-                    @"Follow this link to change your password:
-If you did not make a password change request, ignore this email.
-https://joinreach.org/passwordreset?token=" + token + "&email=" + model.Email
-                );
+                var toSend = _emailService.GeneratePasswordEmail(model.Email);
 
                 try
                 {

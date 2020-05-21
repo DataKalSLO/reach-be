@@ -1,4 +1,5 @@
 using HourglassServer.Data;
+using HourglassServer.Mail;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -37,6 +38,7 @@ namespace HourglassServer
             });
 
             services.AddTransient<IJwtTokenService, JwtTokenService>();
+            services.AddSingleton<EmailService>();
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
