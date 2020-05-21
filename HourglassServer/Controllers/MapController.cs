@@ -50,6 +50,7 @@ namespace HourglassServer.Controllers
             try
             {
                 // search for table name in metadata table
+                // if bad table name, Exception is thrown
                 var metaData = from meta in _context.DatasetMetaData
                                where meta.TableName == tableName
                                select meta;
@@ -68,6 +69,7 @@ namespace HourglassServer.Controllers
                 }
 
                 PolygonFeatureCollection collection = new PolygonFeatureCollection(features);
+                collection.Name = tableName;
                 return collection;
             }
             catch (Exception e)

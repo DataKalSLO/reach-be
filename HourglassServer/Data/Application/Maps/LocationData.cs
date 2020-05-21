@@ -8,7 +8,6 @@ namespace HourglassServer.Data.Application.Maps
         }
 
         public string GeoName;
-        public string GeoType;
         public int? Value;
     }
 }

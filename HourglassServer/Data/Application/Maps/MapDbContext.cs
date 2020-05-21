@@ -42,14 +42,13 @@ namespace HourglassServer.Data.Application.Maps
             var conn = getConnection();
             await conn.OpenAsync();
             string geoName;
-            string geoType;
             int? value;
 
             LocationData locationData;
             List<LocationData> dataRows = new List<LocationData>();
 
             // prepared statement not working here
-            var sql = "SELECT geo_name, geo_type, value from datasets." + tableName;
+            var sql = "SELECT geo_name, value from datasets." + tableName;
             using var cmd = new NpgsqlCommand(sql, conn);
             try
             {
@@ -57,13 +56,11 @@ namespace HourglassServer.Data.Application.Maps
                     while (await reader.ReadAsync())
                     {
                         geoName = reader.GetString(0);
-                        geoType = reader.GetString(1);
-                        value = (int?)reader.GetValue(2);
+                        value = (int?)reader.GetValue(1);
 
                         locationData = new LocationData
                         {
                             GeoName = geoName,
-                            GeoType = geoType,
                             Value = value
                         };
                         dataRows.Add(locationData);

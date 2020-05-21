@@ -30,8 +30,14 @@ namespace HourglassServer.Controllers
             try
             {
                 List<string> names = new List<string>();
-                IEnumerable<DatasetMetaData> metadata = await _context.DatasetMetaData.ToListAsync();
-                foreach (DatasetMetaData data in metadata)
+                // IEnumerable<DatasetMetaData> metadata = await _context.DatasetMetaData.ToListAsync();
+
+                var metaData = from meta in _context.DatasetMetaData
+                               join census in _context.CensusVariables
+                               on meta.TableName equals census.Name
+                               select meta;
+
+                foreach (DatasetMetaData data in metaData)
                 {
                     names.Add(data.TableName);
                 }
