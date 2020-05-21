@@ -19,10 +19,10 @@ namespace HourglassServer
     {
         private HourglassContext _context;
         private readonly IConfiguration _configuration;
-        private readonly EmailService _emailService;
+        private readonly IEmailService _emailService;
 
         public PasswordController(HourglassContext context, IConfiguration configuration,
-            EmailService emailService)
+            IEmailService emailService)
         {
             _context = context;
             _configuration = configuration;

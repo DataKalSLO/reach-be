@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace HourglassServer.Mail
 {
-    public class EmailService
+    public class EmailService : IEmailService
     {
         public const string ReachEmail = "reachcentralcoast@gmail.com";
 

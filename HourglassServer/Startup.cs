@@ -38,7 +38,7 @@ namespace HourglassServer
             });
 
             services.AddTransient<IJwtTokenService, JwtTokenService>();
-            services.AddSingleton<EmailService>();
+            services.AddSingleton<IEmailService, EmailService>();
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
