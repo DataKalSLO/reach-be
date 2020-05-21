@@ -3,6 +3,7 @@ using HourglassServer.Data;
 using HourglassServer.Models.Persistent;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace HourglassServer
 {
@@ -17,11 +18,11 @@ namespace HourglassServer
             _context = context;
         }
 
-        [HttpPost("covid_unemployment")]
+        [HttpPost("covidUnemployment")]
         public async Task<IActionResult> Post([FromBody] CovidUnemploymentUploadModel uploadData)
         {
             await _context.InsertAsync(uploadData.CovidUnemployment);
-            return Ok(new { tableName = "covid_unemployment"});
+            return Ok(new { rowsInserted = uploadData.CovidUnemployment.Count()});
         }
     }
 }
