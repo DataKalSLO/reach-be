@@ -34,8 +34,6 @@ namespace HourglassServer
             string host = _configuration["Smtp:Host"];
             int port = 25;
 
-            string token = _jwtTokenService.BuildToken(ClaimBuilders.BuildPasswordResetClaims(model.Email));
-
             using (var client = new SmtpClient(host, port))
             {
                 var username = _configuration["Smtp:Username"];
@@ -43,6 +41,8 @@ namespace HourglassServer
 
                 client.Credentials = new System.Net.NetworkCredential(username, password);
                 client.EnableSsl = true;
+
+                string token = _jwtTokenService.BuildToken(ClaimBuilders.BuildPasswordResetClaims(model.Email));
 
                 var toSend = new MailMessage(
                     "reachcentralcoast@gmail.com",
