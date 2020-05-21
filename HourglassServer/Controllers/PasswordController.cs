@@ -44,17 +44,18 @@ namespace HourglassServer
                 client.Credentials = new System.Net.NetworkCredential(username, password);
                 client.EnableSsl = true;
 
-                try
-                {
-                    await client.SendMailAsync
-                    (
-                        "reachcentralcoast@gmail.com", // Sender address
-                        model.Email,
-                        "Reach - Change your password",
-                        @"Follow this link to change your password:
+                var toSend = new MailMessage(
+                    "reachcentralcoast@gmail.com",
+                    model.Email,
+                    "Reach - Change your password",
+                    @"Follow this link to change your password:
 If you did not make a password change request, ignore this email.
 https://joinreach.org/passwordreset?token=" + token + "&email=" + model.Email
-                    );
+                );
+
+                try
+                {
+                    await client.SendMailAsync(toSend);
                 }
                 catch (SmtpFailedRecipientException)
                 {
