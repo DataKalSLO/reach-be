@@ -19,11 +19,6 @@ namespace HourglassServer.Controllers
             _context = context;
         }
 
-<<<<<<< HEAD
-        [HttpGet("{category}")]
-        public ActionResult<List<storedGraph>> getDefaultGraphs(string category){
-            return _context.getDefultGraphs(category).Result;
-=======
         [Route("getDefaultGraphs/{category}")]
         [HttpGet]
         public async Task<IActionResult> getDefaultGraphs(string category)
@@ -32,7 +27,6 @@ namespace HourglassServer.Controllers
                 await DefaultGraphOperations.GetDefaultGraphsModelByCategory(this._context, category);
 
             return new OkObjectResult(defaults);
->>>>>>> 843b14620618988334c2f2284e79384818941d71
         }
         // GET api/<controller>/5
         [HttpGet]
@@ -59,9 +53,6 @@ namespace HourglassServer.Controllers
         [HttpDelete("{id}")]
         public string Delete()
         {
-<<<<<<< HEAD
-            return "Deleting Graphs is not yet implemented";
-=======
             try
             {
                 var currentUserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).Single().Value;
@@ -81,7 +72,6 @@ namespace HourglassServer.Controllers
             {
                 return BadRequest(new HourglassError(e.ToString(), "UnknownError"));
             }
->>>>>>> 843b14620618988334c2f2284e79384818941d71
         }
     }
 }
