@@ -4,13 +4,13 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using HourglassServer.Custom.StoryModel;
+    using HourglassServer.Custom.Constraints;
     using HourglassServer.Data;
     using HourglassServer.Data.Application.StoryModel;
     using HourglassServer.Data.DataManipulation.StoryModel;
-    using HourglassServer.Models.Persistent;
     using HourglassServer.Custom.Exceptions;
     using Microsoft.AspNetCore.Mvc;
+    using System.Security.Claims;
 
     // TODO: Catch different types of exceptions and return descriptive tags for all routes.
     [DefaultControllerRoute]
@@ -42,11 +42,19 @@
         {
             try
             {
-                StoryConstraintChecker permissionChecker = new StoryConstraintChecker(HttpContext.User, this.context, new Story { StoryId = storyId });
-                permissionChecker.AssertPermission(StoryConstraint.STORY_EXISTS_WITH_ID);
+                StoryContraintChecker permissionChecker = new StoryContraintChecker(
+                    new ConstraintEnvironment(this.HttpContext.User, context),
+                    new StoryApplicationModel { Id = storyId });
+
+                permissionChecker.AssertConstraint(StoryConstraint.STORY_EXISTS_WITH_ID);
+
                 StoryApplicationModel storyWithId = StoryModelRetriever.GetStoryApplicationModelById(this.context, storyId);
                 await this.context.SaveChangesAsync();
                 return new OkObjectResult(storyWithId);
+            }
+            catch(HourglassError e)
+            {
+                return this.BadRequest(e);
             }
             catch (Exception e)
             {
@@ -59,18 +67,21 @@
         {
             try
             {
-                StoryConstraintChecker permissionChecker = new StoryConstraintChecker(HttpContext.User, this.context, storyFromBody);
-                permissionChecker.AssertPermission(StoryConstraint.HAS_USER_ACCOUNT);
-                storyFromBody.UserId = HttpContext.User.GetUserId();
+                StoryContraintChecker permissionChecker = new StoryContraintChecker(
+                    new ConstraintEnvironment(this.HttpContext.User, context),
+                    storyFromBody);
+
+                permissionChecker.AssertConstraint(StoryConstraint.HAS_USER_ACCOUNT);
+
                 IActionResult response = this.context.Story.Any(story => story.StoryId == storyFromBody.Id) ?
                     PerformStoryUpdate(storyFromBody, permissionChecker) :
                     PerformStoryCreation(storyFromBody, permissionChecker);
                 await this.context.SaveChangesAsync();
                 return response;
             }
-            catch (PermissionDeniedException e)
+            catch (HourglassError e)
             {
-                return this.BadRequest(new HourglassError(e.ToString(), e.errorObj.tag));
+                return this.BadRequest(e);
             }
             catch (Exception e)
             {
@@ -83,15 +94,23 @@
         {
             try
             {
-                StoryConstraintChecker permissionChecker = new StoryConstraintChecker(HttpContext.User, this.context, new Story() { StoryId = storyId });
-                permissionChecker.AssertAllPermissions(new StoryConstraint[]
+                StoryContraintChecker permissionChecker = new StoryContraintChecker(
+                    new ConstraintEnvironment(this.HttpContext.User, context),
+                    new StoryApplicationModel() { Id = storyId });
+
+                permissionChecker.AssertAllConstraints(new StoryConstraint[]
                 {
-                    StoryConstraint.STORY_EXISTS_WITH_ID,
+                    StoryConstraint.STORY_EXISTS_WITH_ID, //only checks the id set above
                     StoryConstraint.HAS_STORY_OWNERSHIP_OR_HAS_ADMIN_ACCOUNT
                 });
+
                 StoryModelDeleter.DeleteStoryById(this.context, storyId);
                 await this.context.SaveChangesAsync();
                 return new NoContentResult();
+            }
+            catch (HourglassError e)
+            {
+                return this.BadRequest(e);
             }
             catch (Exception e)
             {
@@ -103,16 +122,21 @@
          * Private Helper Methods
          */
 
-        private IActionResult PerformStoryCreation(StoryApplicationModel storyFromBody, StoryConstraintChecker permissionChecker)
+        private IActionResult PerformStoryCreation(StoryApplicationModel storyFromBody, StoryContraintChecker permissionChecker)
         {
-            permissionChecker.AssertPermission(StoryConstraint.HAS_DRAFT_STATUS);
+            permissionChecker.AssertConstraint(StoryConstraint.HAS_DRAFT_STATUS);
+            storyFromBody.UserId = HttpContext.User.GetUserId();  //Asserts that authenticated user is the owner
             StoryModelCreator.AddStoryApplicationModelToDatabaseContext(this.context, storyFromBody);
             return new CreatedAtRouteResult(nameof(this.GetStoryById), new { storyId = storyFromBody.Id }, storyFromBody);
         }
 
-        private IActionResult PerformStoryUpdate(StoryApplicationModel storyFromBody, StoryConstraintChecker permissionChecker)
+        private IActionResult PerformStoryUpdate(StoryApplicationModel storyFromBody, StoryContraintChecker permissionChecker)
         {
-            permissionChecker.AssertPermission(StoryConstraint.HAS_PERMISSION_TO_CHANGE_STATUS);
+            permissionChecker.AssertConstraint(StoryConstraint.HAS_PERMISSION_TO_CHANGE_STATUS);
+            storyFromBody.UserId = context.Story.
+                Where(story => story.StoryId == storyFromBody.Id)
+                .Select(story => story.UserId)
+                .Single(); //Fills potentially null value with real owner
             StoryModelUpdater.UpdateStoryApplicationModel(this.context, storyFromBody);
             return new NoContentResult();
         }

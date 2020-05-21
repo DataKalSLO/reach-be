@@ -7,5 +7,6 @@ namespace HourglassServer.Custom.Exceptions
         public const string NotOwner = "notOwner";
         public const string ForbiddenRole = "forbiddenRole";
         public const string QueryFailed = "queryFailed";
+        public const string NotFound = "notFound";
     }
 }
