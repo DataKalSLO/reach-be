@@ -20,11 +20,18 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
 
         public static async Task<List<GraphApplicationModel>> GetGraphApplictionModelsforUser(HourglassContext db, string userId)
         {
-            List<GraphApplicationModel> graphModels = new List<GraphApplicationModel>();
+            List<GraphApplicationModel> graphModels;
             List<Graph> graphsForUser = await db.Graph
                     .Include(g => g.GraphSource)
                     .Where(g => g.UserId == userId)
-                    .ToListAsync();
+                    .ToListAsync();       
+            graphModels = getListOfApplicationModel(graphsForUser);
+            return graphModels;
+        }
+
+        public static List<GraphApplicationModel> getListOfApplicationModel(List<Graph> graphsForUser)
+        {
+            List<GraphApplicationModel> graphModels = new List<GraphApplicationModel>();
             foreach (Graph graph in graphsForUser)
             {
                 GraphApplicationModel graphModel =  
