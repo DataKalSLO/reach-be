@@ -25,7 +25,8 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
                     .Include(g => g.GraphSource)
                     .Where(g => g.UserId == userId)
                     .ToListAsync();
-            foreach (Graph graph in graphsForUser){
+            foreach (Graph graph in graphsForUser)
+            {
                 GraphApplicationModel graphModel =  
                     GraphFactory.CreateGraphApplicationModel(graph, graph.GraphSource.ToArray());
                 graphModels.Add(graphModel);
