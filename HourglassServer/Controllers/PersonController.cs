@@ -1,13 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using HourglassServer.Data;
+using HourglassServer.Models.Persistent;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using HourglassServer.Data;
-using HourglassServer.Models.Persistent;
-using HourglassServer.Custom.User;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -68,7 +67,7 @@ namespace HourglassServer
             {
                 Name = model.Name,
                 Email = model.Email,
-                Role = (int) newRole,
+                Role = (int)newRole,
                 Salt = salt,
                 PasswordHash = hash,
                 Occupation = model.Occupation == "" ? null : model.Occupation,

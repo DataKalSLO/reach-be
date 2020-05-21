@@ -1,8 +1,8 @@
 ﻿using HourglassServer.Custom.User;
 using HourglassServer.Data;
+using HourglassServer.Mail;
 using HourglassServer.Models.Persistent;
 using Microsoft.AspNetCore.Authorization;
-using HourglassServer.Mail;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
