@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using HourglassServer.Data;
 using HourglassServer.Models.Persistent;
-using System.Collections.Generic;
+using HourglassServer.Custom.User;
 
 namespace HourglassServer
 {
@@ -42,7 +42,7 @@ namespace HourglassServer
                 return Unauthorized(new { tag = "badLogin" });
             }
 
-            string token = _jwtTokenService.BuildLoginToken(loggedInUser);
+            string token = _jwtTokenService.BuildToken(ClaimBuilders.BuildLoginClaims(loggedInUser));
 
             return Ok(new { email = tokenModel.Email, token });
         }

@@ -34,7 +34,7 @@ namespace HourglassServer
             string host = _configuration["Smtp:Host"];
             int port = 25;
 
-            string token = _jwtTokenService.BuildPasswordResetToken(model.Email);
+            string token = _jwtTokenService.BuildToken(ClaimBuilders.BuildPasswordResetClaims(model.Email));
 
             using (var client = new SmtpClient(host, port))
             {

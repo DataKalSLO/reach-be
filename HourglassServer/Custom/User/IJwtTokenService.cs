@@ -1,10 +1,10 @@
 ﻿using HourglassServer.Models.Persistent;
+using System.Security.Claims;
 
 namespace HourglassServer
 {
     public interface IJwtTokenService
     {
-        string BuildLoginToken(Person person);
-        string BuildPasswordResetToken(string email);
+        string BuildToken(Claim[] claims);
     }
 }
