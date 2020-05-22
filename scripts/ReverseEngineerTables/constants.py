@@ -20,7 +20,7 @@ constructor_header_with_configuration = "public %s(DbContextOptions<%s> options,
     context_file_name, context_file_name)
 
 # Paths
-path_to_project_folder = os.path.join("..", "..", "HourglassServer")
+path_to_project_folder = os.path.join("..", "HourglassServer")
 path_to_app_settings = os.path.join(path_to_project_folder, app_settings_file_name)
 path_to_table_to_generate_file = os.path.join(path_to_project_folder, tables_to_generate_file_name)
 path_to_models_output_dir = os.path.join(
