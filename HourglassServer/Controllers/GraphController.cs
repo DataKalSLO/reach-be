@@ -80,7 +80,7 @@ namespace HourglassServer.Controllers
             try
             {
                 var currentUserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).Single().Value;
-                GraphApplicationModel graph = await GraphModelCreator.CreateGraph(this._context, graphModel, currentUserId);
+                GraphApplicationModel graph = await graphModel.CreateGraph(this._context, currentUserId);
 
                 // Add to the default graph table if administrator requests
                 if (HttpContext.User.HasRole(Role.Admin) && graphModel.GraphCategory != null)
@@ -107,7 +107,7 @@ namespace HourglassServer.Controllers
             try
             {
                 var currentUserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).Single().Value;
-                GraphApplicationModel graph = await GraphModelUpdater.UpdateGraph(this._context, graphModel, currentUserId);
+                GraphApplicationModel graph = await graphModel.UpdateGraph(this._context, currentUserId);
 
                 // Update the default graph table if administrator requests
                 if (HttpContext.User.HasRole(Role.Admin) && graphModel.GraphCategory != null)

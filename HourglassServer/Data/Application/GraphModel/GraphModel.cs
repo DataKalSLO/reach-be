@@ -1,5 +1,7 @@
 using Newtonsoft.Json.Linq;
 using System;
+using System.Threading.Tasks;
+using HourglassServer.Data.DataManipulation.GraphOperations;
 
 namespace HourglassServer.Data.Application.GraphModel
 {
@@ -12,5 +14,12 @@ namespace HourglassServer.Data.Application.GraphModel
         public string GraphCategory { get; set; }
         public GraphSourceModel[] DataSources { get; set; }
         public JObject GraphOptions { get; set; }
+
+        public async Task<GraphApplicationModel> CreateGraph(HourglassContext db, string currentUserId) {
+            return await GraphModelCreator.CreateGraph(db, this, currentUserId);
+        }
+        public async Task<GraphApplicationModel> UpdateGraph(HourglassContext db, string currentUserId) {
+            return await GraphModelUpdater.UpdateGraph(db, this, currentUserId);
+        }
     }
 }

@@ -13,20 +13,7 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
     {
         public static async Task<GraphApplicationModel> UpdateGraph(HourglassContext db, GraphModel graphModel, string currentUserId)
         {
-            string graphOwnerId = await db.Graph
-                .Where(g => g.GraphId == graphModel.GraphId)
-                .Select(g => g.UserId)
-                .SingleAsync();
-
-            if (graphOwnerId != currentUserId)
-            {
-                throw new PermissionDeniedException(
-                    message: String.Format("Unable to modify. {0} is not the owner of graph {1}.",
-                                currentUserId,
-                                graphModel.GraphId),
-                    tag: "PermissionDenied"
-                );
-            }
+            string graphOwnerId = await GetGraphOwnerId(db, graphModel, currentUserId);
 
             // Append the userId from the session token to the graph model
             graphModel.UserId = currentUserId;
@@ -72,6 +59,24 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
             GraphSourceOperations.PerformOperationForGraphSources(db, MutatorOperations.DELETE, sourcesToRemove);
 
             await db.SaveChangesAsync();
+        }
+
+        private static async Task<string> GetGraphOwnerId(HourglassContext db, GraphModel graphModel, string currentUserId) {
+            string graphOwnerId = await db.Graph
+                .Where(g => g.GraphId == graphModel.GraphId)
+                .Select(g => g.UserId)
+                .SingleAsync();
+
+            if (graphOwnerId != currentUserId)
+            {
+                throw new PermissionDeniedException(
+                    message: String.Format("Unable to modify. {0} is not the owner of graph {1}.",
+                                currentUserId,
+                                graphModel.GraphId),
+                    tag: "PermissionDenied"
+                );
+            }
+            return graphOwnerId;
         }
     }
 }
