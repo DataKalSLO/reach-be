@@ -1,10 +1,10 @@
 import os
 
-from constants import context_file_name, path_to_table_to_generate_file, \
+from ReverseEngineerTables.constants import context_file_name, path_to_table_to_generate_file, \
     path_to_models_output_dir, path_to_app_settings, database_driver, overwrite_files, \
     output_dir_name, path_to_context_dir, app_settings_connection_string, path_to_project_file, \
     context_dir_name
-from remove_connection_string_from_db_context import remove_connection_string_from_db_context
+from ReverseEngineerTables.remove_connection_string_from_db_context import remove_connection_string_from_db_context
 
 """
 Background Info: https://docs.microsoft.com/en-us/ef/core/managing-schemas/scaffolding
