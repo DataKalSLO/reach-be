@@ -25,16 +25,13 @@ namespace HourglassServer.Controllers
         // GET: api/mapselection
         // gets all available datasets returned as an array of Strings
         [HttpGet]
-        public async Task<List<string>> GetZipCodes()
+        public async Task<List<string>> GetTableNames()
         {
             try
             {
                 List<string> names = new List<string>();
-                // IEnumerable<DatasetMetaData> metadata = await _context.DatasetMetaData.ToListAsync();
 
                 var metaData = from meta in _context.DatasetMetaData
-                               join census in _context.CensusVariables
-                               on meta.TableName equals census.Name
                                select meta;
 
                 foreach (DatasetMetaData data in metaData)
