@@ -7,6 +7,7 @@ namespace HourglassServer.Models.Persistent
     {
         public Point()
         {
+            Area = new HashSet<Area>();
             Location = new HashSet<Location>();
         }
 
@@ -14,6 +15,7 @@ namespace HourglassServer.Models.Persistent
         public decimal Longitude { get; set; }
         public decimal Latitude { get; set; }
 
+        public virtual ICollection<Area> Area { get; set; }
         public virtual ICollection<Location> Location { get; set; }
     }
 }

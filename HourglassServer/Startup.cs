@@ -1,4 +1,5 @@
 using HourglassServer.Data;
+using HourglassServer.Data.Application.Maps;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -26,6 +27,7 @@ namespace HourglassServer
         {
             services.AddDbContext<HourglassContext>();
             services.AddDbContext<DatasetDbContext>();
+            services.AddDbContext<MapDbContext>();
 
             services.AddScoped<IAuthorizationHandler, UserExistsHandler>();
             services.AddAuthorization(options =>

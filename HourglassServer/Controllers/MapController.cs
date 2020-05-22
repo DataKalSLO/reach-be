@@ -24,23 +24,6 @@ namespace HourglassServer.Controllers
             _dataContext = dataContext;
         }
 
-        private List<Point> GetPoints(string geoName)
-        {
-            // all rows in Area with specified zipcode name
-            var points = from area in _context.Area
-                         join point in _context.Point
-                             on area.PointId equals point.Id
-                         where area.Name == geoName
-                         select point;
-
-            List<Point> pts = new List<Point>();
-            foreach (Point pt in points)
-            {
-                pts.Add(pt);
-            }
-            return pts;
-        }
-
         // GET: api/map/[censusVar]
         // get PolygonFeatureCollection for given census variable description
         // get FC based on given data table name
@@ -49,27 +32,9 @@ namespace HourglassServer.Controllers
         {
             try
             {
-                // search for table name in metadata table
-                // if bad table name, Exception is thrown
-                var metaData = from meta in _context.DatasetMetaData
-                               where meta.TableName == tableName
-                               select meta;
-
-                // get location data from table
-                List<LocationData> dataSet = _dataContext.getLocationData(tableName).Result;
-                List<PolygonFeature> features = new List<PolygonFeature>();
-
-                // for each row of location data, get the latitude, longitude pairs
-                foreach (LocationData row in dataSet)
-                {
-                    List<Point> points = GetPoints(row.GeoName);
-                    // create feature from list of points
-                    PolygonFeature geom = new PolygonFeature(points, row.GeoName, row.Value);
-                    features.Add(geom);
-                }
-
-                PolygonFeatureCollection collection = new PolygonFeatureCollection(features);
-                collection.Name = tableName;
+                MapLocationRetriever retriever = new MapLocationRetriever();
+                PolygonFeatureCollection collection =
+                    retriever.GetPolygonFeatureCollection(tableName, _context, _dataContext);
                 return collection;
             }
             catch (Exception e)

@@ -25,6 +25,7 @@ namespace HourglassServer.Data
         public virtual DbSet<BookmarkGraph> BookmarkGraph { get; set; }
         public virtual DbSet<BookmarkStory> BookmarkStory { get; set; }
         public virtual DbSet<Category> Category { get; set; }
+        public virtual DbSet<CensusVariables> CensusVariables { get; set; }
         public virtual DbSet<DatasetMetaData> DatasetMetaData { get; set; }
         public virtual DbSet<DefaultGraph> DefaultGraph { get; set; }
         public virtual DbSet<GeoMap> GeoMap { get; set; }
@@ -57,16 +58,22 @@ namespace HourglassServer.Data
 
             modelBuilder.Entity<Area>(entity =>
             {
-                entity.HasKey(e => e.Name)
+                entity.HasKey(e => new { e.Name, e.PointId })
                     .HasName("area_pkey");
 
                 entity.ToTable("area");
 
                 entity.Property(e => e.Name)
                     .HasColumnName("name")
-                    .HasColumnType("character varying");
+                    .HasMaxLength(200);
 
-                entity.Property(e => e.Coordinates).HasColumnName("coordinates");
+                entity.Property(e => e.PointId).HasColumnName("point_id");
+
+                entity.HasOne(d => d.Point)
+                    .WithMany(p => p.Area)
+                    .HasForeignKey(d => d.PointId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("area_point_id_fkey");
             });
 
             modelBuilder.Entity<BookmarkGeoMap>(entity =>
@@ -154,6 +161,20 @@ namespace HourglassServer.Data
                     .HasMaxLength(500);
             });
 
+            modelBuilder.Entity<CensusVariables>(entity =>
+            {
+                entity.HasKey(e => e.Name)
+                    .HasName("census_variables_pkey");
+
+                entity.ToTable("census_variables", "datasets");
+
+                entity.Property(e => e.Name)
+                    .HasColumnName("name")
+                    .HasMaxLength(40);
+
+                entity.Property(e => e.Description).HasColumnName("description");
+            });
+
             modelBuilder.Entity<DatasetMetaData>(entity =>
             {
                 entity.HasKey(e => e.TableName)
@@ -166,9 +187,7 @@ namespace HourglassServer.Data
                     .HasMaxLength(500);
 
                 entity.Property(e => e.ColumnNames).HasColumnName("column_names");
-
                 entity.Property(e => e.GeoType).HasColumnName("geo_type");
-
                 entity.Property(e => e.DataTypes).HasColumnName("data_types");
             });
 
@@ -577,12 +596,6 @@ namespace HourglassServer.Data
                 entity.Property(e => e.Area)
                     .HasColumnName("area")
                     .HasColumnType("character varying");
-
-                entity.HasOne(d => d.AreaNavigation)
-                    .WithMany(p => p.ZipArea)
-                    .HasForeignKey(d => d.Area)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("zip_area_area_fkey");
 
                 entity.HasOne(d => d.ZipNavigation)
                     .WithMany(p => p.ZipArea)
