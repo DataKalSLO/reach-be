@@ -47,13 +47,11 @@ https://docs.microsoft.com/en-us/ef/core/miscellaneous/cli/dotnet
 
 https://www.nuget.org/packages/Npgsql.EntityFrameworkCore.PostgreSQL
 
-#### 4. Run script reverse_engineer_database_table
+#### 4. Run script: scaffold_script
 
-python reverse_engineer_database_table.py
+Navigate to hourglass-be/scripts and run the following commands:
 
-or
-
-python3 reverse_engineer_database_table.py
+python3 scaffold_script.py
 
 ## Resources
 https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?view=aspnetcore-3.1&tabs=visual-studio
