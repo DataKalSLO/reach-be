@@ -28,7 +28,7 @@ namespace HourglassServer.Controllers
         {
             try
             {
-                List<MetadataApplicationModel> metadata = await MetadataOperations.GetMetadata(_context, _cache);
+                List<MetadataApplicationModel> metadata = await _cache.GetMetadata(_context);
                 return new OkObjectResult(metadata);
             }
             catch (Exception e)

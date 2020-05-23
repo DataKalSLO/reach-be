@@ -61,7 +61,7 @@ namespace HourglassServer.Data
             QueryFormatUtil queryUtil = new QueryFormatUtil();
 
             // Get a copy of the metadata from the cache
-            List<MetadataApplicationModel> metadata = await MetadataOperations.GetMetadata(_dbContext, _cache);
+            List<MetadataApplicationModel> metadata = await _cache.GetMetadata(_dbContext);
 
             // Invoke query util to format a full dataset select query using the table name
             if (!queryUtil.formatTableQuery(tableName, metadata))
@@ -116,7 +116,7 @@ namespace HourglassServer.Data
 
                     // Expire the cache and throw an exception
                     _logger.LogDebug(String.Format("{0}: Expiring stale cache", nameof(getDataSet)));
-                    MetadataOperations.ExpireMetadataCache(_cache);
+                    _cache.ExpireMetadataCache();
 
                     throw new StaleRequestException(String.Format("Table no longer exists in database: {0}", tableName));
                 }

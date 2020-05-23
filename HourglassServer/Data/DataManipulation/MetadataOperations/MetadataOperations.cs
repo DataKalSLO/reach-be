@@ -8,14 +8,9 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace HourglassServer.Data.DataManipulation.MetadataOperations
 {
-    public class MetadataOperations
+    public static class MetadataOperations
     {
-        public static async Task<List<MetadataApplicationModel>> GetMetadata(HourglassContext db, IMemoryCache cache)
-        {
-            return await GetMetadataFromCache(db, cache);
-        }
-
-        public static async Task<List<MetadataApplicationModel>> GetMetadataFromCache(HourglassContext db, IMemoryCache cache)
+        public static async Task<List<MetadataApplicationModel>> GetMetadata(this IMemoryCache cache, HourglassContext db)
         {
             List<MetadataApplicationModel> metadata = new List<MetadataApplicationModel>();
 
@@ -29,10 +24,11 @@ namespace HourglassServer.Data.DataManipulation.MetadataOperations
             return metadata;
         }
 
-        public static void ExpireMetadataCache(IMemoryCache cache)
+        public static void ExpireMetadataCache(this IMemoryCache cache)
         {
             cache.Remove(CacheKeys.MetadataKey);
         }
+
         private static async Task<List<MetadataApplicationModel>> UpdateMetadataCache(HourglassContext db, IMemoryCache cache)
         {
             List<MetadataApplicationModel> metadata = new List<MetadataApplicationModel>();
