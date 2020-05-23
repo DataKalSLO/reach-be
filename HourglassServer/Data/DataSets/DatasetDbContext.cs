@@ -196,7 +196,7 @@ namespace HourglassServer.Data
             return dsMetadata;
         }
 
-        public async Task<List<storedGraph>> getDefultGraphs(string category){
+        public async Task<List<storedGraph>> getDefaultGraphs(string category){
             List<storedGraph> graphs = new List<storedGraph>();
             var conn = getConnection();
             await conn.OpenAsync();
