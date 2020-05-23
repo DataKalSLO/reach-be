@@ -1,46 +1,40 @@
-using HourglassServer.Data;
+using System;
 using System.Threading.Tasks;
-//using HourglassServer.EndpointResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using System.Collections.Generic;
-//using Microsoft.EntityFrameworkCore;
-//using System.IO;
-//using System.Linq;
-//using Npgsql;
-using HourglassServer.Models.Persistent;
+using HourglassServer.Data;
+using HourglassServer.Data.Application.MetadataModel;
+using HourglassServer.Data.DataManipulation.MetadataOperations;
 
-/**
- *----------------------------------------
- * Meta Data Controller class
- *----------------------------------------
- * This class provides access to MetaData API Methods
- * This class provides the following methods:
- * -GetMetaData
- *     -Using the [HttpGet] route endpoint,
- *      this method will return a the MetaData
- *      from for all the datasets as a list
- *      of MetaData Objects 
- *----------------------------------------
- */
-
-namespace HourglassServer.Controllers{
-
+namespace HourglassServer.Controllers
+{
     [DefaultControllerRoute]
-    public class MetaDataController : ControllerBase{
-        //create a Database context
-        private DatasetDbContext _context;
+    public class MetaDataController : Controller
+    {
+        private HourglassContext _context;
 
-        public MetaDataController(DatasetDbContext context)
+        private IMemoryCache _cache;
+
+        public MetaDataController(HourglassContext context,
+                IMemoryCache cache)
         {
-            //set DatabaseContext in MetaDataController constructor
             _context = context;
+            _cache = cache;
         }
 
-        // GET: api/MetaData
         [HttpGet]
-        public ActionResult<List<DatasetMetaData>> GetMetaData(){
-
-            return _context.getDatasetMetadata().Result;
+        public async Task<IActionResult> GetMetaData()
+        {
+            try
+            {
+                List<MetadataApplicationModel> metadata = await MetadataOperations.GetMetadata(_context, _cache);
+                return new OkObjectResult(metadata);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new HourglassError(e.ToString(), "Error"));
+            }
         }
-    } 
+    }
 }
