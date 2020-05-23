@@ -40,12 +40,14 @@ namespace HourglassServer.Data
         private readonly ILogger _logger;
 
         public DatasetDbContext(DbContextOptions<DatasetDbContext> options,
+                HourglassContext context,
                 IConfiguration config,
                 IMemoryCache cache,
                 ILogger<DatasetDbContext> logger) : base(options)
         {
-
+            _dbContext = context;
             _config = config;
+            _cache = cache;
             _logger = logger;
         }
 
