@@ -47,17 +47,6 @@ namespace HourglassServerTest.StoryTests
             AssertItemsCreated();
         }
 
-
-        [TestMethod]
-        public void CreateTestWithController()
-        {
-            sampleData.ClearDataInContext();
-            StoryController storyController = new StoryController(context);
-            storyController.ModifyStory(exampleStory);
-            AssertItemsCreated();
-        }
-        
-
         public void AssertItemsCreated()
         {
             int count = 1;

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HourglassServer.Models.Persistent;
 using HourglassServer.Data;
+using HourglassServer.Data.DataManipulation.StoryModel;
 using HourglassServer.Controllers;
 using HourglassServer.Data.Application.StoryModel;
 using System.Linq;
@@ -35,8 +36,7 @@ namespace HourglassServerTest.StoryTests
             };
             HourglassContext mockContext = testData.GetMockContext();
             
-            StoryController storyController = new StoryController(mockContext);
-            storyController.ModifyStory(story);
+            StoryModelUpdater.UpdateStoryApplicationModel(mockContext, story);
 
             List<Story> stories = mockContext.Story.ToList();
             GeneralAssertions.AssertListHasCount(stories, 1);
@@ -53,7 +53,6 @@ namespace HourglassServerTest.StoryTests
         {
             StoryTestData testData = new StoryTestData();
             HourglassContext mockContext = testData.GetMockContext();
-            StoryController storyController = new StoryController(mockContext);
 
             string newTitle = "This is a new title";
             string newEditorState = "HelloThisIsAnEditorState";
@@ -72,8 +71,8 @@ namespace HourglassServerTest.StoryTests
                 Title = newTitle,
                 StoryBlocks = storyBlocks
             };
-            
-            storyController.ModifyStory(story);
+
+            StoryModelUpdater.UpdateStoryApplicationModel(mockContext, story);
 
             testData.StoryDbSet.Verify(mock => mock.Update(It.IsAny<Story>()), Times.AtLeastOnce());
             testData.TextBlockDbSet.Verify(mock => mock.Update(It.IsAny<TextBlock>()), Times.Never());
