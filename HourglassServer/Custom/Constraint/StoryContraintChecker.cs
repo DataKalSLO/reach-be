@@ -19,11 +19,7 @@ namespace HourglassServer.Custom.Constraints
         protected override void CreatePermissions()
         {
             base.CreatePermissions();
-            Constraints.Add(Custom.Constraints.Constraints.HAS_ADMIN_ACCOUNT,
-                (env, newStory) => env.user.HasRole(Role.Admin));
-            ConstraintErrors.Add(Custom.Constraints.Constraints.HAS_ADMIN_ACCOUNT,
-                ("Administrator account required for action.", ErrorTag.ForbiddenRole));
-
+            
             Constraints.Add(Custom.Constraints.Constraints.AUTHORIZED_USER_OWNS_STORY,
                 HasOwnershipOfStory);
             ConstraintErrors.Add(Custom.Constraints.Constraints.AUTHORIZED_USER_OWNS_STORY,
