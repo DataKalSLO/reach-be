@@ -130,5 +130,10 @@
             Enum.TryParse(story.PublicationStatus, true, out oldStatus);
             return oldStatus;
         }
+
+        public static bool StoryIsInStatus(Story story, PublicationStatus expectedStatus)
+        {
+            return expectedStatus == GetPublicationStatus(story);
+        }
     }
 }

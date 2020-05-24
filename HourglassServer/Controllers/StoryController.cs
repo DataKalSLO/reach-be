@@ -10,7 +10,6 @@
     using HourglassServer.Data.DataManipulation.StoryModel;
     using HourglassServer.Custom.Exceptions;
     using Microsoft.AspNetCore.Mvc;
-    using System.Security.Claims;
 
     // TODO: Catch different types of exceptions and return descriptive tags for all routes.
     /* TODO: Find way to mock user authentication for testing
@@ -32,15 +31,15 @@
         [HttpGet]
         public IActionResult GetStoriesInPublished()
         {
-            return HandleGetStoriesInPublicationStatus(PublicationStatus.PUBLISHED);
+            return new OkObjectResult(StoryModelRetriever.GetStoryApplicationModelsInPublicationStatus(context, PublicationStatus.PUBLISHED));
         }
 
         [HttpGet("review")]
         public IActionResult GetStoriesInReview()
         {
-            if (!HttpContext.User.HasRole(Role.Admin))
-                return BadRequest(new HourglassError(MissingAdminPrivileges, "forbiddenRole"));
-            return HandleGetStoriesInPublicationStatus(PublicationStatus.REVIEW);
+            ConstraintChecker<StoryApplicationModel> constraintChecker = new ConstraintChecker<StoryApplicationModel>(new ConstraintEnvironment(HttpContext.User, context), null);
+            constraintChecker.AssertConstraint(Constraints.HAS_USER_ACCOUNT);
+            return HandleGetStoriesInPublicationStatusByUserId(PublicationStatus.REVIEW, HttpContext.User.GetUserId());
         }
 
         [HttpGet("draft")]
@@ -49,8 +48,7 @@
             try
             {
                 string userId = HttpContext.User.GetUserId();
-                IList<StoryApplicationModel> storiesInReviewForUser = StoryModelRetriever.GetStoryApplicationModelsInDraft(this.context, userId);
-                return new OkObjectResult(storiesInReviewForUser);
+                return HandleGetStoriesInPublicationStatusByUserId(PublicationStatus.DRAFT, userId);
             }
             catch (Exception e)
             {
@@ -58,11 +56,11 @@
             }
         }
 
-        private IActionResult HandleGetStoriesInPublicationStatus(PublicationStatus expectedStatus)
+        private IActionResult HandleGetStoriesInPublicationStatusByUserId(PublicationStatus expectedStatus, string userId)
         {
             try
             {
-                IList<StoryApplicationModel> allStories = StoryModelRetriever.GetStoryApplicationModelsInPublicationStatus(this.context, expectedStatus);
+                IList<StoryApplicationModel> allStories = StoryModelRetriever.GetStoryApplicationModelsInPublicationStatusByUserId(this.context, expectedStatus, userId);
                 return new OkObjectResult(allStories);
             }
             catch (Exception e)
@@ -81,6 +79,14 @@
                     new StoryApplicationModel { Id = storyId });
 
                 permissionChecker.AssertConstraint(Constraints.STORY_EXISTS_WITH_ID);
+
+                PublicationStatus storyStatus = StoryFactory.GetPublicationStatus(context.Story.Find(storyId));
+                if (storyStatus == PublicationStatus.DRAFT || storyStatus == PublicationStatus.REVIEW)
+                    permissionChecker.AssertAllConstraints(new Constraints[]
+                    {
+                        Constraints.HAS_USER_ACCOUNT,
+                        Constraints.AUTHORIZED_USER_OWNS_STORY
+                    });
 
                 StoryApplicationModel storyWithId = StoryModelRetriever.GetStoryApplicationModelById(this.context, storyId);
                 await this.context.SaveChangesAsync();
