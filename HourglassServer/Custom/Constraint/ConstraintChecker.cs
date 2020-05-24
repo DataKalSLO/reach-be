@@ -4,6 +4,11 @@ using System.Linq;
 using HourglassServer.Custom.Exceptions;
 using HourglassServer.Data;
 
+/* This class is intended for performing assertions on both the
+ * Controller environment and the entity being performed on.
+ * For checks regarding specific entities (e.g. Story) please extend 
+ * this class like StoryContraintChecker.
+ */
 namespace HourglassServer.Custom.Constraints
 {
     public class ConstraintChecker <CONTENT_TYPE>
