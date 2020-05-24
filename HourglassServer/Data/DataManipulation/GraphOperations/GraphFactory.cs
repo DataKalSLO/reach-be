@@ -70,6 +70,15 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
             return graphSources;
         }
 
+        public static DefaultGraph CreateDefaultGraph(string graphId, string category)
+        {
+            return new DefaultGraph()
+            {
+                GraphId = graphId,
+                Category = category
+            };
+        }
+
         public static GraphApplicationModel CreateGraphApplicationModel(Graph graph, GraphSource[] sources)
         {
             return new GraphApplicationModel
