@@ -163,6 +163,6 @@ namespace HourglassServer.Controllers
             this.Enabled = enabled;
         }
 
-        private bool Enabled { get; set; }
+        public bool Enabled { get; set; }
     }
 }
