@@ -40,6 +40,11 @@ namespace HourglassServer.Custom.Constraints
                 (env, newStory) => env.context.Person.Any(p => p.Email == env.user.GetUserId()));
             ConstraintErrors.Add(Custom.Constraints.Constraints.HAS_USER_ACCOUNT, (
                 "Account required for action.", ErrorTag.ForbiddenRole));
+
+            Constraints.Add(Custom.Constraints.Constraints.HAS_ADMIN_ACCOUNT,
+                (env, newStory) => env.user.HasRole(Role.Admin));
+            ConstraintErrors.Add(Custom.Constraints.Constraints.HAS_ADMIN_ACCOUNT,
+                ("Administrator account required for action.", ErrorTag.ForbiddenRole));
         }
 
         /*
