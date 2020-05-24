@@ -43,9 +43,9 @@ namespace HourglassServerTest.StoryTests
             Story testStory = stories[0];
             Assert.AreEqual(testData.StoryId, testStory.StoryId);
 
-            testData.StoryDbSet.Verify(mock => mock.Update(It.IsAny<Story>()), Times.AtLeastOnce());
-            testData.TextBlockDbSet.Verify(mock => mock.Update(It.IsAny<TextBlock>()), Times.AtLeastOnce());
-            testData.TextBlockDbSet.Verify(mock => mock.Add(It.IsAny<TextBlock>()), Times.Never()); // Nothing new being added
+            testData.MockStoryDbSet.Verify(mock => mock.Update(It.IsAny<Story>()), Times.AtLeastOnce());
+            testData.MockTextBlockDbSet.Verify(mock => mock.Update(It.IsAny<TextBlock>()), Times.AtLeastOnce());
+            testData.MockTextBlockDbSet.Verify(mock => mock.Add(It.IsAny<TextBlock>()), Times.Never()); // Nothing new being added
         }
 
         [TestMethod]
@@ -74,9 +74,9 @@ namespace HourglassServerTest.StoryTests
 
             StoryModelUpdater.UpdateStoryApplicationModel(mockContext, story);
 
-            testData.StoryDbSet.Verify(mock => mock.Update(It.IsAny<Story>()), Times.AtLeastOnce());
-            testData.TextBlockDbSet.Verify(mock => mock.Update(It.IsAny<TextBlock>()), Times.Never());
-            testData.TextBlockDbSet.Verify(mock => mock.Add(It.IsAny<TextBlock>()), Times.AtLeastOnce()); // For new TextBlock
+            testData.MockStoryDbSet.Verify(mock => mock.Update(It.IsAny<Story>()), Times.AtLeastOnce());
+            testData.MockTextBlockDbSet.Verify(mock => mock.Update(It.IsAny<TextBlock>()), Times.Never());
+            testData.MockTextBlockDbSet.Verify(mock => mock.Add(It.IsAny<TextBlock>()), Times.AtLeastOnce()); // For new TextBlock
         }
 
         //TODO: When `Find` and `Any` are mocked test that story blocks get deleted. Testing in postman for time being.

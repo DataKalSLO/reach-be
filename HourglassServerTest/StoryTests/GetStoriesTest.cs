@@ -41,7 +41,7 @@ namespace HourglassServerTest.StoryTests
         }
 
         [TestMethod]
-        public async Task TestGetStoryByIdFromStoryControllerContainingStory()
+        public void TestGetStoryByIdFromStoryControllerContainingStory()
         {
             StoryTestData sampleData = new StoryTestData();
             HourglassContext mockContext = sampleData.GetMockContext();

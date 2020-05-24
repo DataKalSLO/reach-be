@@ -12,25 +12,23 @@ namespace HourglassServerTest.BookmarkTests
     public class GetBookmarksTest
     {
         [TestMethod]
-        public void TestGetStoryBookmarks()
+        public void TestGetBookmarks()
         {
             BookmarkTestData testData = new BookmarkTestData();
             HourglassContext mockContext = testData.GetMockContext();
 
             //GeoMap
             List<string> geoMapIds = BookmarkRetriever.GetBookmarkGeoMapByUserId(mockContext, testData.UserId);
-            Assert.AreEqual(1, geoMapIds.Count);
-            Assert.AreEqual(testData.GeoMapId, geoMapIds[0]);
+            GeneralAssertions.AssertListHasCount(geoMapIds, 1);
 
             //Graph
             List<string> graphIds = BookmarkRetriever.GetBookmarkGraphByUserId(mockContext, testData.UserId);
-            Assert.AreEqual(1, graphIds.Count);
-            Assert.AreEqual(testData.GraphId, graphIds[0]);
+            GeneralAssertions.AssertListHasCount(graphIds, 1);
 
             //Story
             List<string> storyIds = BookmarkRetriever.GetBookmarkStoryByUserId(mockContext, testData.UserId);
-            Assert.AreEqual(1, storyIds.Count);
-            Assert.AreEqual(testData.StoryId, storyIds[0]);
+            GeneralAssertions.AssertListHasCount(storyIds, 1);
+
         }
     }
 }

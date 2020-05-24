@@ -2,6 +2,7 @@
 using HourglassServer.Data;
 using HourglassServer.Data.DataManipulation.DbSetOperations;
 using HourglassServerTest.StoryTests;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace HourglassServerTest.BookmarkTests
@@ -10,28 +11,23 @@ namespace HourglassServerTest.BookmarkTests
     public class ToggleBookmarkTest
     {
         [TestMethod]
-        public void TestToggleBookmark()
+        public void TestTurnBookmarksOffAndOn()
         {
             BookmarkTestData testData = new BookmarkTestData();
             HourglassContext mockContext = testData.GetMockContext();
 
-            //GeoMap - Turn off and on
-            ToggleState geoMapBookmarkState = Toggler.ToggleEntity(mockContext.BookmarkGeoMap, testData.bookmarkGeoMap);
-            Assert.IsFalse(geoMapBookmarkState.Enabled);
-            geoMapBookmarkState = Toggler.ToggleEntity(mockContext.BookmarkGeoMap, testData.bookmarkGeoMap);
-            Assert.IsTrue(geoMapBookmarkState.Enabled);
+            //GeoMaps, Graphs, Story
+            TestToggle(mockContext.BookmarkGeoMap, testData.bookmarkGeoMap, true);
+            TestToggle(mockContext.BookmarkGraph, testData.bookmarkGraph, true);
+            TestToggle(mockContext.BookmarkStory, testData.bookmarkStory, true);
+        }
 
-            //Graph - Turn off and on
-            ToggleState graphBookmarkState = Toggler.ToggleEntity(mockContext.BookmarkGeoMap, testData.bookmarkGeoMap);
-            Assert.IsFalse(graphBookmarkState.Enabled);
-            graphBookmarkState = Toggler.ToggleEntity(mockContext.BookmarkGeoMap, testData.bookmarkGeoMap);
-            Assert.IsTrue(graphBookmarkState.Enabled);
-
-            //Story - Turn off and on
-            ToggleState storyBookmarkState = Toggler.ToggleEntity(mockContext.BookmarkGeoMap, testData.bookmarkGeoMap);
-            Assert.IsFalse(storyBookmarkState.Enabled);
-            storyBookmarkState = Toggler.ToggleEntity(mockContext.BookmarkGeoMap, testData.bookmarkGeoMap);
-            Assert.IsTrue(storyBookmarkState.Enabled);
+        private void TestToggle<T>(DbSet<T> setToToggle, T entity, bool entityExists) where T : class
+        {
+            ToggleState geoMapBookmarkState = Toggler.ToggleEntity<T>(setToToggle, entity);
+            Assert.AreEqual(!entityExists, geoMapBookmarkState.Enabled);
+            geoMapBookmarkState = Toggler.ToggleEntity<T>(setToToggle, entity);
+            Assert.AreEqual(entityExists, geoMapBookmarkState.Enabled);
         }
     }
 }
