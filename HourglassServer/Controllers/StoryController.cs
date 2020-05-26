@@ -24,13 +24,13 @@
         }
 
         [HttpGet]
-        public IActionResult GetStoriesInPublished()
+        public IActionResult GetAllPublishedStories()
         {
             return HandleGetStoriesInPublicationStatus(PublicationStatus.PUBLISHED);
         }
 
         [HttpGet("review")]
-        public IActionResult GetStoriesInReview()
+        public IActionResult GetStoriesInReviewForUser()
         {
             StoryContraintChecker permissionChecker = new StoryContraintChecker(
                     new ConstraintEnvironment(this.HttpContext.User, context), null);
@@ -57,6 +57,10 @@
         {
             try
             {
+                StoryContraintChecker permissionChecker = new StoryContraintChecker(
+                   new ConstraintEnvironment(this.HttpContext.User, context), null);
+                permissionChecker.AssertConstraint(Constraints.HAS_USER_ACCOUNT);
+
                 string userId = HttpContext.User.GetUserId();
                 IList<StoryApplicationModel> storiesInReviewForUser =
                     StoryModelRetriever.GetStoryApplicationModelsInPublicationStatusByUserId(
@@ -67,11 +71,9 @@
             }
             catch (Exception e)
             {
-                return this.BadRequest(new[] { new HourglassError(e.ToString(), "badValue") });
+                return this.BadRequest(new HourglassError(e.ToString(), "badValue"));
             }
         }
-
-        
 
         [HttpGet("{storyId}", Name = nameof(GetStoryById))]
         public async Task<IActionResult> GetStoryById(string storyId)
