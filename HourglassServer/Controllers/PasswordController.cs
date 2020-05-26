@@ -1,5 +1,6 @@
 ﻿using HourglassServer.Custom.User;
 using HourglassServer.Data;
+using HourglassServer.Mail;
 using HourglassServer.Models.Persistent;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,14 +19,14 @@ namespace HourglassServer
     {
         private HourglassContext _context;
         private readonly IConfiguration _configuration;
-        private readonly IJwtTokenService _jwtTokenService;
+        private readonly IEmailService _emailService;
 
         public PasswordController(HourglassContext context, IConfiguration configuration,
-            IJwtTokenService jwtTokenService)
+            IEmailService emailService)
         {
             _context = context;
             _configuration = configuration;
-            _jwtTokenService = jwtTokenService;
+            _emailService = emailService;
         }
 
         [HttpPost]
@@ -33,8 +34,6 @@ namespace HourglassServer
         {
             string host = _configuration["Smtp:Host"];
             int port = 25;
-
-            string token = _jwtTokenService.BuildToken(ClaimBuilders.BuildPasswordResetClaims(model.Email));
 
             using (var client = new SmtpClient(host, port))
             {
@@ -44,17 +43,11 @@ namespace HourglassServer
                 client.Credentials = new System.Net.NetworkCredential(username, password);
                 client.EnableSsl = true;
 
+                var toSend = _emailService.GeneratePasswordEmail(model.Email);
+
                 try
                 {
-                    await client.SendMailAsync
-                    (
-                        "reachcentralcoast@gmail.com", // Sender address
-                        model.Email,
-                        "Reach - Change your password",
-                        @"Follow this link to change your password:
-If you did not make a password change request, ignore this email.
-https://joinreach.org/passwordreset?token=" + token + "&email=" + model.Email
-                    );
+                    await client.SendMailAsync(toSend);
                 }
                 catch (SmtpFailedRecipientException)
                 {
