@@ -4,6 +4,8 @@ using System.Linq;
 using HourglassServer.Data;
 using HourglassServer.Models.Persistent;
 using HourglassServer.Custom.User;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace HourglassServer
 {
@@ -21,21 +23,19 @@ namespace HourglassServer
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody]TokenModel tokenModel)
+        public async Task<IActionResult> Post([FromBody]TokenModel tokenModel)
         {
             Person loggedInUser;
 
             try
             {
-                Person userWithEmail = _context.Person.First(p => p.Email == tokenModel.Email);
-                if (userWithEmail.Salt == null ||
-                    userWithEmail.PasswordHash == null ||
-                    !Utilities.PasswordMatches(tokenModel.Password, userWithEmail.Salt, userWithEmail.PasswordHash))
+                loggedInUser = await _context.Person.FirstAsync(p => p.Email == tokenModel.Email);
+                if (loggedInUser.Salt == null ||
+                    loggedInUser.PasswordHash == null ||
+                    !Utilities.PasswordMatches(tokenModel.Password, loggedInUser.Salt, loggedInUser.PasswordHash))
                 {
                     return Unauthorized(new { tag = "badLogin" });
                 }
-
-                loggedInUser = userWithEmail;
             }
             catch (InvalidOperationException)
             {
@@ -44,7 +44,7 @@ namespace HourglassServer
 
             string token = _jwtTokenService.BuildToken(ClaimBuilders.BuildLoginClaims(loggedInUser));
 
-            return Ok(new { email = tokenModel.Email, token });
+            return Ok(new { email = tokenModel.Email, name = loggedInUser.Name, occupation = loggedInUser.Occupation, role = loggedInUser.Role, token });
         }
     }
 }
