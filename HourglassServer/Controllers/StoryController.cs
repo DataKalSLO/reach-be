@@ -46,7 +46,7 @@
                     new ConstraintEnvironment(this.HttpContext.User, context),
                     new StoryApplicationModel { Id = storyId });
 
-                permissionChecker.AssertConstraint(StoryConstraint.STORY_EXISTS_WITH_ID);
+                permissionChecker.AssertConstraint(Constraints.STORY_EXISTS_WITH_ID);
 
                 StoryApplicationModel storyWithId = StoryModelRetriever.GetStoryApplicationModelById(this.context, storyId);
                 await this.context.SaveChangesAsync();
@@ -71,7 +71,7 @@
                     new ConstraintEnvironment(this.HttpContext.User, context),
                     storyFromBody);
 
-                permissionChecker.AssertConstraint(StoryConstraint.HAS_USER_ACCOUNT);
+                permissionChecker.AssertConstraint(Constraints.HAS_USER_ACCOUNT);
 
                 IActionResult response = this.context.Story.Any(story => story.StoryId == storyFromBody.Id) ?
                     PerformStoryUpdate(storyFromBody, permissionChecker) :
@@ -98,10 +98,10 @@
                     new ConstraintEnvironment(this.HttpContext.User, context),
                     new StoryApplicationModel() { Id = storyId });
 
-                permissionChecker.AssertAllConstraints(new StoryConstraint[]
+                permissionChecker.AssertAllConstraints(new Constraints[]
                 {
-                    StoryConstraint.STORY_EXISTS_WITH_ID, //only checks the id set above
-                    StoryConstraint.HAS_STORY_OWNERSHIP_OR_HAS_ADMIN_ACCOUNT
+                    Constraints.STORY_EXISTS_WITH_ID, //only checks the id set above
+                    Constraints.HAS_STORY_OWNERSHIP_OR_HAS_ADMIN_ACCOUNT
                 });
 
                 StoryModelDeleter.DeleteStoryById(this.context, storyId);
@@ -124,7 +124,7 @@
 
         private IActionResult PerformStoryCreation(StoryApplicationModel storyFromBody, StoryContraintChecker permissionChecker)
         {
-            permissionChecker.AssertConstraint(StoryConstraint.HAS_DRAFT_STATUS);
+            permissionChecker.AssertConstraint(Constraints.HAS_DRAFT_STATUS);
             storyFromBody.UserId = HttpContext.User.GetUserId();  //Asserts that authenticated user is the owner
             StoryModelCreator.AddStoryApplicationModelToDatabaseContext(this.context, storyFromBody);
             return new CreatedAtRouteResult(nameof(this.GetStoryById), new { storyId = storyFromBody.Id }, storyFromBody);
@@ -132,7 +132,7 @@
 
         private IActionResult PerformStoryUpdate(StoryApplicationModel storyFromBody, StoryContraintChecker permissionChecker)
         {
-            permissionChecker.AssertConstraint(StoryConstraint.HAS_PERMISSION_TO_CHANGE_STATUS);
+            permissionChecker.AssertConstraint(Constraints.HAS_PERMISSION_TO_CHANGE_STATUS);
             storyFromBody.UserId = context.Story.
                 Where(story => story.StoryId == storyFromBody.Id)
                 .Select(story => story.UserId)
