@@ -15,13 +15,17 @@
     [DefaultControllerRoute]
     public class StoryController : Controller
     {
-        private const string MissingAdminPrivileges = "Admin privileges are required to access this action.";
         private readonly HourglassContext context;
 
         public StoryController(HourglassContext context)
         {
             this.context = context;
         }
+
+        /*
+         * The following methods specify the endpoints for api/story
+         * These methods are responsible to asserting constraints/permissions.
+         */
 
         [HttpGet]
         public IActionResult GetAllPublishedStories()
@@ -71,7 +75,7 @@
             }
             catch (Exception e)
             {
-                return this.BadRequest(new HourglassError(e.ToString(), "badValue"));
+                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.BadValue));
             }
         }
 
