@@ -41,7 +41,7 @@ namespace HourglassServer.Controllers
             }
             catch (Exception e)
             {
-                return this.BadRequest(new[] { new HourglassError(e.ToString(), ErrorTag.BadValue) });
+                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.BadValue));
             }
         }
 
@@ -58,7 +58,7 @@ namespace HourglassServer.Controllers
             }
             catch (Exception e)
             {
-                return this.BadRequest(new[] { new HourglassError(e.ToString(), ErrorTag.BadValue) });
+                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.BadValue));
             }
         }
 
@@ -75,7 +75,7 @@ namespace HourglassServer.Controllers
             }
             catch (Exception e)
             {
-                return this.BadRequest(new[] { new HourglassError(e.ToString(), ErrorTag.BadValue) });
+                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.BadValue));
             }
         }
 
@@ -93,7 +93,7 @@ namespace HourglassServer.Controllers
             }
             catch (Exception e)
             {
-                return this.BadRequest(new[] { new HourglassError(e.ToString(), ErrorTag.BadValue) });
+                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.BadValue));
             }
         }
 
@@ -112,7 +112,7 @@ namespace HourglassServer.Controllers
             }
             catch (Exception e)
             {
-                return this.BadRequest(new[] { new HourglassError(e.ToString(), ErrorTag.BadValue) });
+                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.BadValue));
             }
         }
 
@@ -131,7 +131,7 @@ namespace HourglassServer.Controllers
             }
             catch (Exception e)
             {
-                return this.BadRequest(new[] { new HourglassError(e.ToString(), ErrorTag.BadValue) });
+                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.BadValue));
             }
         }
     }
