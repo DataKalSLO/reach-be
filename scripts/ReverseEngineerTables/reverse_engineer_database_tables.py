@@ -38,7 +38,7 @@ def get_command_specifying_tables_to_reverse_engineer():
     return " ".join(table_commands)
 
 
-if __name__ == "__main__":
+def run():
     base_scaffold_command = "dotnet ef dbcontext scaffold"
     tables_to_reverse_engineer = get_command_specifying_tables_to_reverse_engineer()
     overwrite_files_command = "--force" if overwrite_files else ""

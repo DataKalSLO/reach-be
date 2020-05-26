@@ -30,7 +30,7 @@ namespace HourglassServer
                 Person userWithEmail = _context.Person.First(p => p.Email == tokenModel.Email);
                 if (userWithEmail.Salt == null ||
                     userWithEmail.PasswordHash == null ||
-                    !Utilities.PasswordMatches(tokenModel.Password, userWithEmail.Salt, userWithEmail.PasswordHash))
+                    !UserPasswordHasher.PasswordMatches(tokenModel.Password, userWithEmail.Salt, userWithEmail.PasswordHash))
                 {
                     return Unauthorized(new { tag = "badLogin" });
                 }
@@ -39,7 +39,7 @@ namespace HourglassServer
 
                 string token = _jwtTokenService.BuildToken(loggedInUser);
 
-                return Ok(new { email = tokenModel.Email, name = userWithEmail.Name, occupation = userWithEmail.Occupation, role = userWithEmail.Role, token });
+                return Ok(new { email = tokenModel.Email, name = userWithEmail.Name, occupation = userWithEmail.Occupation, role = userWithEmail.Role, notificationsEnabled = userWithEmail.NotificationsEnabled, token });
             }
             catch (InvalidOperationException)
             {
