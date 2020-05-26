@@ -32,7 +32,7 @@
         [HttpGet("review")]
         public IActionResult GetStoriesInReviewForUser()
         {
-            StoryContraintChecker permissionChecker = new StoryContraintChecker(
+            StoryConstraintChecker permissionChecker = new StoryConstraintChecker(
                     new ConstraintEnvironment(this.HttpContext.User, context), null);
             permissionChecker.AssertConstraint(Constraints.HAS_USER_ACCOUNT);
 
@@ -57,7 +57,7 @@
         {
             try
             {
-                StoryContraintChecker permissionChecker = new StoryContraintChecker(
+                StoryConstraintChecker permissionChecker = new StoryConstraintChecker(
                    new ConstraintEnvironment(this.HttpContext.User, context), null);
                 permissionChecker.AssertConstraint(Constraints.HAS_USER_ACCOUNT);
 
@@ -80,7 +80,7 @@
         {
             try
             {
-                StoryContraintChecker permissionChecker = new StoryContraintChecker(
+                StoryConstraintChecker permissionChecker = new StoryConstraintChecker(
                     new ConstraintEnvironment(this.HttpContext.User, context),
                     new StoryApplicationModel { Id = storyId });
 
@@ -105,7 +105,7 @@
         {
             try
             {
-                StoryContraintChecker permissionChecker = new StoryContraintChecker(
+                StoryConstraintChecker permissionChecker = new StoryConstraintChecker(
                     new ConstraintEnvironment(this.HttpContext.User, context),
                     storyFromBody);
 
@@ -132,7 +132,7 @@
         {
             try
             {
-                StoryContraintChecker permissionChecker = new StoryContraintChecker(
+                StoryConstraintChecker permissionChecker = new StoryConstraintChecker(
                     new ConstraintEnvironment(this.HttpContext.User, context),
                     new StoryApplicationModel() { Id = storyId });
 
@@ -173,7 +173,7 @@
             }
         }
 
-        private IActionResult PerformStoryCreation(StoryApplicationModel storyFromBody, StoryContraintChecker permissionChecker)
+        private IActionResult PerformStoryCreation(StoryApplicationModel storyFromBody, StoryConstraintChecker permissionChecker)
         {
             permissionChecker.AssertConstraint(Constraints.HAS_DRAFT_STATUS);
             storyFromBody.UserId = HttpContext.User.GetUserId();  //Asserts that authenticated user is the owner
@@ -181,7 +181,7 @@
             return new CreatedAtRouteResult(nameof(this.GetStoryById), new { storyId = storyFromBody.Id }, storyFromBody);
         }
 
-        private IActionResult PerformStoryUpdate(StoryApplicationModel storyFromBody, StoryContraintChecker permissionChecker)
+        private IActionResult PerformStoryUpdate(StoryApplicationModel storyFromBody, StoryConstraintChecker permissionChecker)
         {
             permissionChecker.AssertConstraint(Constraints.HAS_PERMISSION_TO_CHANGE_STATUS);
             storyFromBody.UserId = context.Story.

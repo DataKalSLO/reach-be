@@ -11,10 +11,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HourglassServer.Custom.Constraints
 {
-    public class StoryContraintChecker: ConstraintChecker<StoryApplicationModel>
+    public class StoryConstraintChecker: ConstraintChecker<StoryApplicationModel>
     {
 
-        public StoryContraintChecker(ConstraintEnvironment env, StoryApplicationModel story) : base(env, story) { }
+        public StoryConstraintChecker(ConstraintEnvironment env, StoryApplicationModel story) : base(env, story) { }
 
         protected override void CreatePermissions()
         {
