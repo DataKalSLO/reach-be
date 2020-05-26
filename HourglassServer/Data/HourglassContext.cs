@@ -55,6 +55,28 @@ namespace HourglassServer.Data
             modelBuilder.HasPostgresEnum(null, "geo_type", new[] { "city", "zip", "county" })
                 .HasPostgresEnum(null, "graph_category", new[] { "Industry", "Demographics", "Assets", "Education", "Housing" });
 
+            modelBuilder.Entity<Airports>(entity =>
+            {
+                entity.HasKey(e => e.Code)
+                    .HasName("airports_pkey");
+
+                entity.ToTable("airports", "datasets");
+
+                entity.Property(e => e.Code).HasColumnName("code");
+
+                entity.Property(e => e.Latitude)
+                    .HasColumnName("latitude")
+                    .HasColumnType("numeric");
+
+                entity.Property(e => e.Longitude)
+                    .HasColumnName("longitude")
+                    .HasColumnType("numeric");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasColumnName("name");
+            });
+
             modelBuilder.Entity<Area>(entity =>
             {
                 entity.HasKey(e => e.Name)

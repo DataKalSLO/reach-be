@@ -1,4 +1,5 @@
 using HourglassServer.Data;
+using HourglassServer.Mail;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -32,9 +33,12 @@ namespace HourglassServer
             {
                 options.AddPolicy("UserExists", policy =>
                     policy.Requirements.Add(new UserExistsRequirement()));
+                options.AddPolicy("ValidPasswordResetToken", policy =>
+                    policy.RequireAssertion(PolicyHandlers.CheckValidPasswordResetToken));
             });
 
             services.AddTransient<IJwtTokenService, JwtTokenService>();
+            services.AddSingleton<IEmailService, EmailService>();
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
