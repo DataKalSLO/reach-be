@@ -24,5 +24,12 @@ namespace HourglassServer
             await _context.InsertAsync(uploadData.CovidUnemployment);
             return Ok(new { rowsInserted = uploadData.CovidUnemployment.Count()});
         }
+
+        [HttpPost("airports")]
+        public async Task<IActionResult> Post([FromBody] AirportsUploadModel uploadData)
+        {
+            await _context.InsertAsync(uploadData.Airports);
+            return Ok(new { rowsInserted = uploadData.Airports.Count() });
+        }
     }
 }
