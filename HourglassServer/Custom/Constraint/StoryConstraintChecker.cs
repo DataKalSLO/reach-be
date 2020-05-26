@@ -11,10 +11,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HourglassServer.Custom.Constraints
 {
-    public class StoryContraintChecker: ConstraintChecker<StoryApplicationModel>
+    public class StoryConstraintChecker: ConstraintChecker<StoryApplicationModel>
     {
 
-        public StoryContraintChecker(ConstraintEnvironment env, StoryApplicationModel story) : base(env, story) { }
+        public StoryConstraintChecker(ConstraintEnvironment env, StoryApplicationModel story) : base(env, story) { }
 
         protected override void CreatePermissions()
         {
@@ -55,14 +55,7 @@ namespace HourglassServer.Custom.Constraints
 
         private bool HasPermissionToChangeStatus(ConstraintEnvironment env, StoryApplicationModel newStory)
         {
-            Story currentStoryPublicationStatus = env.context.Story
-                .AsNoTracking()
-                .Where(story => story.StoryId == newStory.Id)
-                .Single();
-            PublicationStatus oldStatus = StoryFactory.GetPublicationStatus(currentStoryPublicationStatus);
-            PublicationStatus newStatus = newStory.PublicationStatus;
-
-            if (newStatus == PublicationStatus.PUBLISHED) // moving to published story
+            if (newStory.PublicationStatus == PublicationStatus.PUBLISHED) // moving to published story
                 return this.SatisfiesConstraint(Custom.Constraints.Constraints.HAS_ADMIN_ACCOUNT);
             else
                 return true;
