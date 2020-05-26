@@ -154,6 +154,20 @@ namespace HourglassServer.Data
                     .HasMaxLength(500);
             });
 
+            modelBuilder.Entity<CovidUnemployment>(entity =>
+            {
+                entity.HasKey(e => e.WeekEnd)
+                    .HasName("covid_unemployment_pkey");
+
+                entity.ToTable("covid_unemployment", "datasets");
+
+                entity.Property(e => e.WeekEnd)
+                    .HasColumnName("week_end")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.UnemploymentClaims).HasColumnName("unemployment_claims");
+            });
+
             modelBuilder.Entity<DatasetMetaData>(entity =>
             {
                 entity.HasKey(e => e.TableName)
