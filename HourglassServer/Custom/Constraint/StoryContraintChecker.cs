@@ -55,14 +55,7 @@ namespace HourglassServer.Custom.Constraints
 
         private bool HasPermissionToChangeStatus(ConstraintEnvironment env, StoryApplicationModel newStory)
         {
-            Story currentStoryPublicationStatus = env.context.Story
-                .AsNoTracking()
-                .Where(story => story.StoryId == newStory.Id)
-                .Single();
-            PublicationStatus oldStatus = StoryFactory.GetPublicationStatus(currentStoryPublicationStatus);
-            PublicationStatus newStatus = newStory.PublicationStatus;
-
-            if (newStatus == PublicationStatus.PUBLISHED) // moving to published story
+            if (newStory.PublicationStatus == PublicationStatus.PUBLISHED) // moving to published story
                 return this.SatisfiesConstraint(Custom.Constraints.Constraints.HAS_ADMIN_ACCOUNT);
             else
                 return true;
