@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using HourglassServer.Models.Persistent;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
 
 namespace HourglassServer
 {
@@ -17,15 +16,8 @@ namespace HourglassServer
             this._configuration = configuration;
         }
 
-        public string BuildToken(Person person)
+        public string BuildToken(Claim[] claims)
         {
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.Email, person.Email),
-                new Claim(ClaimTypes.Role, person.Role.ToString()),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
 
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
