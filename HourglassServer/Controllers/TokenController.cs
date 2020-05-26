@@ -32,7 +32,7 @@ namespace HourglassServer
                 loggedInUser = await _context.Person.FirstAsync(p => p.Email == tokenModel.Email);
                 if (loggedInUser.Salt == null ||
                     loggedInUser.PasswordHash == null ||
-                    !Utilities.PasswordMatches(tokenModel.Password, loggedInUser.Salt, loggedInUser.PasswordHash))
+                    !UserPasswordHasher.PasswordMatches(tokenModel.Password, loggedInUser.Salt, loggedInUser.PasswordHash))
                 {
                     return Unauthorized(new { tag = "badLogin" });
                 }

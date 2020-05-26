@@ -64,7 +64,7 @@ namespace HourglassServer
 
         [Authorize(Policy = "ValidPasswordResetToken")]
         [HttpPut]
-        public async Task<IActionResult> Put([FromBody]PasswordChangeModel model) // enforce user has permissions
+        public async Task<IActionResult> Put([FromBody]PasswordChangeModel model)
         {
             Person person;
             try
@@ -76,7 +76,7 @@ namespace HourglassServer
                 return NotFound();
             }
 
-            var (salt, hash) = Utilities.HashPassword(model.Password); // enforce password restrictions
+            var (salt, hash) = UserPasswordHasher.HashPassword(model.Password);
             person.Salt = salt;
             person.PasswordHash = hash;
 
