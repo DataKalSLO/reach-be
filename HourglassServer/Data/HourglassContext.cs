@@ -444,6 +444,20 @@ namespace HourglassServer.Data
                     .HasConstraintName("location_table_name_fkey");
             });
 
+            modelBuilder.Entity<MedianHouseIncomeSlo>(entity =>
+            {
+                entity.HasKey(e => e.Year)
+                    .HasName("median_house_income_slo_pkey");
+
+                entity.ToTable("median_house_income_slo", "datasets");
+
+                entity.Property(e => e.Year)
+                    .HasColumnName("year")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.MedianIncome).HasColumnName("median_income");
+            });
+
             modelBuilder.Entity<Person>(entity =>
             {
                 entity.HasKey(e => e.Email)
