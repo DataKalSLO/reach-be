@@ -31,7 +31,6 @@ namespace HourglassServer.Controllers
             {
                 List<string> names = new List<string>();
                 // IEnumerable<DatasetMetaData> metadata = await _context.DatasetMetaData.ToListAsync();
-
                 var metaData = from meta in _context.DatasetMetaData
                                join census in _context.CensusVariables
                                on meta.TableName equals census.Name

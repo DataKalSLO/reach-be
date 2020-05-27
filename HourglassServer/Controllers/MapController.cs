@@ -41,12 +41,55 @@ namespace HourglassServer.Controllers
             return pts;
         }
 
+        // GET: api/map/tableNames
+        [HttpGet("tableNames")]
+        public ActionResult<List<string>> ReadableCensusNames()
+        {
+            try
+            {
+                Dictionary<string, string> censusNameDesc = new Dictionary<string, string>();
+                List<string> names = new List<string>();
+                var censusVariables = from census in _context.CensusVariables
+                                      select census;
+                var metaData = from meta in _context.DatasetMetaData
+                               select meta;
+
+                foreach (CensusVariables censusVar in censusVariables)
+                {
+                    censusNameDesc.Add(censusVar.Name.ToLower(), censusVar.Description);
+                }
+
+                foreach (DatasetMetaData data in metaData)
+                {
+                    if (censusNameDesc.Keys.Contains(data.TableName))
+                    {
+                        names.Add(censusNameDesc[data.TableName]);
+                    }
+                    else
+                    {
+                        names.Add(data.TableName);
+                    }
+                }
+                return names;
+            }
+            catch (Exception e)
+            {
+                return BadRequest(
+                    new ExceptionMessageContent()
+                    {
+                    Error = "Table does not exist",
+                    Message = e.ToString()
+                    });
+            }
+        }
+
         // GET: api/map/[censusVar]
         // get PolygonFeatureCollection for given census variable description
         // get FC based on given data table name
         [HttpGet("{tableName}")]
         public ActionResult<PolygonFeatureCollection> GetZipCodes(string tableName)
         {
+
             try
             {
                 // search for table name in metadata table
