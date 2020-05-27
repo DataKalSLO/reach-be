@@ -6,7 +6,7 @@
  * - removing story block
  * - updating story block
  */
-namespace HourglassServer.Data.DataManipulation.StoryModel
+namespace HourglassServer.Data.DataManipulation.StoryOperations
 {
     using System;
     using System.Collections.Generic;

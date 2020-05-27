@@ -1,5 +1,5 @@
 ﻿// Responsibility: Delete all entities associated with a Story
-namespace HourglassServer.Data.DataManipulation.StoryModel
+namespace HourglassServer.Data.DataManipulation.StoryOperations
 {
     using System.Collections.Generic;
     using System.Linq;

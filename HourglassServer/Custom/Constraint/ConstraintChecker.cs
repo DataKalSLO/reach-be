@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using HourglassServer.Custom.Exceptions;
+using HourglassServer.Custom.Exception;
 using HourglassServer.Data;
 
 /* This class is intended for performing assertions on both the
@@ -11,7 +11,7 @@ using HourglassServer.Data;
  */
 namespace HourglassServer.Custom.Constraints
 {
-    public class ConstraintChecker <CONTENT_TYPE>
+    public class ConstraintChecker<CONTENT_TYPE>
         where CONTENT_TYPE : class
     {
         /*
@@ -44,12 +44,12 @@ namespace HourglassServer.Custom.Constraints
             Constraints.Add(Custom.Constraints.Constraints.HAS_USER_ACCOUNT,
                 (env, newStory) => env.context.Person.Any(p => p.Email == env.user.GetUserId()));
             ConstraintErrors.Add(Custom.Constraints.Constraints.HAS_USER_ACCOUNT, (
-                "Account required for action.", ErrorTag.ForbiddenRole));
+                "Account required for action.", ExceptionTag.ForbiddenRole));
 
             Constraints.Add(Custom.Constraints.Constraints.HAS_ADMIN_ACCOUNT,
                 (env, newStory) => env.user.HasRole(Role.Admin));
             ConstraintErrors.Add(Custom.Constraints.Constraints.HAS_ADMIN_ACCOUNT,
-                ("Administrator account required for action.", ErrorTag.ForbiddenRole));
+                ("Administrator account required for action.", ExceptionTag.ForbiddenRole));
         }
 
         /*
@@ -77,7 +77,7 @@ namespace HourglassServer.Custom.Constraints
 
         public void ThrowPermissionException(Constraints action)
         {
-            throw new HourglassError(ConstraintErrors[action].message, ConstraintErrors[action].tag);
+            throw new HourglassException(ConstraintErrors[action].message, ConstraintErrors[action].tag);
         }
 
         /*
@@ -101,7 +101,7 @@ namespace HourglassServer.Custom.Constraints
         {
             if (constraints.Length == 0)
                 throw new InvalidOperationException(NoConstraintsGivenError);
-            for (int i=0; i<constraints.Length; i++)
+            for (int i = 0; i < constraints.Length; i++)
             {
                 Constraints constraintName = constraints[i];
                 if (!this.SatisfiesConstraint(constraintName))

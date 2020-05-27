@@ -1,6 +1,6 @@
 ﻿using Moq; 
 using HourglassServer.Data.Application.StoryModel;
-using HourglassServer.Data.DataManipulation.StoryModel;
+using HourglassServer.Data.DataManipulation.StoryOperations;
 using HourglassServer.Models.Persistent;
 using HourglassServer.Data;
 using Microsoft.EntityFrameworkCore;

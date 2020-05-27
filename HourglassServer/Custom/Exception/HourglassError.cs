@@ -1,9 +1,9 @@
 ﻿using System;
 namespace HourglassServer.Data
 {
-    public class HourglassError: Exception
+    public class HourglassException: Exception
     {
-        public HourglassError(string error, string tag)
+        public HourglassException(string error, string tag)
         {
             this.details = error;
             this.tag = tag;

@@ -39,14 +39,14 @@ namespace HourglassServer.Controllers
             try
             {
                 var currentUserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).Single().Value;
-                List<GraphApplicationModel> graph = 
+                List<GraphApplicationModel> graph =
                     await GraphModelRetriever.GetGraphApplictionModelsforUser(this._context, currentUserId);
                 return new OkObjectResult(graph);
             }
             catch (Exception e)
             {
                 return BadRequest(
-                    new HourglassError(e.ToString(), "User Error")
+                    new HourglassException(e.ToString(), "User Error")
                 );
             }
         }
@@ -62,14 +62,14 @@ namespace HourglassServer.Controllers
             catch (InvalidOperationException)
             {
                 return BadRequest(
-                    new HourglassError(
+                    new HourglassException(
                         String.Format("No graph found with id {0}. ", graphId),
                         "NotFound")
                 );
             }
             catch (Exception e)
             {
-                return BadRequest(new HourglassError(e.ToString(), "Error"));
+                return BadRequest(new HourglassException(e.ToString(), "Error"));
             }
         }
 
@@ -96,7 +96,7 @@ namespace HourglassServer.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(new HourglassError(e.ToString(), "UnknownError"));
+                return BadRequest(new HourglassException(e.ToString(), "UnknownError"));
             }
         }
 
@@ -128,14 +128,14 @@ namespace HourglassServer.Controllers
             catch (InvalidOperationException)
             {
                 return BadRequest(
-                    new HourglassError(
+                    new HourglassException(
                         String.Format("No graph found with id {0}. ", graphModel.GraphId),
                         "NotFound")
                 );
             }
             catch (Exception e)
             {
-                return BadRequest(new HourglassError(e.ToString(), "Error"));
+                return BadRequest(new HourglassException(e.ToString(), "Error"));
             }
         }
 
@@ -160,7 +160,7 @@ namespace HourglassServer.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(new HourglassError(e.ToString(), "UnknownError"));
+                return BadRequest(new HourglassException(e.ToString(), "UnknownError"));
             }
         }
     }

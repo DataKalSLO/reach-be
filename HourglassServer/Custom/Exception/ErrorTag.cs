@@ -1,7 +1,7 @@
 ﻿using System;
-namespace HourglassServer.Custom.Exceptions
+namespace HourglassServer.Custom.Exception
 {
-    public class ErrorTag
+    public class ExceptionTag
     {
         public const string BadValue = "badValue";
         public const string NotOwner = "notOwner";
