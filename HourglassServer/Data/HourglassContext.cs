@@ -444,6 +444,22 @@ namespace HourglassServer.Data
                     .HasConstraintName("location_table_name_fkey");
             });
 
+            modelBuilder.Entity<MeanRealWagesAdjColSlo>(entity =>
+            {
+                entity.HasKey(e => e.Year)
+                    .HasName("mean_real_wages_adj_col_slo_pkey");
+
+                entity.ToTable("mean_real_wages_adj_col_slo", "datasets");
+
+                entity.Property(e => e.Year)
+                    .HasColumnName("year")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.MeanRealWagesAdjCol)
+                    .HasColumnName("mean_real_wages_adj_col")
+                    .HasColumnType("numeric");
+            });
+
             modelBuilder.Entity<Person>(entity =>
             {
                 entity.HasKey(e => e.Email)

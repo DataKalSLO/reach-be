@@ -31,5 +31,12 @@ namespace HourglassServer
             await _context.InsertAsync(uploadData.Airports);
             return Ok(new { rowsInserted = uploadData.Airports.Count() });
         }
-    }
+
+        [HttpPost("meanRealWagesAdjColSlo")]
+        public async Task<IActionResult> Post([FromBody] MeanRealWagesAdjColSloUploadModel uploadData)
+        {
+           await _context.InsertAsync(uploadData.MeanRealWagesAdjColSlos);
+           return Ok(new { rowsInserted = uploadData.MeanRealWagesAdjColSlos.Count() });
+        }
+   }
 }
