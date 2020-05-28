@@ -415,9 +415,6 @@ namespace HourglassServer.Data
                     .HasConstraintName("graph_source_graphid_fkey");
             });
 
-            modelBuilder.HasPostgresEnum(null, "geo_type", new[] { "city", "zip", "county" })
-                .HasPostgresEnum(null, "graph_category", new[] { "Industry", "Demographics", "Assets", "Education", "Housing" });
-
             modelBuilder.Entity<IncomeInequalitySlo>(entity =>
             {
                 entity.HasKey(e => e.Year)
