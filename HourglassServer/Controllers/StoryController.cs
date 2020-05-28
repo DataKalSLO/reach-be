@@ -4,13 +4,12 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using HourglassServer.Custom.Constraints;
+    using Microsoft.AspNetCore.Mvc;
     using HourglassServer.Data;
     using HourglassServer.Data.Application.StoryModel;
     using HourglassServer.Data.DataManipulation.StoryModel;
+    using HourglassServer.Custom.Constraints;
     using HourglassServer.Custom.Exceptions;
-    using Microsoft.AspNetCore.Mvc;
-    using System.Security.Claims;
 
     // TODO: Catch different types of exceptions and return descriptive tags for all routes.
     [DefaultControllerRoute]
@@ -23,13 +22,56 @@
             this.context = context;
         }
 
+        /*
+         * The following methods specify the endpoints for api/story
+         * These methods are responsible to asserting constraints/permissions.
+         */
+
         [HttpGet]
-        public IActionResult GetAllStories()
+        public IActionResult GetAllPublishedStories()
+        {
+            return HandleGetStoriesInPublicationStatus(PublicationStatus.PUBLISHED);
+        }
+
+        [HttpGet("review")]
+        public IActionResult GetStoriesInReviewForUser()
+        {
+            StoryConstraintChecker permissionChecker = new StoryConstraintChecker(
+                    new ConstraintEnvironment(this.HttpContext.User, context), null);
+            permissionChecker.AssertConstraint(Constraints.HAS_USER_ACCOUNT);
+
+            string userId = HttpContext.User.GetUserId();
+            if (HttpContext.User.HasRole(Role.Admin))
+            {
+                return HandleGetStoriesInPublicationStatus(PublicationStatus.REVIEW);
+            }
+            else
+            {
+                IList<StoryApplicationModel> storiesInReviewForUser =
+                    StoryModelRetriever.GetStoryApplicationModelsInPublicationStatusByUserId(
+                        this.context,
+                        PublicationStatus.REVIEW,
+                        userId);
+                return new OkObjectResult(storiesInReviewForUser);
+            }
+        }
+
+        [HttpGet("draft")]
+        public IActionResult GetStoriesInDraftForUser()
         {
             try
             {
-                IList<StoryApplicationModel> allStories = StoryModelRetriever.GetAllStoryApplicationModels(this.context);
-                return new OkObjectResult(allStories);
+                StoryConstraintChecker permissionChecker = new StoryConstraintChecker(
+                   new ConstraintEnvironment(this.HttpContext.User, context), null);
+                permissionChecker.AssertConstraint(Constraints.HAS_USER_ACCOUNT);
+
+                string userId = HttpContext.User.GetUserId();
+                IList<StoryApplicationModel> storiesInReviewForUser =
+                    StoryModelRetriever.GetStoryApplicationModelsInPublicationStatusByUserId(
+                        this.context,
+                        PublicationStatus.DRAFT,
+                        userId);
+                return new OkObjectResult(storiesInReviewForUser);
             }
             catch (Exception e)
             {
@@ -42,7 +84,7 @@
         {
             try
             {
-                StoryContraintChecker permissionChecker = new StoryContraintChecker(
+                StoryConstraintChecker permissionChecker = new StoryConstraintChecker(
                     new ConstraintEnvironment(this.HttpContext.User, context),
                     new StoryApplicationModel { Id = storyId });
 
@@ -67,7 +109,7 @@
         {
             try
             {
-                StoryContraintChecker permissionChecker = new StoryContraintChecker(
+                StoryConstraintChecker permissionChecker = new StoryConstraintChecker(
                     new ConstraintEnvironment(this.HttpContext.User, context),
                     storyFromBody);
 
@@ -94,7 +136,7 @@
         {
             try
             {
-                StoryContraintChecker permissionChecker = new StoryContraintChecker(
+                StoryConstraintChecker permissionChecker = new StoryConstraintChecker(
                     new ConstraintEnvironment(this.HttpContext.User, context),
                     new StoryApplicationModel() { Id = storyId });
 
@@ -122,7 +164,20 @@
          * Private Helper Methods
          */
 
-        private IActionResult PerformStoryCreation(StoryApplicationModel storyFromBody, StoryContraintChecker permissionChecker)
+        private IActionResult HandleGetStoriesInPublicationStatus(PublicationStatus expectedStatus)
+        {
+            try
+            {
+                IList<StoryApplicationModel> allStories = StoryModelRetriever.GetStoryApplicationModelsInPublicationStatus(this.context, expectedStatus);
+                return new OkObjectResult(allStories);
+            }
+            catch (Exception e)
+            {
+                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.BadValue));
+            }
+        }
+
+        private IActionResult PerformStoryCreation(StoryApplicationModel storyFromBody, StoryConstraintChecker permissionChecker)
         {
             permissionChecker.AssertConstraint(Constraints.HAS_DRAFT_STATUS);
             storyFromBody.UserId = HttpContext.User.GetUserId();  //Asserts that authenticated user is the owner
@@ -130,7 +185,7 @@
             return new CreatedAtRouteResult(nameof(this.GetStoryById), new { storyId = storyFromBody.Id }, storyFromBody);
         }
 
-        private IActionResult PerformStoryUpdate(StoryApplicationModel storyFromBody, StoryContraintChecker permissionChecker)
+        private IActionResult PerformStoryUpdate(StoryApplicationModel storyFromBody, StoryConstraintChecker permissionChecker)
         {
             permissionChecker.AssertConstraint(Constraints.HAS_PERMISSION_TO_CHANGE_STATUS);
             storyFromBody.UserId = context.Story.
