@@ -23,7 +23,6 @@ namespace HourglassServer.Data.DataManipulation.StoryOperations
             IList<Story> storiesInDraftStatus = GetStoriesInPublicationStatus(db, expectedStatus);
             IList<Story> userDraftStories = storiesInDraftStatus.Where(story => story.UserId == userId).ToList();
             return GetStoryApplicationListFromStories(db, userDraftStories);
-
         }
 
         public static IList<StoryApplicationModel> GetStoryApplicationModelsInPublicationStatus(HourglassContext db, PublicationStatus expectedStatus)

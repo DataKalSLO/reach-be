@@ -9,15 +9,12 @@
         public static Story CreateStoryFromStoryModel(StoryApplicationModel model)
         {
             Story newStory = new Story();
-            DateTime nowTimeStamp = DateTime.UtcNow;
 
             newStory.StoryId = model.Id;
             newStory.UserId = model.UserId;
             newStory.PublicationStatus = model.PublicationStatus.ToString();
             newStory.Title = model.Title;
             newStory.Description = model.Description;
-            newStory.DateCreated = nowTimeStamp;
-            newStory.DateLastEdited = nowTimeStamp;
 
             return newStory;
         }
@@ -124,11 +121,20 @@
             return geoMapBlock;
         }
 
+        public static PublicationStatus GetPublicationStatus(Story story)
+        {
+            return (PublicationStatus) Enum.Parse(typeof(PublicationStatus), story.PublicationStatus);
+        }
+
         public static bool StoryIsInStatus(Story story, PublicationStatus expectedStatus)
         {
-            PublicationStatus actualPublicationStatus;
-            Enum.TryParse<PublicationStatus>(story.PublicationStatus, out actualPublicationStatus);
+            PublicationStatus actualPublicationStatus = GetPublicationStatus(story);
             return expectedStatus == actualPublicationStatus; 
+        }
+
+        public static DateTime GetNow()
+        {
+            return DateTime.UtcNow;
         }
     }
 }
