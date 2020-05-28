@@ -415,6 +415,22 @@ namespace HourglassServer.Data
                     .HasConstraintName("graph_source_graphid_fkey");
             });
 
+            modelBuilder.Entity<IncomeInequalitySlo>(entity =>
+            {
+                entity.HasKey(e => e.Year)
+                    .HasName("income_inequality_slo_pkey");
+
+                entity.ToTable("income_inequality_slo", "datasets");
+
+                entity.Property(e => e.Year)
+                    .HasColumnName("year")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.IncomeInequality)
+                    .HasColumnName("income_inequality")
+                    .HasColumnType("numeric");
+            });
+
             modelBuilder.Entity<Location>(entity =>
             {
                 entity.HasKey(e => new { e.Name, e.TableName })
