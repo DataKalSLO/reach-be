@@ -460,6 +460,20 @@ namespace HourglassServer.Data
                     .HasConstraintName("location_table_name_fkey");
             });
 
+            modelBuilder.Entity<NetMigrationSlo>(entity =>
+            {
+                entity.HasKey(e => e.Year)
+                    .HasName("net_migration_slo_pkey");
+
+                entity.ToTable("net_migration_slo", "datasets");
+
+                entity.Property(e => e.Year)
+                    .HasColumnName("year")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.NetMigration).HasColumnName("net_migration");
+            });
+
             modelBuilder.Entity<Person>(entity =>
             {
                 entity.HasKey(e => e.Email)
@@ -512,6 +526,34 @@ namespace HourglassServer.Data
                 entity.Property(e => e.Longitude)
                     .HasColumnName("longitude")
                     .HasColumnType("numeric");
+            });
+
+            modelBuilder.Entity<SloAirport>(entity =>
+            {
+                entity.HasKey(e => e.Month)
+                    .HasName("slo_airport_pkey");
+
+                entity.ToTable("slo_airport", "datasets");
+
+                entity.Property(e => e.Month)
+                    .HasColumnName("month")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.Alaska).HasColumnName("alaska");
+
+                entity.Property(e => e.American).HasColumnName("american");
+
+                entity.Property(e => e.Contour).HasColumnName("contour");
+
+                entity.Property(e => e.GrandTotal2018).HasColumnName("grand_total_2018");
+
+                entity.Property(e => e.GrandTotal2019).HasColumnName("grand_total_2019");
+
+                entity.Property(e => e.PctChange)
+                    .HasColumnName("pct_change")
+                    .HasColumnType("numeric");
+
+                entity.Property(e => e.United).HasColumnName("united");
             });
 
             modelBuilder.Entity<Story>(entity =>
