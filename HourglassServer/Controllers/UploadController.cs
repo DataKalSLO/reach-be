@@ -25,7 +25,7 @@ namespace HourglassServer
             await _context.InsertAsync(uploadData.Airports);
             return Ok(new { rowsInserted = uploadData.Airports.Count() });
         }
-
+        
         [HttpPost("commuteTimes")]
         public async Task<IActionResult> Post([FromBody] CommuteTimesUploadModel uploadData)
         {
@@ -40,18 +40,25 @@ namespace HourglassServer
            return Ok(new { rowsInserted = uploadData.CovidUnemployment.Count() });
         }
         
-        [HttpPost("medianHouseIncomeSlo")]
-        public async Task<IActionResult> Post([FromBody] MedianHouseIncomeSloUploadModel uploadData)
-        {
-           await _context.InsertAsync(uploadData.MedianHouseIncomeSlo);
-           return Ok(new { rowsInserted = uploadData.MedianHouseIncomeSlo.Count() });
-        }
-
         [HttpPost("incomeInequalitySlo")]
         public async Task<IActionResult> Post([FromBody] IncomeInequalitySloUploadModel uploadData)
         {
             await _context.InsertAsync(uploadData.IncomeInequalitySlo);
             return Ok(new { rowsInserted = uploadData.IncomeInequalitySlo.Count() });
+        }
+        
+        [HttpPost("meanRealWagesAdjColSlo")]
+        public async Task<IActionResult> Post([FromBody] MeanRealWagesAdjColSloUploadModel uploadData)
+        {
+           await _context.InsertAsync(uploadData.MeanRealWagesAdjColSlo);
+           return Ok(new { rowsInserted = uploadData.MeanRealWagesAdjColSlo.Count() });
+        }
+        
+        [HttpPost("medianHouseIncomeSlo")]
+        public async Task<IActionResult> Post([FromBody] MedianHouseIncomeSloUploadModel uploadData)
+        {
+           await _context.InsertAsync(uploadData.MedianHouseIncomeSlo);
+           return Ok(new { rowsInserted = uploadData.MedianHouseIncomeSlo.Count() });
         }
 
         [HttpPost("netMigrationSlo")]
