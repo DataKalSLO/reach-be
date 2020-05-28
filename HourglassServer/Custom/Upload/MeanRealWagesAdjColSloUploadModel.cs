@@ -6,6 +6,6 @@ namespace HourglassServer.Custom.Upload
    public class MeanRealWagesAdjColSloUploadModel
    {
       [Required]
-      public MeanRealWagesAdjColSlo[] MeanRealWagesAdjColSlos;
+      public MeanRealWagesAdjColSlo[] MeanRealWagesAdjColSlo;
    }
 }
