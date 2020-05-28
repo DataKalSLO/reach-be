@@ -18,12 +18,6 @@ namespace HourglassServer
             _context = context;
         }
 
-        [HttpPost("covidUnemployment")]
-        public async Task<IActionResult> Post([FromBody] CovidUnemploymentUploadModel uploadData)
-        {
-            await _context.InsertAsync(uploadData.CovidUnemployment);
-            return Ok(new { rowsInserted = uploadData.CovidUnemployment.Count()});
-        }
 
         [HttpPost("airports")]
         public async Task<IActionResult> Post([FromBody] AirportsUploadModel uploadData)
@@ -32,6 +26,20 @@ namespace HourglassServer
             return Ok(new { rowsInserted = uploadData.Airports.Count() });
         }
 
+        [HttpPost("commuteTimes")]
+        public async Task<IActionResult> Post([FromBody] CommuteTimesUploadModel uploadData)
+        {
+            await _context.InsertAsync(uploadData.CommuteTimes);
+            return Ok(new { rowsInserted = uploadData.CommuteTimes.Count() });
+        }
+
+        [HttpPost("covidUnemployment")]
+        public async Task<IActionResult> Post([FromBody] CovidUnemploymentUploadModel uploadData)
+        {
+           await _context.InsertAsync(uploadData.CovidUnemployment);
+           return Ok(new { rowsInserted = uploadData.CovidUnemployment.Count() });
+        }
+        
         [HttpPost("medianHouseIncomeSlo")]
         public async Task<IActionResult> Post([FromBody] MedianHouseIncomeSloUploadModel uploadData)
         {
