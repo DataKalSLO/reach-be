@@ -38,5 +38,33 @@ namespace HourglassServer
            await _context.InsertAsync(uploadData.MedianHouseIncomeSlo);
            return Ok(new { rowsInserted = uploadData.MedianHouseIncomeSlo.Count() });
         }
+
+        [HttpPost("incomeInequalitySlo")]
+        public async Task<IActionResult> Post([FromBody] IncomeInequalitySloUploadModel uploadData)
+        {
+            await _context.InsertAsync(uploadData.IncomeInequalitySlo);
+            return Ok(new { rowsInserted = uploadData.IncomeInequalitySlo.Count() });
+        }
+
+        [HttpPost("netMigrationSlo")]
+        public async Task<IActionResult> Post([FromBody] NetMigrationSloUploadModel uploadData)
+        {
+            await _context.InsertAsync(uploadData.NetMigrationSlo);
+            return Ok(new { rowsInserted = uploadData.NetMigrationSlo.Count() });
+        }
+
+        [HttpPost("sloAirports")]
+        public async Task<IActionResult> Post([FromBody] SloAirportsUploadModel uploadData)
+        {
+            await _context.InsertAsync(uploadData.SloAirports);
+            return Ok(new { rowsInserted = uploadData.SloAirports.Count() });
+        }
+
+        [HttpPost("universityInfo")]
+        public async Task<IActionResult> Post([FromBody] UniversityInfoUploadModel uploadData)
+        {
+          await _context.InsertAsync(uploadData.UniversityInfo);
+          return Ok(new { rowsInserted = uploadData.UniversityInfo.Count() });
+        }
    }
 }

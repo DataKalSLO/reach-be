@@ -415,6 +415,22 @@ namespace HourglassServer.Data
                     .HasConstraintName("graph_source_graphid_fkey");
             });
 
+            modelBuilder.Entity<IncomeInequalitySlo>(entity =>
+            {
+                entity.HasKey(e => e.Year)
+                    .HasName("income_inequality_slo_pkey");
+
+                entity.ToTable("income_inequality_slo", "datasets");
+
+                entity.Property(e => e.Year)
+                    .HasColumnName("year")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.IncomeInequality)
+                    .HasColumnName("income_inequality")
+                    .HasColumnType("numeric");
+            });
+
             modelBuilder.Entity<Location>(entity =>
             {
                 entity.HasKey(e => new { e.Name, e.TableName })
@@ -456,6 +472,20 @@ namespace HourglassServer.Data
                     .HasColumnType("date");
 
                 entity.Property(e => e.MedianIncome).HasColumnName("median_income");
+            });
+            
+            modelBuilder.Entity<NetMigrationSlo>(entity =>
+            {
+                entity.HasKey(e => e.Year)
+                    .HasName("net_migration_slo_pkey");
+
+                entity.ToTable("net_migration_slo", "datasets");
+
+                entity.Property(e => e.Year)
+                    .HasColumnName("year")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.NetMigration).HasColumnName("net_migration");
             });
 
             modelBuilder.Entity<Person>(entity =>
@@ -510,6 +540,34 @@ namespace HourglassServer.Data
                 entity.Property(e => e.Longitude)
                     .HasColumnName("longitude")
                     .HasColumnType("numeric");
+            });
+
+            modelBuilder.Entity<SloAirport>(entity =>
+            {
+                entity.HasKey(e => e.Month)
+                    .HasName("slo_airport_pkey");
+
+                entity.ToTable("slo_airport", "datasets");
+
+                entity.Property(e => e.Month)
+                    .HasColumnName("month")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.Alaska).HasColumnName("alaska");
+
+                entity.Property(e => e.American).HasColumnName("american");
+
+                entity.Property(e => e.Contour).HasColumnName("contour");
+
+                entity.Property(e => e.GrandTotal2018).HasColumnName("grand_total_2018");
+
+                entity.Property(e => e.GrandTotal2019).HasColumnName("grand_total_2019");
+
+                entity.Property(e => e.PctChange)
+                    .HasColumnName("pct_change")
+                    .HasColumnType("numeric");
+
+                entity.Property(e => e.United).HasColumnName("united");
             });
 
             modelBuilder.Entity<Story>(entity =>
@@ -613,6 +671,38 @@ namespace HourglassServer.Data
                     .HasForeignKey(d => d.StoryId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("text_block_story_id_fkey");
+            });
+
+            modelBuilder.Entity<UniversityInfo>(entity =>
+            {
+                entity.HasKey(e => new { e.IdGender, e.IdUniversity, e.Year })
+                    .HasName("university_info_pkey");
+
+                entity.ToTable("university_info", "datasets");
+
+                entity.Property(e => e.IdGender).HasColumnName("id_gender");
+
+                entity.Property(e => e.IdUniversity).HasColumnName("id_university");
+
+                entity.Property(e => e.Year).HasColumnName("year");
+
+                entity.Property(e => e.Completions).HasColumnName("completions");
+
+                entity.Property(e => e.County)
+                    .IsRequired()
+                    .HasColumnName("county");
+
+                entity.Property(e => e.Gender)
+                    .IsRequired()
+                    .HasColumnName("gender");
+
+                entity.Property(e => e.IdGeography)
+                    .IsRequired()
+                    .HasColumnName("id_geography");
+
+                entity.Property(e => e.University)
+                    .IsRequired()
+                    .HasColumnName("university");
             });
 
             modelBuilder.Entity<ZipArea>(entity =>
