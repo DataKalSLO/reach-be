@@ -659,6 +659,38 @@ namespace HourglassServer.Data
                     .HasConstraintName("text_block_story_id_fkey");
             });
 
+            modelBuilder.Entity<UniversityInfo>(entity =>
+            {
+                entity.HasKey(e => new { e.IdGender, e.IdUniversity, e.Year })
+                    .HasName("university_info_pkey");
+
+                entity.ToTable("university_info", "datasets");
+
+                entity.Property(e => e.IdGender).HasColumnName("id_gender");
+
+                entity.Property(e => e.IdUniversity).HasColumnName("id_university");
+
+                entity.Property(e => e.Year).HasColumnName("year");
+
+                entity.Property(e => e.Completions).HasColumnName("completions");
+
+                entity.Property(e => e.County)
+                    .IsRequired()
+                    .HasColumnName("county");
+
+                entity.Property(e => e.Gender)
+                    .IsRequired()
+                    .HasColumnName("gender");
+
+                entity.Property(e => e.IdGeography)
+                    .IsRequired()
+                    .HasColumnName("id_geography");
+
+                entity.Property(e => e.University)
+                    .IsRequired()
+                    .HasColumnName("university");
+            });
+
             modelBuilder.Entity<ZipArea>(entity =>
             {
                 entity.HasKey(e => new { e.Zip, e.Area })

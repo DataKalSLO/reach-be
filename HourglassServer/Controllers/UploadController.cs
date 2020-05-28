@@ -52,5 +52,12 @@ namespace HourglassServer
             await _context.InsertAsync(uploadData.SloAirports);
             return Ok(new { rowsInserted = uploadData.SloAirports.Count() });
         }
-    }
+
+        [HttpPost("universityInfo")]
+        public async Task<IActionResult> Post([FromBody] UniversityInfoUploadModel uploadData)
+        {
+          await _context.InsertAsync(uploadData.UniversityInfo);
+          return Ok(new { rowsInserted = uploadData.UniversityInfo.Count() });
+        }
+   }
 }
