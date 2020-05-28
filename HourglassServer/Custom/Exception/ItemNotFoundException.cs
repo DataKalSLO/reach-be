@@ -3,7 +3,7 @@ using HourglassServer.Data;
 
 public class ItemNotFoundException : Exception
 {
-    public HourglassError errorObj { get; set; }
+    public HourglassException errorObj { get; set; }
     public ItemNotFoundException()
     {
     }
@@ -11,7 +11,7 @@ public class ItemNotFoundException : Exception
     public ItemNotFoundException(string message, string tag)
         : base(message)
     {
-        errorObj = new HourglassError(message, tag);
+        errorObj = new HourglassException(message, tag);
     }
 
     public ItemNotFoundException(string message, Exception inner)

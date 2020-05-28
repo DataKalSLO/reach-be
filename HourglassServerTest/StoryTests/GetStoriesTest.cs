@@ -1,7 +1,7 @@
 ﻿using HourglassServer.Data;
 using HourglassServer.Data.Application.StoryModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using HourglassServer.Data.DataManipulation.StoryModel;
+using HourglassServer.Data.DataManipulation.StoryOperations;
 using System.Collections.Generic;
 
 /* Note, the reason some of these tests are so similar and not 
