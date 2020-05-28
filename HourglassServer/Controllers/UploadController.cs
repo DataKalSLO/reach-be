@@ -40,6 +40,13 @@ namespace HourglassServer
            return Ok(new { rowsInserted = uploadData.CovidUnemployment.Count() });
         }
         
+        [HttpPost("medianHouseIncomeSlo")]
+        public async Task<IActionResult> Post([FromBody] MedianHouseIncomeSloUploadModel uploadData)
+        {
+           await _context.InsertAsync(uploadData.MedianHouseIncomeSlo);
+           return Ok(new { rowsInserted = uploadData.MedianHouseIncomeSlo.Count() });
+        }
+
         [HttpPost("incomeInequalitySlo")]
         public async Task<IActionResult> Post([FromBody] IncomeInequalitySloUploadModel uploadData)
         {
