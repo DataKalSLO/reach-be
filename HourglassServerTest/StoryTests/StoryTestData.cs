@@ -36,6 +36,8 @@ namespace HourglassServerTest.StoryTests
         public readonly string UserId = "test@test.com";
         private const string StoryDescription = "Sample Description";
         private const string StoryTitle = "Example Title";
+        public readonly DateTime DateCreated = StoryFactory.GetNow();
+        public readonly DateTime DateLastEdited = StoryFactory.GetNow();
 
         public StoryTestData()
         {
@@ -117,7 +119,9 @@ namespace HourglassServerTest.StoryTests
                 Title = StoryTitle,
                 Description = StoryDescription,
                 UserId = UserId,
-                PublicationStatus = PublicationStatus.DRAFT.ToString()
+                PublicationStatus = PublicationStatus.DRAFT.ToString(),
+                DateCreated = DateCreated,
+                DateLastEdited = DateLastEdited
             };
         }
 
