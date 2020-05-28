@@ -43,8 +43,7 @@ namespace HourglassServer
             }
 
             string token = _jwtTokenService.BuildToken(ClaimBuilders.BuildLoginClaims(loggedInUser));
-
-            return Ok(new { email = tokenModel.Email, name = loggedInUser.Name, occupation = loggedInUser.Occupation, role = loggedInUser.Role, notificationsEnabled = loggedInUser.NotificationsEnabled, loggedInUser.IsThirdParty, token });
+            return Ok(new { email = tokenModel.Email, name = loggedInUser.Name, occupation = loggedInUser.Occupation, role = loggedInUser.Role, notificationsEnabled = loggedInUser.NotificationsEnabled, isThirdParty = loggedInUser.IsThirdParty, token });
         }
     }
 }
