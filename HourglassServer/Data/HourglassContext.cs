@@ -176,6 +176,24 @@ namespace HourglassServer.Data
                     .HasMaxLength(500);
             });
 
+            modelBuilder.Entity<CommuteTimes>(entity =>
+            {
+                entity.HasKey(e => new { e.Year, e.City })
+                    .HasName("commute_times_pkey");
+
+                entity.ToTable("commute_times", "datasets");
+
+                entity.Property(e => e.Year)
+                    .HasColumnName("year")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.City).HasColumnName("city");
+
+                entity.Property(e => e.AvgMinutes)
+                    .HasColumnName("avg_minutes")
+                    .HasColumnType("numeric");
+            });
+
             modelBuilder.Entity<CovidUnemployment>(entity =>
             {
                 entity.HasKey(e => e.WeekEnd)
@@ -472,8 +490,8 @@ namespace HourglassServer.Data
                     .HasColumnType("date");
 
                 entity.Property(e => e.MedianIncome).HasColumnName("median_income");
-             });
-
+            });
+            
             modelBuilder.Entity<NetMigrationSlo>(entity =>
             {
                 entity.HasKey(e => e.Year)
