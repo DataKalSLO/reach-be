@@ -5,30 +5,37 @@
  */
 namespace HourglassServer.Data.DataManipulation.StoryModel
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using HourglassServer.Data.Application.StoryModel;
     using HourglassServer.Models.Persistent;
+    using HourglassServer.Data.DataManipulation.StoryModel;
 
     // TODO: Replace `ToList` to `ToListAsync` and convert to async queries
     public static class StoryModelRetriever
     {
+        /*
+         * Retrieving stories in a certain status
+         */
+        public static IList<StoryApplicationModel> GetStoryApplicationModelsInPublicationStatusByUserId(HourglassContext db, PublicationStatus expectedStatus, string userId)
+        {
+            IList<Story> storiesInDraftStatus = GetStoriesInPublicationStatus(db, expectedStatus);
+            IList<Story> userDraftStories = storiesInDraftStatus.Where(story => story.UserId == userId).ToList();
+            return GetStoryApplicationListFromStories(db, userDraftStories);
+
+        }
+
+        public static IList<StoryApplicationModel> GetStoryApplicationModelsInPublicationStatus(HourglassContext db, PublicationStatus expectedStatus)
+        {
+            IList<Story> storiesInStatus = GetStoriesInPublicationStatus(db, expectedStatus);
+            return GetStoryApplicationListFromStories(db, storiesInStatus);
+        }
+
         public static StoryApplicationModel GetStoryApplicationModelById(HourglassContext db, string storyId)
         {
             Story story = db.Story.First(story => story.StoryId == storyId); // TODO: Replace with `Find`
             return GetStoryApplicationModelFromStory(db, story);
-        }
-
-        public static IList<StoryApplicationModel> GetAllStoryApplicationModels(HourglassContext db)
-        {
-            List<Story> stories = db.Story.ToList();
-            List<StoryApplicationModel> storyModels = new List<StoryApplicationModel>();
-            foreach (var story in stories)
-            {
-                storyModels.Add(GetStoryApplicationModelFromStory(db, story));
-            }
-
-            return storyModels;
         }
 
         public static StoryApplicationModel GetStoryApplicationModelFromStory(HourglassContext db, Story story)
@@ -52,11 +59,34 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             return allStories;
         }
 
+        /*
+         * (private) Helper Methods
+         */
+
+        private static IList<Story> GetStoriesInPublicationStatus(HourglassContext db, PublicationStatus expectedStatus)
+        {
+            return db.Story
+                .ToList() // translate to enumerable before custom query below
+                .Where(story => StoryFactory.StoryIsInStatus(story, expectedStatus))
+                .ToList();
+        }
+
+        private static IList<StoryApplicationModel> GetStoryApplicationListFromStories(HourglassContext db, IList<Story> stories)
+        {
+            List<StoryApplicationModel> storyModels = new List<StoryApplicationModel>();
+            foreach (var story in stories)
+            {
+                storyModels.Add(GetStoryApplicationModelFromStory(db, story));
+            }
+            return storyModels;
+        }
+
+
         /* The reason these blocks cannot be generalized is because no supertype can be
          * declared for StoryBlocks. The script we use to generate the classes specifically
          * mentions this as one of its limitations.
          */
-        public static List<StoryBlockModel> GetGraphBlockByStoryId(HourglassContext db, string storyId)
+        private static List<StoryBlockModel> GetGraphBlockByStoryId(HourglassContext db, string storyId)
         {
             List<GraphBlock> storyBlockGraphBlockJoin = db.GraphBlock.Where(graphBlock => graphBlock.StoryId == storyId).ToList();
             List<StoryBlockModel> storyBlocks = new List<StoryBlockModel>();
@@ -68,7 +98,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             return storyBlocks;
         }
 
-        public static List<StoryBlockModel> GetGeoMapBlocksByStoryId(HourglassContext db, string storyId)
+        private static List<StoryBlockModel> GetGeoMapBlocksByStoryId(HourglassContext db, string storyId)
         {
             List<GeoMapBlock> geoMapBlocks = db.GeoMapBlock.Where(geoMapBlock => geoMapBlock.StoryId == storyId).ToList();
             List<StoryBlockModel> storyBlocks = new List<StoryBlockModel>();
@@ -80,7 +110,7 @@ namespace HourglassServer.Data.DataManipulation.StoryModel
             return storyBlocks;
         }
 
-        public static List<StoryBlockModel> GetTextBlocksByStoryId(HourglassContext db, string storyId)
+        private static List<StoryBlockModel> GetTextBlocksByStoryId(HourglassContext db, string storyId)
         {
             List<TextBlock> textBlocks = db.TextBlock.Where(textBlock => textBlock.StoryId == storyId).ToList();
             List<StoryBlockModel> storyBlocks = new List<StoryBlockModel>();

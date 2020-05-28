@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using HourglassServer.Data;
 using HourglassServer.Data.Application.GraphModel;
+using HourglassServer.Data.DataManipulation.DbSetOperations;
 using HourglassServer.Data.DataManipulation.GraphOperations;
 using System.Collections.Generic;
+using HourglassServer.Models.Persistent;
 
 namespace HourglassServer.Controllers
 {
@@ -14,19 +16,39 @@ namespace HourglassServer.Controllers
     public class GraphController : Controller
     {
         private readonly HourglassContext _context;
-        private DatasetDbContext _dbContext;
-
-        public GraphController(HourglassContext context, DatasetDbContext dbContext)
+        public GraphController(HourglassContext context)
         {
             _context = context;
-            _dbContext = dbContext;
         }
 
-        [Route("getDefaultGraphs/{category}")]
+        [Route("DefaultGraphs/{category}")]
         [HttpGet]
-        public ActionResult<List<storedGraph>> getDefaultGraphs(string category)
+        public async Task<IActionResult> getDefaultGraphs(string category)
         {
-            return _dbContext.getDefultGraphs(category).Result;
+            List<GraphApplicationModel> defaults =
+                await DefaultGraphOperations.GetDefaultGraphsModelByCategory(this._context, category);
+
+            return new OkObjectResult(defaults);
+        }
+
+        [UserExists]
+        [Route("UserGraphs")]
+        [HttpGet]
+        public async Task<IActionResult> getGraphsforUser()
+        {
+            try
+            {
+                var currentUserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).Single().Value;
+                List<GraphApplicationModel> graph = 
+                    await GraphModelRetriever.GetGraphApplictionModelsforUser(this._context, currentUserId);
+                return new OkObjectResult(graph);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(
+                    new HourglassError(e.ToString(), "User Error")
+                );
+            }
         }
 
         [HttpGet("{graphId}")]
@@ -59,6 +81,17 @@ namespace HourglassServer.Controllers
             {
                 var currentUserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).Single().Value;
                 GraphApplicationModel graph = await GraphModelCreator.CreateGraph(this._context, graphModel, currentUserId);
+
+                // Add to the default graph table if administrator requests
+                if (HttpContext.User.HasRole(Role.Admin) && graphModel.GraphCategory != null)
+                {
+                    await DefaultGraphOperations.PerformOperationForDefaultGraph(
+                        this._context,
+                        MutatorOperations.ADD,
+                        graph.GraphId,
+                        graphModel.GraphCategory);
+                }
+
                 return new OkObjectResult(graph);
             }
             catch (Exception e)
@@ -75,6 +108,17 @@ namespace HourglassServer.Controllers
             {
                 var currentUserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).Single().Value;
                 GraphApplicationModel graph = await GraphModelUpdater.UpdateGraph(this._context, graphModel, currentUserId);
+
+                // Update the default graph table if administrator requests
+                if (HttpContext.User.HasRole(Role.Admin) && graphModel.GraphCategory != null)
+                {
+                    await DefaultGraphOperations.PerformOperationForDefaultGraph(
+                        this._context,
+                        MutatorOperations.UPDATE,
+                        graph.GraphId,
+                        graphModel.GraphCategory);
+                }
+
                 return new OkObjectResult(graph);
             }
             catch (PermissionDeniedException e)
@@ -103,7 +147,8 @@ namespace HourglassServer.Controllers
             {
                 var currentUserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).Single().Value;
                 await GraphModelDeleter.DeleteGraphById(_context, graphId, currentUserId);
-                return new OkObjectResult(String.Format("Successfully deleted graph with id {0}.", graphId));
+
+                return new OkObjectResult(new { graphId });
             }
             catch (ItemNotFoundException e)
             {

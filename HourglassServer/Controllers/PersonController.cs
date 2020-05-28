@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using HourglassServer.Data;
+using HourglassServer.Models.Persistent;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using HourglassServer.Data;
-using HourglassServer.Models.Persistent;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -59,15 +59,15 @@ namespace HourglassServer
             }
             if (await DuplicateEmail(model))
             {
-                return BadRequest(new { errorName = "duplicateEmail" });
+                return BadRequest(new { tag = "duplicateEmail" });
             }
 
-            var (salt, hash) = Utilities.HashPassword(model.Password);
+            var (salt, hash) = UserPasswordHasher.HashPassword(model.Password);
             await _context.InsertAsync(new Person
             {
                 Name = model.Name,
                 Email = model.Email,
-                Role = (int) newRole,
+                Role = (int)newRole,
                 Salt = salt,
                 PasswordHash = hash,
                 Occupation = model.Occupation == "" ? null : model.Occupation,

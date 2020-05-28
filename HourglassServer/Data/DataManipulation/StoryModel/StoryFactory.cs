@@ -13,7 +13,7 @@
 
             newStory.StoryId = model.Id;
             newStory.UserId = model.UserId;
-            newStory.PublicationStatus = PublicationStatus.DRAFT.ToString();
+            newStory.PublicationStatus = model.PublicationStatus.ToString();
             newStory.Title = model.Title;
             newStory.Description = model.Description;
             newStory.DateCreated = nowTimeStamp;
@@ -122,6 +122,13 @@
                 GeoMapId = geoMapId,
             };
             return geoMapBlock;
+        }
+
+        public static bool StoryIsInStatus(Story story, PublicationStatus expectedStatus)
+        {
+            PublicationStatus actualPublicationStatus;
+            Enum.TryParse<PublicationStatus>(story.PublicationStatus, out actualPublicationStatus);
+            return expectedStatus == actualPublicationStatus; 
         }
     }
 }

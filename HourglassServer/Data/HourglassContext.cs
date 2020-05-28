@@ -26,6 +26,7 @@ namespace HourglassServer.Data
         public virtual DbSet<BookmarkStory> BookmarkStory { get; set; }
         public virtual DbSet<Category> Category { get; set; }
         public virtual DbSet<DatasetMetaData> DatasetMetaData { get; set; }
+        public virtual DbSet<DefaultGraph> DefaultGraph { get; set; }
         public virtual DbSet<GeoMap> GeoMap { get; set; }
         public virtual DbSet<GeoMapBlock> GeoMapBlock { get; set; }
         public virtual DbSet<GeoMapTables> GeoMapTables { get; set; }
@@ -53,6 +54,28 @@ namespace HourglassServer.Data
         {
             modelBuilder.HasPostgresEnum(null, "geo_type", new[] { "city", "zip", "county" })
                 .HasPostgresEnum(null, "graph_category", new[] { "Industry", "Demographics", "Assets", "Education", "Housing" });
+
+            modelBuilder.Entity<Airports>(entity =>
+            {
+                entity.HasKey(e => e.Code)
+                    .HasName("airports_pkey");
+
+                entity.ToTable("airports", "datasets");
+
+                entity.Property(e => e.Code).HasColumnName("code");
+
+                entity.Property(e => e.Latitude)
+                    .HasColumnName("latitude")
+                    .HasColumnType("numeric");
+
+                entity.Property(e => e.Longitude)
+                    .HasColumnName("longitude")
+                    .HasColumnType("numeric");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasColumnName("name");
+            });
 
             modelBuilder.Entity<Area>(entity =>
             {
@@ -153,6 +176,20 @@ namespace HourglassServer.Data
                     .HasMaxLength(500);
             });
 
+            modelBuilder.Entity<CovidUnemployment>(entity =>
+            {
+                entity.HasKey(e => e.WeekEnd)
+                    .HasName("covid_unemployment_pkey");
+
+                entity.ToTable("covid_unemployment", "datasets");
+
+                entity.Property(e => e.WeekEnd)
+                    .HasColumnName("week_end")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.UnemploymentClaims).HasColumnName("unemployment_claims");
+            });
+
             modelBuilder.Entity<DatasetMetaData>(entity =>
             {
                 entity.HasKey(e => e.TableName)
@@ -164,15 +201,33 @@ namespace HourglassServer.Data
                     .HasColumnName("table_name")
                     .HasMaxLength(500);
 
-                entity.Property(e => e.CityColumn).HasColumnName("city_column");
-
                 entity.Property(e => e.ColumnNames).HasColumnName("column_names");
 
-                entity.Property(e => e.CountyColumn).HasColumnName("county_column");
+                entity.Property(e => e.GeoType).HasColumnName("geo_type");
 
                 entity.Property(e => e.DataTypes).HasColumnName("data_types");
+            });
 
-                entity.Property(e => e.ZipCodeColumn).HasColumnName("zip_code_column");
+            modelBuilder.Entity<DefaultGraph>(entity =>
+            {
+                entity.HasKey(e => e.GraphId)
+                    .HasName("default_graph_pkey");
+
+                entity.ToTable("default_graph");
+
+                entity.Property(e => e.GraphId)
+                    .HasColumnName("graph_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.Property(e => e.Category)
+                    .HasColumnName("category")
+                    .HasMaxLength(100);
+
+                entity.HasOne(d => d.Graph)
+                    .WithOne(p => p.DefaultGraph)
+                    .HasForeignKey<DefaultGraph>(d => d.GraphId)
+                    .HasConstraintName("default_graph_graph_id_fkey");
             });
 
             modelBuilder.Entity<GeoMap>(entity =>
@@ -360,6 +415,22 @@ namespace HourglassServer.Data
                     .HasConstraintName("graph_source_graphid_fkey");
             });
 
+            modelBuilder.Entity<IncomeInequalitySlo>(entity =>
+            {
+                entity.HasKey(e => e.Year)
+                    .HasName("income_inequality_slo_pkey");
+
+                entity.ToTable("income_inequality_slo", "datasets");
+
+                entity.Property(e => e.Year)
+                    .HasColumnName("year")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.IncomeInequality)
+                    .HasColumnName("income_inequality")
+                    .HasColumnType("numeric");
+            });
+
             modelBuilder.Entity<Location>(entity =>
             {
                 entity.HasKey(e => new { e.Name, e.TableName })
@@ -387,6 +458,20 @@ namespace HourglassServer.Data
                     .HasForeignKey(d => d.TableName)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("location_table_name_fkey");
+            });
+
+            modelBuilder.Entity<NetMigrationSlo>(entity =>
+            {
+                entity.HasKey(e => e.Year)
+                    .HasName("net_migration_slo_pkey");
+
+                entity.ToTable("net_migration_slo", "datasets");
+
+                entity.Property(e => e.Year)
+                    .HasColumnName("year")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.NetMigration).HasColumnName("net_migration");
             });
 
             modelBuilder.Entity<Person>(entity =>
@@ -441,6 +526,34 @@ namespace HourglassServer.Data
                 entity.Property(e => e.Longitude)
                     .HasColumnName("longitude")
                     .HasColumnType("numeric");
+            });
+
+            modelBuilder.Entity<SloAirport>(entity =>
+            {
+                entity.HasKey(e => e.Month)
+                    .HasName("slo_airport_pkey");
+
+                entity.ToTable("slo_airport", "datasets");
+
+                entity.Property(e => e.Month)
+                    .HasColumnName("month")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.Alaska).HasColumnName("alaska");
+
+                entity.Property(e => e.American).HasColumnName("american");
+
+                entity.Property(e => e.Contour).HasColumnName("contour");
+
+                entity.Property(e => e.GrandTotal2018).HasColumnName("grand_total_2018");
+
+                entity.Property(e => e.GrandTotal2019).HasColumnName("grand_total_2019");
+
+                entity.Property(e => e.PctChange)
+                    .HasColumnName("pct_change")
+                    .HasColumnType("numeric");
+
+                entity.Property(e => e.United).HasColumnName("united");
             });
 
             modelBuilder.Entity<Story>(entity =>

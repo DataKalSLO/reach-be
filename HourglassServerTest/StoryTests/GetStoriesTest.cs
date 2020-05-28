@@ -3,53 +3,88 @@ using HourglassServer.Data.Application.StoryModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HourglassServer.Data.DataManipulation.StoryModel;
 using System.Collections.Generic;
-using HourglassServer.Controllers;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
+/* Note, the reason some of these tests are so similar and not 
+ * 
+ */
 namespace HourglassServerTest.StoryTests
 {
     [TestClass]
     public class GetStoriesTest
     {
-
         [TestMethod]
-        public void TestGetStoriesFromStoryRetrieverContainingSampleData()
+        public void TestGetStoryByIdFromStoryControllerContainingStory()
         {
             StoryTestData sampleData = new StoryTestData();
-            HourglassContext mockContent = sampleData.GetMockContext();
-            IList<StoryApplicationModel> stories = StoryModelRetriever.GetAllStoryApplicationModels(mockContent);
-            GeneralAssertions.AssertListHasMinimumCount(stories, 1);
-            StoryApplicationModel story = stories[0];
+            HourglassContext mockContext = sampleData.GetMockContext();
+            StoryApplicationModel story = StoryModelRetriever.GetStoryApplicationModelById(mockContext, sampleData.StoryId);
+
+            //VP 1 - Correct story returned
+            Assert.AreEqual(sampleData.StoryId, story.Id);
+
+            //VP 2 - Story blocks returned with story
             int expectedStoryBlockCount = 3;
             GeneralAssertions.AssertListHasCount(story.StoryBlocks, expectedStoryBlockCount);
-            for (int i=0;i<expectedStoryBlockCount; i++) //Checks that blocks are sorted.
+            for (int i = 0; i < expectedStoryBlockCount; i++) //Checks that blocks are sorted.
                 Assert.AreEqual(i, story.StoryBlocks[i].BlockPosition);
         }
 
         [TestMethod]
-        public void TestGetStoriesFromControllerContainingSampleData()
+        public void TestGetStoriesInDraftStatus()
         {
-            StoryTestData sampleData = new StoryTestData();
-            HourglassContext mockContext = sampleData.GetMockContext();
-            StoryController storyController = new StoryController(mockContext);
-            var okResult = storyController.GetAllStories() as OkObjectResult;
-            IList<StoryApplicationModel> stories = okResult.Value as List<StoryApplicationModel>;
-
+            StoryTestData testData = new StoryTestData();
+            HourglassContext mockContext = testData.GetMockContext();
+            IList<StoryApplicationModel> stories = StoryModelRetriever.GetStoryApplicationModelsInPublicationStatus(mockContext, PublicationStatus.DRAFT);
             GeneralAssertions.AssertListHasMinimumCount(stories, 1);
-            GeneralAssertions.AssertListHasMinimumCount(stories[0].StoryBlocks, 1);
         }
 
         [TestMethod]
-        public async Task TestGetStoryByIdFromStoryControllerContainingStory()
+        public void TestGetStoriesInDraftStatusByUserId()
         {
-            StoryTestData sampleData = new StoryTestData();
-            HourglassContext mockContext = sampleData.GetMockContext();
-            StoryController storyController = new StoryController(mockContext);
-            var okResult = (await storyController.GetStoryById(sampleData.StoryId))as OkObjectResult;
-            StoryApplicationModel story = okResult.Value as StoryApplicationModel;
-            GeneralAssertions.AssertListHasMinimumCount(story.StoryBlocks, 1);
-            Assert.AreEqual(sampleData.StoryId, story.Id);
+            StoryTestData testData = new StoryTestData();
+            HourglassContext mockContext = testData.GetMockContext();
+            IList<StoryApplicationModel> stories = StoryModelRetriever.GetStoryApplicationModelsInPublicationStatusByUserId(mockContext, PublicationStatus.DRAFT, testData.UserId);
+            GeneralAssertions.AssertListHasMinimumCount(stories, 1);
+        }
+
+        [TestMethod]
+        public void TestGetStoriesInReviewStatus()
+        {
+            // TODO: Refactor test data to include at least one story in review
+            StoryTestData testData = new StoryTestData();
+            HourglassContext mockContext = testData.GetMockContext();
+            IList<StoryApplicationModel> stories = StoryModelRetriever.GetStoryApplicationModelsInPublicationStatus(mockContext, PublicationStatus.REVIEW);
+            GeneralAssertions.AssertListHasCount(stories, 0);
+        }
+
+        [TestMethod]
+        public void TestGetStoriesInReviewStatusByUserId()
+        {
+            // TODO: Refactor test data to include at least one story in review
+            StoryTestData testData = new StoryTestData();
+            HourglassContext mockContext = testData.GetMockContext();
+            IList<StoryApplicationModel> stories = StoryModelRetriever.GetStoryApplicationModelsInPublicationStatusByUserId(mockContext, PublicationStatus.REVIEW, testData.UserId);
+            GeneralAssertions.AssertListHasMinimumCount(stories, 0);
+        }
+
+        [TestMethod]
+        public void TestGetStoriesInPublishedStatus()
+        {
+            // TODO: Refactor test data to include at least one published story
+            StoryTestData testData = new StoryTestData();
+            HourglassContext mockContext = testData.GetMockContext();
+            IList<StoryApplicationModel> stories = StoryModelRetriever.GetStoryApplicationModelsInPublicationStatus(mockContext, PublicationStatus.PUBLISHED);
+            GeneralAssertions.AssertListHasCount(stories, 0);
+        }
+
+        [TestMethod]
+        public void TestGetStoriesInPublishedStatusByUserId()
+        {
+            // TODO: Refactor test data to include at least one published story
+            StoryTestData testData = new StoryTestData();
+            HourglassContext mockContext = testData.GetMockContext();
+            IList<StoryApplicationModel> stories = StoryModelRetriever.GetStoryApplicationModelsInPublicationStatusByUserId(mockContext, PublicationStatus.PUBLISHED, testData.UserId);
+            GeneralAssertions.AssertListHasMinimumCount(stories, 0);
         }
     }
 }

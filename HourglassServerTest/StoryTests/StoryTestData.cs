@@ -33,7 +33,7 @@ namespace HourglassServerTest.StoryTests
         public Mock<DbSet<GeoMapBlock>> GeoMapBlockDbDSet;
 
         private const string EditorState = "{\"MeaningOfLife\": 42}";
-        private const string UserId = "test@test.com";
+        public readonly string UserId = "test@test.com";
         private const string StoryDescription = "Sample Description";
         private const string StoryTitle = "Example Title";
 
