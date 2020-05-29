@@ -25,9 +25,10 @@ namespace HourglassServerTest.StoryTests
 
             StoryModelDeleter.DeleteStoryById(mockContext, testData.StoryId);
             testData.StoryDbSet.Verify(mock => mock.Remove(It.IsAny<Story>()), Times.Once());
-            testData.TextBlockDbSet.Verify(mock => mock.RemoveRange(It.IsAny<IQueryable<TextBlock>>()), Times.Once());
-            testData.GraphBlockDbSet.Verify(mock => mock.RemoveRange(It.IsAny<IQueryable<GraphBlock>>()), Times.Once());
             testData.GeoMapBlockDbDSet.Verify(mock => mock.RemoveRange(It.IsAny<IQueryable<GeoMapBlock>>()), Times.Once());
+            testData.GraphBlockDbSet.Verify(mock => mock.RemoveRange(It.IsAny<IQueryable<GraphBlock>>()), Times.Once());
+            testData.ImageBlockDbSet.Verify(mock => mock.RemoveRange(It.IsAny<IQueryable<ImageBlock>>()), Times.Once());
+            testData.TextBlockDbSet.Verify(mock => mock.RemoveRange(It.IsAny<IQueryable<TextBlock>>()), Times.Once());
         }
     }
 }

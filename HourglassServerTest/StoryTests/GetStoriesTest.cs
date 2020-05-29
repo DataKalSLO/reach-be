@@ -23,7 +23,7 @@ namespace HourglassServerTest.StoryTests
             Assert.AreEqual(sampleData.StoryId, story.Id);
 
             //VP 2 - Story blocks returned with story
-            int expectedStoryBlockCount = 3;
+            int expectedStoryBlockCount = 4;
             GeneralAssertions.AssertListHasCount(story.StoryBlocks, expectedStoryBlockCount);
             for (int i = 0; i < expectedStoryBlockCount; i++) //Checks that blocks are sorted.
                 Assert.AreEqual(i, story.StoryBlocks[i].BlockPosition);
