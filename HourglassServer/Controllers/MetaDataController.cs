@@ -33,7 +33,7 @@ namespace HourglassServer.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(new HourglassError(e.ToString(), "Error"));
+                return BadRequest(new HourglassException(e.ToString(), "Error"));
             }
         }
     }

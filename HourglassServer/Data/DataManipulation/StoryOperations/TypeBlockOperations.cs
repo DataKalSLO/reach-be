@@ -1,4 +1,4 @@
-﻿namespace HourglassServer.Data.DataManipulation.StoryModel
+﻿namespace HourglassServer.Data.DataManipulation.StoryOperations
 {
     using System;
     using HourglassServer.Data.Application.StoryModel;

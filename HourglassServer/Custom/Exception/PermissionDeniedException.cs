@@ -3,7 +3,7 @@ using HourglassServer.Data;
 
 public class PermissionDeniedException : Exception
 {
-    public HourglassError errorObj { get; set; }
+    public HourglassException errorObj { get; set; }
     public PermissionDeniedException()
     {
     }
@@ -11,7 +11,7 @@ public class PermissionDeniedException : Exception
     public PermissionDeniedException(string message, string tag)
         : base(message)
     {
-        errorObj = new HourglassError(message, tag);
+        errorObj = new HourglassException(message, tag);
     }
 
     public PermissionDeniedException(string message, Exception inner)

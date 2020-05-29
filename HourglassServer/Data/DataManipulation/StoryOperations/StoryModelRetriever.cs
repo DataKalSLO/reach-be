@@ -3,14 +3,14 @@
  * Current Queries Implemented: By ID
  * Pending: Containing substring in description/title, by author, by date
  */
-namespace HourglassServer.Data.DataManipulation.StoryModel
+namespace HourglassServer.Data.DataManipulation.StoryOperations
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using HourglassServer.Data.Application.StoryModel;
     using HourglassServer.Models.Persistent;
-    using HourglassServer.Data.DataManipulation.StoryModel;
+    using HourglassServer.Data.DataManipulation.StoryOperations;
 
     // TODO: Replace `ToList` to `ToListAsync` and convert to async queries
     public static class StoryModelRetriever

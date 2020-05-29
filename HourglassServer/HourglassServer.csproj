@@ -20,7 +20,4 @@
     <PackageReference Include="AWSSDK.S3" Version="3.3.111.4"/>
     <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.3.101"/>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Custom\StoryModel\"/>
-  </ItemGroup>
 </Project>
