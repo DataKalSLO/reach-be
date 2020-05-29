@@ -554,6 +554,8 @@ namespace HourglassServer.Data
 
                 entity.Property(e => e.NotificationsEnabled).HasColumnName("notifications_enabled");
 
+                entity.Property(e => e.IsThirdParty).HasColumnName("is_third_party");
+
                 entity.Property(e => e.Occupation)
                     .HasColumnName("occupation")
                     .HasMaxLength(50);

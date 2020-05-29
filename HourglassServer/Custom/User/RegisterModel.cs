@@ -20,5 +20,8 @@ namespace HourglassServer
 
         [Required]
         public bool NotificationsEnabled { get; set; }
+
+        [Required]
+        public bool IsThirdParty { get; set; }
     }
 }
