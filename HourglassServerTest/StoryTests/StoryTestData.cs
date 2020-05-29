@@ -1,10 +1,8 @@
 ﻿using Moq; 
 using HourglassServer.Data.Application.StoryModel;
-using HourglassServer.Data.DataManipulation.StoryOperations;
 using HourglassServer.Models.Persistent;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-
 
 /* This class is instantiated with the following entities:
  * 
