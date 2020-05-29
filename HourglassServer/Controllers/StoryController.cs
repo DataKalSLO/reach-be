@@ -7,9 +7,9 @@
     using Microsoft.AspNetCore.Mvc;
     using HourglassServer.Data;
     using HourglassServer.Data.Application.StoryModel;
-    using HourglassServer.Data.DataManipulation.StoryModel;
+    using HourglassServer.Data.DataManipulation.StoryOperations;
     using HourglassServer.Custom.Constraints;
-    using HourglassServer.Custom.Exceptions;
+    using HourglassServer.Custom.Exception;
 
     // TODO: Catch different types of exceptions and return descriptive tags for all routes.
     [DefaultControllerRoute]
@@ -75,7 +75,7 @@
             }
             catch (Exception e)
             {
-                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.BadValue));
+                return this.BadRequest(new HourglassException(e.ToString(), ExceptionTag.BadValue));
             }
         }
 
@@ -94,13 +94,13 @@
                 await this.context.SaveChangesAsync();
                 return new OkObjectResult(storyWithId);
             }
-            catch(HourglassError e)
+            catch (HourglassException e)
             {
                 return this.BadRequest(e);
             }
             catch (Exception e)
             {
-                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.BadValue));
+                return this.BadRequest(new HourglassException(e.ToString(), ExceptionTag.BadValue));
             }
         }
 
@@ -121,13 +121,13 @@
                 await this.context.SaveChangesAsync();
                 return response;
             }
-            catch (HourglassError e)
+            catch (HourglassException e)
             {
                 return this.BadRequest(e);
             }
             catch (Exception e)
             {
-                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.BadValue));
+                return this.BadRequest(new HourglassException(e.ToString(), ExceptionTag.BadValue));
             }
         }
 
@@ -150,13 +150,13 @@
                 await this.context.SaveChangesAsync();
                 return new NoContentResult();
             }
-            catch (HourglassError e)
+            catch (HourglassException e)
             {
                 return this.BadRequest(e);
             }
             catch (Exception e)
             {
-                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.BadValue));
+                return this.BadRequest(new HourglassException(e.ToString(), ExceptionTag.BadValue));
             }
         }
 
@@ -173,7 +173,7 @@
             }
             catch (Exception e)
             {
-                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.BadValue));
+                return this.BadRequest(new HourglassException(e.ToString(), ExceptionTag.BadValue));
             }
         }
 

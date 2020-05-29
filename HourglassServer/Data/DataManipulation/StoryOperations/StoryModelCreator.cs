@@ -6,7 +6,7 @@
  * StoryModel       -> Story + StoryBlockModel[]
  * StoryBlockModel  -> StoryBlock + [GeoMapBlock | TextBlock | GraphBlock]
  */
-namespace HourglassServer.Data.DataManipulation.StoryModel
+namespace HourglassServer.Data.DataManipulation.StoryOperations
 {
     using HourglassServer.Data.Application.StoryModel;
     using HourglassServer.Data.DataManipulation.DbSetOperations;

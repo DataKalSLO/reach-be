@@ -9,7 +9,7 @@ namespace HourglassServer.Controllers
     using System.Linq;
     using System.Threading.Tasks;
     using HourglassServer.Custom.Constraints;
-    using HourglassServer.Custom.Exceptions;
+    using HourglassServer.Custom.Exception;
     using HourglassServer.Data;
     using HourglassServer.Data.DataManipulation.BookmarkOperations;
     using HourglassServer.Data.DataManipulation.DbSetOperations;
@@ -41,7 +41,7 @@ namespace HourglassServer.Controllers
             }
             catch (Exception e)
             {
-                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.BadValue));
+                return this.BadRequest(new HourglassException(e.ToString(), ExceptionTag.BadValue));
             }
         }
 
@@ -58,7 +58,7 @@ namespace HourglassServer.Controllers
             }
             catch (Exception e)
             {
-                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.BadValue));
+                return this.BadRequest(new HourglassException(e.ToString(), ExceptionTag.BadValue));
             }
         }
 
@@ -75,7 +75,7 @@ namespace HourglassServer.Controllers
             }
             catch (Exception e)
             {
-                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.BadValue));
+                return this.BadRequest(new HourglassException(e.ToString(), ExceptionTag.BadValue));
             }
         }
 
@@ -93,7 +93,7 @@ namespace HourglassServer.Controllers
             }
             catch (Exception e)
             {
-                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.BadValue));
+                return this.BadRequest(new HourglassException(e.ToString(), ExceptionTag.BadValue));
             }
         }
 
@@ -112,7 +112,7 @@ namespace HourglassServer.Controllers
             }
             catch (Exception e)
             {
-                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.BadValue));
+                return this.BadRequest(new HourglassException(e.ToString(), ExceptionTag.BadValue));
             }
         }
 
@@ -131,7 +131,7 @@ namespace HourglassServer.Controllers
             }
             catch (Exception e)
             {
-                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.BadValue));
+                return this.BadRequest(new HourglassException(e.ToString(), ExceptionTag.BadValue));
             }
         }
     }

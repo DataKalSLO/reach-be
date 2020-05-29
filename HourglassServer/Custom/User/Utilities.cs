@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using HourglassServer.Custom.Exceptions;
+using HourglassServer.Custom.Exception;
 
 namespace HourglassServer
 {
@@ -14,12 +14,12 @@ namespace HourglassServer
             IList<Claim> userClaimsWithId = user.Claims
                 .Where(c => c.Type == ClaimTypes.Email).ToList();
             if (userClaimsWithId.Count < 1)
-                throw new PermissionDeniedException("No email claim type found for user.", ErrorTag.BadValue);
+                throw new PermissionDeniedException("No email claim type found for user.", ExceptionTag.BadValue);
 
             Claim userClaim = userClaimsWithId[0];
 
             if (userClaim == null)
-                throw new PermissionDeniedException("User claim is null.", ErrorTag.BadValue);
+                throw new PermissionDeniedException("User claim is null.", ExceptionTag.BadValue);
 
             return userClaim.Value;
         }
