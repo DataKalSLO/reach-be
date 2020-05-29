@@ -28,14 +28,16 @@ namespace HourglassServerTest.StoryTests
         //TODO: Prefix these variables with `Mock`
         public readonly Mock<HourglassContext> MockContext;
         public Mock<DbSet<Story>> StoryDbSet;
-        public Mock<DbSet<TextBlock>> TextBlockDbSet;
-        public Mock<DbSet<GraphBlock>> GraphBlockDbSet;
         public Mock<DbSet<GeoMapBlock>> GeoMapBlockDbDSet;
+        public Mock<DbSet<ImageBlock>> ImageBlockDbSet;
+        public Mock<DbSet<GraphBlock>> GraphBlockDbSet;
+        public Mock<DbSet<TextBlock>> TextBlockDbSet;
 
         private const string EditorState = "{\"MeaningOfLife\": 42}";
         public readonly string UserId = "test@test.com";
         private const string StoryDescription = "Sample Description";
         private const string StoryTitle = "Example Title";
+        public readonly string ImageUrl = "https://images2.minutemediacdn.com/image/upload/c_fill,g_auto,h_1248,w_2220/f_auto,q_auto,w_1100/v1555924299/shape/mentalfloss/rick_astley.jpg";
         public readonly DateTime DateCreated = StoryFactory.GetNow();
         public readonly DateTime DateLastEdited = StoryFactory.GetNow();
 
@@ -67,28 +69,32 @@ namespace HourglassServerTest.StoryTests
             CreateQueryableMockSetWithItem(TextBlockDbSet, CreateTextBlock());
             CreateQueryableMockSetWithItem(GraphBlockDbSet, CreateGraphBlock());
             CreateQueryableMockSetWithItem(GeoMapBlockDbDSet, CreateGeoMapBlock());
+            CreateQueryableMockSetWithItem(ImageBlockDbSet, CreateImageBlock());
             AddDbSetsToMockContext();
         }
 
         private void CreateEmptyMockDbSets()
         {
             StoryDbSet = new Mock<DbSet<Story>>();
-            TextBlockDbSet = new Mock<DbSet<TextBlock>>();
-            GraphBlockDbSet = new Mock<DbSet<GraphBlock>>();
             GeoMapBlockDbDSet = new Mock<DbSet<GeoMapBlock>>();
+            GraphBlockDbSet = new Mock<DbSet<GraphBlock>>();
+            ImageBlockDbSet = new Mock<DbSet<ImageBlock>>();
+            TextBlockDbSet = new Mock<DbSet<TextBlock>>();
 
             CreateQueryableMockDbSet(StoryDbSet, new List<Story>());
-            CreateQueryableMockDbSet(TextBlockDbSet, new List<TextBlock>());
-            CreateQueryableMockDbSet(GraphBlockDbSet, new List<GraphBlock>());
             CreateQueryableMockDbSet(GeoMapBlockDbDSet, new List<GeoMapBlock>());
+            CreateQueryableMockDbSet(GraphBlockDbSet, new List<GraphBlock>());
+            CreateQueryableMockDbSet(ImageBlockDbSet, new List<ImageBlock>());
+            CreateQueryableMockDbSet(TextBlockDbSet, new List<TextBlock>());
         }
 
         private void AddDbSetsToMockContext()
         {
             MockContext.Setup(m => m.Story).Returns(StoryDbSet.Object);
-            MockContext.Setup(m => m.TextBlock).Returns(TextBlockDbSet.Object);
-            MockContext.Setup(m => m.GraphBlock).Returns(GraphBlockDbSet.Object);
             MockContext.Setup(m => m.GeoMapBlock).Returns(GeoMapBlockDbDSet.Object);
+            MockContext.Setup(m => m.GraphBlock).Returns(GraphBlockDbSet.Object);
+            MockContext.Setup(m => m.ImageBlock).Returns(ImageBlockDbSet.Object);
+            MockContext.Setup(m => m.TextBlock).Returns(TextBlockDbSet.Object);
         }
 
         private Mock<DbSet<T>> CreateQueryableMockSetWithItem<T>(Mock<DbSet<T>> mockSet,T item) where T : class
@@ -125,14 +131,14 @@ namespace HourglassServerTest.StoryTests
             };
         }
 
-        private TextBlock CreateTextBlock()
+        private GeoMapBlock CreateGeoMapBlock()
         {
-            return new TextBlock
+            return new GeoMapBlock
             {
                 StoryId = StoryId,
                 BlockPosition = 0,
-                BlockId = this.TextBlockId,
-                EditorState = EditorState
+                BlockId = GeoMapBlockId,
+                GeoMapId = CreateUUID()
             };
         }
 
@@ -147,14 +153,25 @@ namespace HourglassServerTest.StoryTests
             };
         }
 
-        private GeoMapBlock CreateGeoMapBlock()
+        private ImageBlock CreateImageBlock()
         {
-            return new GeoMapBlock
+            return new ImageBlock
             {
                 StoryId = StoryId,
                 BlockPosition = 2,
-                BlockId = GeoMapBlockId,
-                GeoMapId = CreateUUID()
+                BlockId = GraphBlockId,
+                ImageUrl = ImageUrl
+            };
+        }
+
+        private TextBlock CreateTextBlock()
+        {
+            return new TextBlock
+            {
+                StoryId = StoryId,
+                BlockPosition = 3,
+                BlockId = this.TextBlockId,
+                EditorState = EditorState
             };
         }
 

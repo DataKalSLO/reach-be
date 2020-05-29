@@ -19,3 +19,4 @@ story_category
 text_block
 zip_area
 zip_code
+image_block

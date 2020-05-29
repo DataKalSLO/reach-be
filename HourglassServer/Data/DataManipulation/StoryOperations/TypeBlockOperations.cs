@@ -24,6 +24,10 @@
                     GeoMapBlock geoMapBlock = StoryFactory.CreateGeoMapBlockFromStoryBlockModel(model, storyId);
                     DbSetMutator.PerformOperationOnDbSet<GeoMapBlock>(db.GeoMapBlock, operation, geoMapBlock);
                     break;
+                case StoryBlockType.IMAGE:
+                    ImageBlock imageBlock = StoryFactory.CreateImageBlockFromStoryBlockModel(model, storyId);
+                    DbSetMutator.PerformOperationOnDbSet<ImageBlock>(db.ImageBlock, operation, imageBlock);
+                    break;
                 default:
                     throw new ArgumentException("Could not recognize type of story block: " + storyType);
             }
