@@ -71,7 +71,8 @@ namespace HourglassServer
                 Salt = salt,
                 PasswordHash = hash,
                 Occupation = model.Occupation == "" ? null : model.Occupation,
-                NotificationsEnabled = model.NotificationsEnabled
+                NotificationsEnabled = model.NotificationsEnabled,
+                IsThirdParty = model.IsThirdParty
             });
 
             return Ok(new { email = model.Email });
