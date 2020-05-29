@@ -1,53 +1,52 @@
-using System;
-using System.IO;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using HourglassServer.AmazonS3;
+using HourglassServer.Images;
+using HourglassServer.Data.Application.GraphModel;
 
 namespace HourglassServer.Data.DataManipulation.GraphOperations
 {
     public class GraphSnapshotOperations
     {
-        public static string UploadSnapshotToS3(string encodedGraphSVG) 
+        public static async Task<string> UploadSnapshotToS3(IConfiguration config, GraphModel graphModel)
         {
-            string path = GraphSnapshotOperations.GetTempFilePath();
+            var contentType = ImageUtility.GetContentType(ImageExtensions.SVG);
+            var fileName = ImageUtility.CreateFileName(graphModel.GraphId, ImageExtensions.SVG);
+            var stream = ImageUtility.EncodedSvgToStream(graphModel.GraphSVG);
+            var bucket = config.GetAWSBucket(Bucket.GRAPH_SNAPSHOT);
+            var region = config.GetAWSRegionEndpoint();
 
-            if (GraphSnapshotOperations.WriteSvgFile(encodedGraphSVG, path)) 
-            {
-                // TODO: Connect backend with S3 bucket and add upload functionality
-                string snapshotURL = "NOT_IMPLEMENTED";
+            var client = AmazonS3Service.GetClient(
+                config.GetAWSAccessKey(),
+                config.GetAWSSecretKey(),
+                region
+            );
 
-                File.Delete(path);
+            await AmazonS3Service.RemoveObject(client, bucket, fileName);
 
-                // Return the URL to the image in S3
-                return snapshotURL;
-            }
-
-            return String.Empty;
+            return await AmazonS3Service.UploadObject(
+                client,
+                stream,
+                region.SystemName,
+                bucket,
+                fileName,
+                contentType
+            );
         }
 
-        // Returns a new random file name in the temp file directory
-        private static string GetTempFilePath() 
+        public static async Task RemoveSnapshotFromS3(IConfiguration config, string graphId)
         {
-            return Path.GetTempPath() + Path.GetRandomFileName() + ".svg";
-        }
+            var fileName = ImageUtility.CreateFileName(graphId, ImageExtensions.SVG);
+            var bucket = config.GetAWSBucket(Bucket.GRAPH_SNAPSHOT);
+            var region = config.GetAWSRegionEndpoint();
 
-        // Decode the base64 encoded SVG string and write bytes as an SVG file
-        private static bool WriteSvgFile(string encodedGraphSVG, string path) 
-        {
-            try 
-            {
-                byte[] data = Convert.FromBase64String(encodedGraphSVG);
-                File.WriteAllBytes(path, data);
-                return true;
-            }
-            catch (FormatException)
-            {
-                // TODO: Implement static logging to be able to log the error from this function
-                return false;
-            }
-            catch (Exception)
-            {
-                // TODO: Implement static logging to be able to log the error from this function
-                return false;
-            }
+            var client = AmazonS3Service.GetClient(
+                config.GetAWSAccessKey(),
+                config.GetAWSSecretKey(),
+                region
+            );
+
+            await AmazonS3Service.RemoveObject(client, bucket, fileName);
         }
     }
 }

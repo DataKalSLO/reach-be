@@ -6,12 +6,14 @@ using System.Collections.Generic;
 using HourglassServer.Models.Persistent;
 using HourglassServer.Data.Application.GraphModel;
 using HourglassServer.Data.DataManipulation.DbSetOperations;
+using Microsoft.Extensions.Configuration;
 
 namespace HourglassServer.Data.DataManipulation.GraphOperations
 {
     public class GraphModelUpdater
     {
-        public static async Task<GraphApplicationModel> UpdateGraph(HourglassContext db, GraphModel graphModel, string currentUserId)
+        public static async Task<GraphApplicationModel> UpdateGraph(HourglassContext db,
+                IConfiguration config, GraphModel graphModel, string currentUserId)
         {
             string graphOwnerId = await db.Graph
                 .Where(g => g.GraphId == graphModel.GraphId)
@@ -45,6 +47,9 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
                 .Where(gs => gs.GraphId == graphModel.GraphId)
                 .AsNoTracking()
                 .ToListAsync();
+
+            await GraphSnapshotOperations.RemoveSnapshotFromS3(config, graphModel.GraphId);
+            updatedGraph.SnapshotUrl = await GraphSnapshotOperations.UploadSnapshotToS3(config, graphModel);
 
             // Perform update to the graph in the DB
             DbSetMutator.PerformOperationOnDbSet<Graph>(db.Graph, MutatorOperations.UPDATE, updatedGraph);
