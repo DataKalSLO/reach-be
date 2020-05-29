@@ -1,4 +1,8 @@
-﻿namespace HourglassServer.Controllers
+﻿/*
+ * The following methods specify the endpoints for api/story
+ * These methods are responsible to asserting constraints/permissions.
+ */
+namespace HourglassServer.Controllers
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -9,6 +13,7 @@
     using HourglassServer.Data.DataManipulation.StoryOperations;
     using HourglassServer.Custom.Constraints;
     using HourglassServer.Custom.Exception;
+    using HourglassServer.Models.Persistent;
 
     [DefaultControllerRoute]
     public class StoryController : Controller
@@ -21,18 +26,47 @@
         }
 
         /*
-         * The following methods specify the endpoints for api/story
-         * These methods are responsible to asserting constraints/permissions.
+         *  Story CRUD Operations
          */
 
+        //Creators
+
+        [HttpPost]
+        public async Task<IActionResult> CreateOrModifyStory([FromBody] StoryApplicationModel storyFromBody)
+        {
+            return await runAsyncApiOperation(async () =>
+            {
+                StoryConstraintChecker permissionChecker = new StoryConstraintChecker(
+                   new ConstraintEnvironment(this.HttpContext.User, context),
+                   storyFromBody);
+
+                permissionChecker.AssertConstraint(Constraints.HAS_USER_ACCOUNT);
+
+                IActionResult response = this.context.Story.Any(story => story.StoryId == storyFromBody.Id) ?
+                    PerformStoryUpdate(storyFromBody, permissionChecker) :
+                    PerformStoryCreation(storyFromBody, permissionChecker);
+                await this.context.SaveChangesAsync();
+                return response;
+            }); 
+        }
+
+        private IActionResult PerformStoryCreation(StoryApplicationModel storyFromBody, StoryConstraintChecker permissionChecker)
+        {
+            permissionChecker.AssertConstraint(Constraints.HAS_DRAFT_STATUS);
+            storyFromBody.UserId = HttpContext.User.GetUserId();  //Asserts that authenticated user is the owner
+            StoryModelCreator.AddStoryApplicationModelToDatabaseContext(this.context, storyFromBody);
+            return new CreatedAtRouteResult(nameof(this.RetrieveStoryById), new { storyId = storyFromBody.Id }, storyFromBody);
+        }
+
+        //Retrievers
+
         [HttpGet]
-        public IActionResult GetAllPublishedStories()
+        public IActionResult RetrieveAllPublishedStories()
         {
             return HandleGetStoriesInPublicationStatus(PublicationStatus.PUBLISHED);
         }
 
-        [HttpGet("review")]
-        public IActionResult GetStoriesInReviewForUser()
+        public async Task<IActionResult> RetrieveStoryById(string storyId)
         {
             return ExceptionHandler.TryApiAction(this, () =>
             {
@@ -58,7 +92,7 @@
         }
 
         [HttpGet("draft")]
-        public IActionResult GetStoriesInDraftForUser()
+        public IActionResult RetrieveStoriesInDraftForUser()
         {
             return ExceptionHandler.TryApiAction(this, () =>
             {
@@ -76,16 +110,14 @@
             }); 
         }
 
-        [HttpGet("{storyId}", Name = nameof(GetStoryById))]
-        public async Task<IActionResult> GetStoryById(string storyId)
+        [HttpGet("review")]
+        public IActionResult RetrieveStoriesInReviewForUser()
         {
             return await ExceptionHandler.TryAsyncApiAction(this, async () =>
             {
                 StoryConstraintChecker permissionChecker = new StoryConstraintChecker(
-                    new ConstraintEnvironment(this.HttpContext.User, context),
-                    new StoryApplicationModel { Id = storyId });
-
-                permissionChecker.AssertConstraint(Constraints.STORY_EXISTS_WITH_ID);
+                    new ConstraintEnvironment(this.HttpContext.User, context), null);
+                permissionChecker.AssertConstraint(Constraints.HAS_USER_ACCOUNT);
 
                 StoryApplicationModel storyWithId = StoryModelRetriever.GetStoryApplicationModelById(this.context, storyId);
                 await this.context.SaveChangesAsync();
@@ -93,16 +125,16 @@
             }); 
         }
 
-        [HttpPost]
-        public async Task<IActionResult> ModifyStory([FromBody] StoryApplicationModel storyFromBody)
+        private IActionResult HandleGetStoriesInPublicationStatus(PublicationStatus expectedStatus)
         {
             return await ExceptionHandler.TryAsyncApiAction(this, async () =>
             {
-                StoryConstraintChecker permissionChecker = new StoryConstraintChecker(
-                    new ConstraintEnvironment(this.HttpContext.User, context),
-                    storyFromBody);
+                IList<StoryApplicationModel> allStories = StoryModelRetriever.GetStoryApplicationModelsInPublicationStatus(this.context, expectedStatus);
+                return new OkObjectResult(allStories);
+            });
+        }
 
-                permissionChecker.AssertConstraint(Constraints.HAS_USER_ACCOUNT);
+        //Updater - Note, Create endpoint is combined with update endpoint.
 
                 IActionResult response = this.context.Story.Any(story => story.StoryId == storyFromBody.Id) ?
                     PerformStoryUpdate(storyFromBody, permissionChecker) :
@@ -111,6 +143,8 @@
                 return response;
             });
         }
+
+        //Deletors
 
         [HttpDelete("{storyId}")]
         public async Task<IActionResult> DeleteStoryById(string storyId)
@@ -137,7 +171,7 @@
          * Private Helper Methods
          */
 
-        private IActionResult HandleGetStoriesInPublicationStatus(PublicationStatus expectedStatus)
+        public async Task<IActionResult> runAsyncApiOperation(Func<Task<IActionResult>> action)
         {
             return ExceptionHandler.TryApiAction(this, () =>
             {
@@ -146,23 +180,20 @@
             });
         }
 
-        private IActionResult PerformStoryCreation(StoryApplicationModel storyFromBody, StoryConstraintChecker permissionChecker)
+        private IActionResult runApiOperation(Func<IActionResult> action)
         {
-            permissionChecker.AssertConstraint(Constraints.HAS_DRAFT_STATUS);
-            storyFromBody.UserId = HttpContext.User.GetUserId();  //Asserts that authenticated user is the owner
-            StoryModelCreator.AddStoryApplicationModelToDatabaseContext(this.context, storyFromBody);
-            return new CreatedAtRouteResult(nameof(this.GetStoryById), new { storyId = storyFromBody.Id }, storyFromBody);
-        }
-
-        private IActionResult PerformStoryUpdate(StoryApplicationModel storyFromBody, StoryConstraintChecker permissionChecker)
-        {
-            permissionChecker.AssertConstraint(Constraints.HAS_PERMISSION_TO_CHANGE_STATUS);
-            storyFromBody.UserId = context.Story.
-                Where(story => story.StoryId == storyFromBody.Id)
-                .Select(story => story.UserId)
-                .Single(); //Fills potentially null value with real owner
-            StoryModelUpdater.UpdateStoryApplicationModel(this.context, storyFromBody);
-            return new NoContentResult();
+            try
+            {
+                return action();
+            }
+            catch (HourglassException e)
+            {
+                return this.BadRequest(e);
+            }
+            catch (Exception e)
+            {
+                return this.BadRequest(new HourglassException(e.ToString(), ExceptionTag.BadValue));
+            }
         }
     }
 }
