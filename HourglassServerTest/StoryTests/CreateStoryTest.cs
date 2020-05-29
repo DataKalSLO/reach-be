@@ -5,7 +5,7 @@ using HourglassServer.Data.Application.StoryModel;
 using HourglassServer.Models.Persistent;
 using HourglassServer.Data;
 using Microsoft.EntityFrameworkCore;
-using HourglassServer.Data.DataManipulation.StoryModel;
+using HourglassServer.Data.DataManipulation.StoryOperations;
 using System.Collections.Generic;
 using HourglassServer.Controllers;
 

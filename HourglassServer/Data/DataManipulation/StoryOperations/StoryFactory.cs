@@ -1,4 +1,4 @@
-﻿namespace HourglassServer.Data.DataManipulation.StoryModel
+﻿namespace HourglassServer.Data.DataManipulation.StoryOperations
 {
     using System;
     using HourglassServer.Data.Application.StoryModel;
@@ -124,11 +124,11 @@
             return geoMapBlock;
         }
 
-        public static PublicationStatus GetPublicationStatus(Story story)
+        public static bool StoryIsInStatus(Story story, PublicationStatus expectedStatus)
         {
-            PublicationStatus oldStatus;
-            Enum.TryParse(story.PublicationStatus, true, out oldStatus);
-            return oldStatus;
+            PublicationStatus actualPublicationStatus;
+            Enum.TryParse<PublicationStatus>(story.PublicationStatus, out actualPublicationStatus);
+            return expectedStatus == actualPublicationStatus; 
         }
     }
 }

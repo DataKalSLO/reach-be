@@ -1,12 +1,8 @@
 ﻿using Moq;
-using HourglassServer.Data.Application.StoryModel;
-using HourglassServer.Data.DataManipulation.StoryModel;
-using HourglassServer.Models.Persistent;
 using HourglassServer.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using System;
 
 namespace HourglassServerTest
 {

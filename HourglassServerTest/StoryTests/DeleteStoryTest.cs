@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HourglassServer.Models.Persistent;
 using HourglassServer.Data;
-using HourglassServer.Data.DataManipulation.StoryModel;
+using HourglassServer.Data.DataManipulation.StoryOperations;
 using HourglassServer.Controllers;
 using HourglassServer.Data.Application.StoryModel;
 using System.Linq;
