@@ -21,7 +21,7 @@ namespace HourglassServerTest.StoryTests
 
             //VP 1 - Correct story returned
             Assert.AreEqual(sampleData.StoryId, story.Id);
-            Assert.AreEqual(sampleData.DateCreated, sampleData.DateCreated);
+            Assert.AreEqual(sampleData.DateCreated, story.DateCreated);
 
             //VP 2 - Story blocks returned with story
             int expectedStoryBlockCount = 3;
