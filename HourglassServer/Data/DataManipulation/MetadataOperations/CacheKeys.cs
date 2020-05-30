@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 // Keys used for accessing the data cache
 namespace HourglassServer.Data {
     public static class CacheKeys {

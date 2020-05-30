@@ -1,5 +1,4 @@
-﻿using System;
-namespace HourglassServer.Data.Application.BookmarkModel
+﻿namespace HourglassServer.Data.Application.BookmarkModel
 {
     public class BookmarkState
     {

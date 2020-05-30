@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
+﻿using System.Linq;
 using HourglassServer.Custom.Exception;
-using HourglassServer.Data;
 using HourglassServer.Data.Application.StoryModel;
-using HourglassServer.Data.DataManipulation.StoryOperations;
-using HourglassServer.Models.Persistent;
-using Microsoft.EntityFrameworkCore;
 
 namespace HourglassServer.Custom.Constraints
 {
