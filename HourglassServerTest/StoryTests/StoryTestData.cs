@@ -38,6 +38,8 @@ namespace HourglassServerTest.StoryTests
         private const string StoryDescription = "Sample Description";
         private const string StoryTitle = "Example Title";
         public readonly string ImageUrl = "https://images2.minutemediacdn.com/image/upload/c_fill,g_auto,h_1248,w_2220/f_auto,q_auto,w_1100/v1555924299/shape/mentalfloss/rick_astley.jpg";
+        public readonly DateTime DateCreated = StoryFactory.GetNow();
+        public readonly DateTime DateLastEdited = StoryFactory.GetNow();
 
         public StoryTestData()
         {
@@ -123,7 +125,9 @@ namespace HourglassServerTest.StoryTests
                 Title = StoryTitle,
                 Description = StoryDescription,
                 UserId = UserId,
-                PublicationStatus = PublicationStatus.DRAFT.ToString()
+                PublicationStatus = PublicationStatus.DRAFT.ToString(),
+                DateCreated = DateCreated,
+                DateLastEdited = DateLastEdited
             };
         }
 
