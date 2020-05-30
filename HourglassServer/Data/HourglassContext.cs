@@ -720,6 +720,7 @@ namespace HourglassServer.Data
                 entity.HasOne(d => d.Story)
                     .WithMany(p => p.StoryFeedback)
                     .HasForeignKey(d => d.StoryId)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("story_feedback_story_id_fkey");
             });
 
