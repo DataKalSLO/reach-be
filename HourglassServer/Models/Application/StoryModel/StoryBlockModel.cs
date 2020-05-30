@@ -30,6 +30,8 @@ namespace HourglassServer.Data.Application.StoryModel
 
         public string EditorState { get; set; }
 
+        public string ImageUrl { get; set; }
+
         /* Note, FEND will not define this and will be null after initial model binding
          * This means that this is required to be set based on its position in
          * given Story's storyBlocks
@@ -60,6 +62,14 @@ namespace HourglassServer.Data.Application.StoryModel
             this.Type = StoryBlockType.TEXTDB;
             this.EditorState = textBlock.EditorState;
             this.BlockPosition = textBlock.BlockPosition;
+        }
+
+        public StoryBlockModel(ImageBlock imageBlock)
+        {
+            this.Id = imageBlock.BlockId;
+            this.Type = StoryBlockType.IMAGE;
+            this.ImageUrl = imageBlock.ImageUrl;
+            this.BlockPosition = imageBlock.BlockPosition;
         }
 
         public int CompareTo(StoryBlockModel other)

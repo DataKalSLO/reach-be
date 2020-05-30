@@ -9,47 +9,50 @@
         public static Story CreateStoryFromStoryModel(StoryApplicationModel model)
         {
             Story newStory = new Story();
-            DateTime nowTimeStamp = DateTime.UtcNow;
 
             newStory.StoryId = model.Id;
             newStory.UserId = model.UserId;
             newStory.PublicationStatus = model.PublicationStatus.ToString();
             newStory.Title = model.Title;
             newStory.Description = model.Description;
-            newStory.DateCreated = nowTimeStamp;
-            newStory.DateLastEdited = nowTimeStamp;
 
             return newStory;
         }
 
-        public static StoryBlockModel CreateStoryBlockModel(TextBlock textBlock)
+        public static GeoMapBlock CreateGeoMapBlockFromStoryBlockModel(StoryBlockModel model, string storyId)
         {
-            return new StoryBlockModel()
+            GeoMapBlock newTextBlock = new GeoMapBlock
             {
-                Id = textBlock.BlockId,
-                Type = StoryBlockType.TEXTDB,
-                EditorState = textBlock.EditorState,
+                StoryId = storyId,
+                BlockPosition = model.BlockPosition,
+                BlockId = model.Id,
+                GeoMapId = model.MapId,
             };
-        }
+            return newTextBlock;
+        } 
 
-        public static StoryBlockModel CreateStoryBlockModel(GraphBlock graphBlock)
+        public static GraphBlock CreateGraphBlockFromStoryBlockModel(StoryBlockModel model, string storyId)
         {
-            return new StoryBlockModel()
+            GraphBlock newGraphBlock = new GraphBlock
             {
-                Id = graphBlock.BlockId,
-                Type = StoryBlockType.TEXTDB,
-                GraphId = graphBlock.GraphId,
+                StoryId = storyId,
+                BlockPosition = model.BlockPosition,
+                BlockId = model.Id,
+                GraphId = model.GraphId,
             };
+            return newGraphBlock;
         }
-
-        public static StoryBlockModel CreateStoryBlockModel(GeoMapBlock geoMapBlock)
+        
+        public static ImageBlock CreateImageBlockFromStoryBlockModel(StoryBlockModel model, string storyId)
         {
-            return new StoryBlockModel()
+            ImageBlock newImageBlock = new ImageBlock
             {
-                Id = geoMapBlock.BlockId,
-                Type = StoryBlockType.TEXTDB,
-                MapId = geoMapBlock.GeoMapId,
+                StoryId = storyId,
+                BlockPosition = model.BlockPosition,
+                BlockId = model.Id,
+                ImageUrl = model.ImageUrl,
             };
+            return newImageBlock;
         }
 
         public static TextBlock CreateTextBlockFromStoryBlockModel(StoryBlockModel model, string storyId)
@@ -64,71 +67,20 @@
             return newTextBlock;
         }
 
-        public static GraphBlock CreateGraphBlockFromStoryBlockModel(StoryBlockModel model, string storyId)
+        public static PublicationStatus GetPublicationStatus(Story story)
         {
-            GraphBlock newGraphBlock = new GraphBlock
-            {
-                StoryId = storyId,
-                BlockPosition = model.BlockPosition,
-                BlockId = model.Id,
-                GraphId = model.GraphId,
-            };
-            return newGraphBlock;
-        }
-
-        public static GeoMapBlock CreateGeoMapBlockFromStoryBlockModel(StoryBlockModel model, string storyId)
-        {
-            GeoMapBlock newTextBlock = new GeoMapBlock
-            {
-                StoryId = storyId,
-                BlockPosition = model.BlockPosition,
-                BlockId = model.Id,
-                GeoMapId = model.MapId,
-            };
-            return newTextBlock;
-        }
-
-        public static GraphBlock CreateGraphBlock(string storyId, int blockPosition, string blockId, string graphId)
-        {
-            GraphBlock graphBlock = new GraphBlock
-            {
-                StoryId = storyId,
-                BlockPosition = blockPosition,
-                BlockId = blockId,
-                GraphId = graphId,
-            };
-            return graphBlock;
-        }
-
-        public static TextBlock CreateTextBlock(string storyId, int blockPosition, string blockId, string editorState)
-        {
-            TextBlock textBlock = new TextBlock
-            {
-                StoryId = storyId,
-                BlockPosition = blockPosition,
-                BlockId = blockId,
-                EditorState = editorState,
-            };
-            return textBlock;
-        }
-
-        public static GeoMapBlock CreateGeoMapBlock(string storyId, int blockPosition, string blockId, string geoMapId)
-        {
-            GeoMapBlock geoMapBlock = new GeoMapBlock
-            {
-                StoryId = storyId,
-                BlockPosition = blockPosition,
-                BlockId = blockId,
-                GeoMapId = geoMapId,
-            };
-            return geoMapBlock;
+            return (PublicationStatus) Enum.Parse(typeof(PublicationStatus), story.PublicationStatus);
         }
 
         public static bool StoryIsInStatus(Story story, PublicationStatus expectedStatus)
         {
-            PublicationStatus actualPublicationStatus;
-            Enum.TryParse<PublicationStatus>(story.PublicationStatus, out actualPublicationStatus);
+            PublicationStatus actualPublicationStatus = GetPublicationStatus(story);
             return expectedStatus == actualPublicationStatus; 
+        }
+
+        public static DateTime GetNow()
+        {
+            return DateTime.UtcNow;
         }
     }
 }

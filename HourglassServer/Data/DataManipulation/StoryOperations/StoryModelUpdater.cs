@@ -19,6 +19,7 @@ namespace HourglassServer.Data.DataManipulation.StoryOperations
         public static void UpdateStoryApplicationModel(HourglassContext db, StoryApplicationModel storyModel)
         {
             Story storyWithId = StoryFactory.CreateStoryFromStoryModel(storyModel); // Isolates the Story part
+            storyModel.DateLastEdited = StoryFactory.GetNow();
             db.Story.Update(storyWithId);
 
             List<string> storyBlockIdsRequestedToUpdate = new List<string>();
