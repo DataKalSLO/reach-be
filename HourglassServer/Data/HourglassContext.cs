@@ -33,6 +33,7 @@ namespace HourglassServer.Data
         public virtual DbSet<Graph> Graph { get; set; }
         public virtual DbSet<GraphBlock> GraphBlock { get; set; }
         public virtual DbSet<GraphSource> GraphSource { get; set; }
+        public virtual DbSet<ImageBlock> ImageBlock { get; set; }
         public virtual DbSet<Location> Location { get; set; }
         public virtual DbSet<Person> Person { get; set; }
         public virtual DbSet<Point> Point { get; set; }
@@ -434,6 +435,35 @@ namespace HourglassServer.Data
                     .HasConstraintName("graph_source_graphid_fkey");
             });
 
+            modelBuilder.Entity<ImageBlock>(entity =>
+            {
+                entity.HasKey(e => e.BlockId)
+                    .HasName("image_block_pkey");
+
+                entity.ToTable("image_block");
+
+                entity.Property(e => e.BlockId)
+                    .HasColumnName("block_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.Property(e => e.BlockPosition).HasColumnName("block_position");
+
+                entity.Property(e => e.ImageUrl)
+                    .HasColumnName("image_url")
+                    .HasMaxLength(1000);
+
+                entity.Property(e => e.StoryId)
+                    .HasColumnName("story_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.HasOne(d => d.Story)
+                    .WithMany(p => p.ImageBlock)
+                    .HasForeignKey(d => d.StoryId)
+                    .HasConstraintName("image_block_story_id_fkey");
+            });
+
             modelBuilder.Entity<IncomeInequalitySlo>(entity =>
             {
                 entity.HasKey(e => e.Year)
@@ -524,6 +554,8 @@ namespace HourglassServer.Data
                     .HasMaxLength(50);
 
                 entity.Property(e => e.NotificationsEnabled).HasColumnName("notifications_enabled");
+
+                entity.Property(e => e.IsThirdParty).HasColumnName("is_third_party");
 
                 entity.Property(e => e.Occupation)
                     .HasColumnName("occupation")

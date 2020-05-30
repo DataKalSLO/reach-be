@@ -3,12 +3,12 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using HourglassServer.Data;
 using HourglassServer.Data.Application.GraphModel;
 using HourglassServer.Data.DataManipulation.DbSetOperations;
 using HourglassServer.Data.DataManipulation.GraphOperations;
 using System.Collections.Generic;
-using HourglassServer.Models.Persistent;
 
 namespace HourglassServer.Controllers
 {
@@ -16,9 +16,11 @@ namespace HourglassServer.Controllers
     public class GraphController : Controller
     {
         private readonly HourglassContext _context;
-        public GraphController(HourglassContext context)
+        private readonly IConfiguration _config;
+        public GraphController(HourglassContext context, IConfiguration config)
         {
             _context = context;
+            _config = config;
         }
 
         [Route("DefaultGraphs/{category}")]
@@ -80,7 +82,7 @@ namespace HourglassServer.Controllers
             try
             {
                 var currentUserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).Single().Value;
-                GraphApplicationModel graph = await GraphModelCreator.CreateGraph(this._context, graphModel, currentUserId);
+                GraphApplicationModel graph = await GraphModelCreator.CreateGraph(this._context, this._config, graphModel, currentUserId);
 
                 // Add to the default graph table if administrator requests
                 if (HttpContext.User.HasRole(Role.Admin) && graphModel.GraphCategory != null)
@@ -107,7 +109,7 @@ namespace HourglassServer.Controllers
             try
             {
                 var currentUserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).Single().Value;
-                GraphApplicationModel graph = await GraphModelUpdater.UpdateGraph(this._context, graphModel, currentUserId);
+                GraphApplicationModel graph = await GraphModelUpdater.UpdateGraph(this._context, this._config, graphModel, currentUserId);
 
                 // Update the default graph table if administrator requests
                 if (HttpContext.User.HasRole(Role.Admin) && graphModel.GraphCategory != null)
@@ -146,7 +148,7 @@ namespace HourglassServer.Controllers
             try
             {
                 var currentUserId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Email).Single().Value;
-                await GraphModelDeleter.DeleteGraphById(_context, graphId, currentUserId);
+                await GraphModelDeleter.DeleteGraphById(_context, _config, graphId, currentUserId);
 
                 return new OkObjectResult(new { graphId });
             }

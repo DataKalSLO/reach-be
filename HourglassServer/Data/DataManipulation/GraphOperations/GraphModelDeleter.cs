@@ -1,15 +1,15 @@
 using System;
-using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using HourglassServer.Models.Persistent;
-using HourglassServer.Data.Application.GraphModel;
 using HourglassServer.Data.DataManipulation.DbSetOperations;
+using Microsoft.Extensions.Configuration;
 
 namespace HourglassServer.Data.DataManipulation.GraphOperations
 {
     public class GraphModelDeleter
     {
-        public static async Task DeleteGraphById(HourglassContext db, string graphId, string currentUserId)
+        public static async Task DeleteGraphById(HourglassContext db,
+                IConfiguration config, string graphId, string currentUserId)
         {
             Graph graphToDelete = await db.FindAsync<Graph>(graphId);
 
@@ -28,6 +28,8 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
                     tag: "PermissionDenied"
                 );
             }
+
+            await GraphSnapshotOperations.RemoveSnapshotFromS3(config, graphId);
 
             DbSetMutator.PerformOperationOnDbSet<Graph>(db.Graph, MutatorOperations.DELETE, graphToDelete);
             await db.SaveChangesAsync();
