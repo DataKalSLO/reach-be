@@ -98,6 +98,7 @@ namespace HourglassServer.Data
                         reader.GetValues(values);
                         datasetRows.Add(values);
                     }
+                conn.Close();
                 return new DataSet
                 {
                     Data = datasetRows
