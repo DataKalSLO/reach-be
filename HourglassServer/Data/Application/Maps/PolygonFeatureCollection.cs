@@ -9,31 +9,24 @@ namespace HourglassServer.Data.Application.Maps
         public string Type { get; set; }
         public string Name { get; set; }
 
-        public IEnumerable<IEnumerable<PolygonFeature>> FeatureList { get; set; }
+        public IEnumerable<PolygonFeature> Features { get; set; }
 
         public PolygonFeatureCollection() { }
 
         public PolygonFeatureCollection(IEnumerable<PolygonFeature> features)
         {
             this.Type = "PolygonFeatureCollection";
-            this.FeatureList = features.Select(f =>
-            {
-                List<PolygonFeature> innerList = new List<PolygonFeature>();
-                innerList.Add(f);
-                return innerList;
-            });
+            this.Features = features;
         }
 
         public override string ToString()
         {
             string result = "";
-            foreach (List<PolygonFeature> feat in FeatureList)
+            foreach (PolygonFeature feat in Features)
             {
-                foreach (PolygonFeature f in feat)
-                {
-                    result += (f.ToString());
-                }
 
+             result += (feat.ToString());
+                
             }
             return result;
         }
