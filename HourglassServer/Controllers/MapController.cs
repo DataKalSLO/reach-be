@@ -7,6 +7,7 @@ using HourglassServer.Models.Persistent;
 using HourglassServer.Data.Application.Maps;
 using HourglassServer.Data;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -24,14 +25,22 @@ namespace HourglassServer.Controllers
             _dataContext = dataContext;
         }
 
+        public class metaCensus
+        {
+            public string tableName { get; set; }
+            public string censusDesc { get; set; }
+            public string geoType { get; set; }
+
+        }
+
         // GET: api/map/tableNames
         [HttpGet("tableNames")]
-        public ActionResult<List<string>> ReadableCensusNames()
+        public ActionResult<List<metaCensus>> ReadableCensusNames()
         {
             try
             {
                 Dictionary<string, string> censusNameDesc = new Dictionary<string, string>();
-                List<string> names = new List<string>();
+                List<metaCensus> metaCensusList = new List<metaCensus>();
                 var censusVariables = from census in _context.CensusVariables
                                       select census;
                 var metaData = from meta in _context.DatasetMetaData
@@ -44,16 +53,22 @@ namespace HourglassServer.Controllers
 
                 foreach (DatasetMetaData data in metaData)
                 {
+                    var temp = new metaCensus();
+                    temp.geoType = data.GeoType;
                     if (censusNameDesc.Keys.Contains(data.TableName))
                     {
-                        names.Add(censusNameDesc[data.TableName]);
+                        
+                        temp.tableName = data.TableName;
+                        temp.censusDesc = (censusNameDesc[data.TableName]);
+                        metaCensusList.Add(temp);
                     }
                     else
                     {
-                        names.Add(data.TableName);
+                        temp.tableName = data.TableName;
+                        metaCensusList.Add(temp);
                     }
                 }
-                return names;
+                return metaCensusList;
             }
             catch (Exception e)
             {
