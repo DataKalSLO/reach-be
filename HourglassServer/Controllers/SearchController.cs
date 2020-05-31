@@ -12,7 +12,6 @@ using HourglassServer.Data.DataManipulation.StoryOperations;
 using HourglassServer.Custom.Constraints;
 using HourglassServer.Custom.Exception;
 using System.Text;
-using Newtonsoft.Json;
 
 namespace HourglassServer.Controllers
 {
@@ -38,14 +37,7 @@ namespace HourglassServer.Controllers
 
             // Send query to ES and give raw JSON results as response
             string esResult = "";
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.BaseAddress = new Uri(elasticURL);
-                using var response = await httpClient.PostAsync("/_search", new StringContent(bodyAsString, Encoding.UTF8, "application/json"));
-                using var content = response.Content;
-                var result = await content.ReadAsStringAsync();
-                esResult = result;
-            }
+            esResult = await QueryElasticsearch("/_search", bodyAsString);
 
             return Ok(esResult);
         }
@@ -62,14 +54,7 @@ namespace HourglassServer.Controllers
 
             // Send query to ES and give raw JSON results as response
             string esResult = "";
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.BaseAddress = new Uri(elasticURL);
-                using var response = await httpClient.PostAsync("/graphs/_search", new StringContent(bodyAsString, Encoding.UTF8, "application/json"));
-                using var content = response.Content;
-                var result = await content.ReadAsStringAsync();
-                esResult = result;
-            }
+            esResult = await QueryElasticsearch("/graphs/_search", bodyAsString);
 
             return Ok(esResult);
         }
@@ -86,16 +71,20 @@ namespace HourglassServer.Controllers
 
             // Send query to ES and give raw JSON results as response
             string esResult = "";
+            esResult = await QueryElasticsearch("/stories/_search", bodyAsString);
+
+            return Ok(esResult);
+        }
+
+        public async Task<string> QueryElasticsearch(string qtype, string bodyAsString) {
             using (var httpClient = new HttpClient())
             {
                 httpClient.BaseAddress = new Uri(elasticURL);
-                using var response = await httpClient.PostAsync("/stories/_search", new StringContent(bodyAsString, Encoding.UTF8, "application/json"));
+                using var response = await httpClient.PostAsync(qtype, new StringContent(bodyAsString, Encoding.UTF8, "application/json"));
                 using var content = response.Content;
                 var result = await content.ReadAsStringAsync();
-                esResult = result;
+                return result;
             }
-
-            return Ok(esResult);
         }
     }
 }
