@@ -88,6 +88,10 @@ def handler(event, context):
     es_client = Elasticsearch(['https://search-hourglass-search-test-boatibipr2tvrekti6tuz7pghi.us-east-2.es.amazonaws.com'])
     print(es_client)
 
+    # Need to delete existing indices so that deleted stories/graphs won't persist
+    es_client.indices.delete(index='stories', ignore=[400, 404])
+    es_client.indices.delete(index='graphs', ignore=[400, 404])
+
     # test index
     '''
     es_client.index(index='testall', id='123thisisatest321', body={
