@@ -34,5 +34,35 @@ namespace HourglassServer.Images
             byte[] data = Convert.FromBase64String(encodedContent);
             return new MemoryStream(data);
         }
+
+        public static ImageExtensions ParseImageExtensionFromContentType(string contentType)
+        {
+            switch (contentType.ToLower())
+            {
+                case CONTENT_TYPE_SVG:
+                    return ImageExtensions.SVG;
+                case CONTENT_TYPE_PNG:
+                    return ImageExtensions.PNG ;
+                case CONTENT_TYPE_JPG:
+                    return ImageExtensions.JPG;
+                default:
+                    throw new InvalidCastException("Could not identify content type: " + contentType);
+            }
+        }
+
+        public static Boolean IsSupportedContentType(string contentType)
+        {
+            switch(contentType.ToLower())
+            {
+                case CONTENT_TYPE_JPG:
+                    return true;
+                case CONTENT_TYPE_PNG:
+                    return true;
+                case CONTENT_TYPE_SVG:
+                    return true;
+                default:
+                    return false;
+            }
+        }
     }
 }
