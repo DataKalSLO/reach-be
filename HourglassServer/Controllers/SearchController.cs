@@ -49,5 +49,53 @@ namespace HourglassServer.Controllers
 
             return Ok(esResult);
         }
+
+        [HttpPost("graphs")]
+        public async Task<IActionResult> QueryElasticsearchGraphs()
+        {
+            // Read raw body of request (query to ES) as string
+            string bodyAsString;
+            using (var streamReader = new StreamReader(Request.Body, Encoding.UTF8))
+            {
+                bodyAsString = await streamReader.ReadToEndAsync();
+            }
+
+            // Send query to ES and give raw JSON results as response
+            string esResult = "";
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.BaseAddress = new Uri(elasticURL);
+                using var response = await httpClient.PostAsync("/graphs/_search", new StringContent(bodyAsString, Encoding.UTF8, "application/json"));
+                using var content = response.Content;
+                var result = await content.ReadAsStringAsync();
+                esResult = result;
+            }
+
+            return Ok(esResult);
+        }
+
+        [HttpPost("stories")]
+        public async Task<IActionResult> QueryElasticsearchStories()
+        {
+            // Read raw body of request (query to ES) as string
+            string bodyAsString;
+            using (var streamReader = new StreamReader(Request.Body, Encoding.UTF8))
+            {
+                bodyAsString = await streamReader.ReadToEndAsync();
+            }
+
+            // Send query to ES and give raw JSON results as response
+            string esResult = "";
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.BaseAddress = new Uri(elasticURL);
+                using var response = await httpClient.PostAsync("/stories/_search", new StringContent(bodyAsString, Encoding.UTF8, "application/json"));
+                using var content = response.Content;
+                var result = await content.ReadAsStringAsync();
+                esResult = result;
+            }
+
+            return Ok(esResult);
+        }
     }
 }
