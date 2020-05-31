@@ -1,7 +1,0 @@
-{
-    "database": "postgres",
-    "user": "postgres", 
-    "password": "WU*m6^tz4BPy",
-    "host": "hourglass-dev.cqg13raeiolw.us-east-2.rds.amazonaws.com",
-    "port": "5432"
-}
