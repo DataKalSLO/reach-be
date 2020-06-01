@@ -17,6 +17,7 @@ namespace HourglassServer.Controllers
     using HourglassServer.Models.Persistent;
 
     // TODO: Catch different types of exceptions and return descriptive tags for all routes.
+    // TODO: Copy ImageController technique for reducing try catch 
     [DefaultControllerRoute]
     public class StoryController : Controller
     {

@@ -91,6 +91,23 @@ namespace HourglassServer
                 return BadRequest(new { errorName = "unusedEmail" });
             }
 
+            if (userSettings.PasswordChangeRequest != null)
+            {
+                bool enteredCorrectPassword = UserPasswordHasher.PasswordMatches(
+                    userSettings.PasswordChangeRequest.CurrentPassword,
+                    person.Salt,
+                    person.PasswordHash);
+
+                if (!enteredCorrectPassword)
+                {
+                    return Unauthorized(new { tag = "badLogin" });
+                }
+
+                var (salt, hash) = UserPasswordHasher.HashPassword(userSettings.PasswordChangeRequest.NewPassword);
+                person.Salt = salt;
+                person.PasswordHash = hash;
+            }
+
             person.Name = userSettings.Name ?? person.Name;
             person.Occupation = userSettings.Occupation ?? person.Occupation;
             person.NotificationsEnabled = userSettings.NotificationsEnabled ?? person.NotificationsEnabled;
