@@ -67,7 +67,7 @@ namespace HourglassServer.Controllers
 
             IFormFileCollection files = HttpContext.Request.Form.Files;
 
-            if (files.Count != 0)
+            if (files.Count != 1)
                 throw new HourglassException(
                     string.Format("Expected a single image. Received {0} images.", files.Count),
                     ExceptionTag.BadValue);
