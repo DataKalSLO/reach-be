@@ -5,7 +5,12 @@ import json
 def convert_story_to_dict(obj):
     res = {
         'story_id': obj[0],
-        'title': obj[3]
+        'user_id': obj[1],
+        'publication_status': obj[2],
+        'title': obj[3],
+        'description': obj[4],
+        'date_created': obj[5],
+        'date_last_edited': obj[6]
     }
 
     return res
@@ -13,7 +18,10 @@ def convert_story_to_dict(obj):
 def convert_graph_to_dict(obj):
     res = {
         'graph_id': obj[0],
-        'title': obj[1]
+        'graph_title': obj[1],
+        'user_id': obj[2],
+        'timestamp': obj[3],
+        'snapshot_url': obj[4]
     }
 
     return res
@@ -87,7 +95,7 @@ def handler(event, context):
 
     es_client = Elasticsearch(['https://search-hourglass-search-test-boatibipr2tvrekti6tuz7pghi.us-east-2.es.amazonaws.com'])
     print(es_client)
-
+    
     # Need to delete existing indices so that deleted stories/graphs won't persist
     es_client.indices.delete(index='stories', ignore=[400, 404])
     es_client.indices.delete(index='graphs', ignore=[400, 404])
@@ -103,14 +111,21 @@ def handler(event, context):
     # Store stories, graphs in respective indices
     for story in dicts:
         es_client.index(index='stories', id=story['story_id'], body={
-            'title': story['title']
+            'user_id': story['user_id'],
+            'publication_status': story['publication_status'],
+            'title': story['title'],
+            'description': story['description'],
+            'date_created': story['date_created'],
+            'date_last_edited': story['date_last_edited']
         })
 
     for graph in dicts2:
         es_client.index(index='graphs', id=graph['graph_id'], body={
-            'title': graph['title']
+            'title': graph['graph_title'],
+            'user_id': graph['user_id'],
+            'timestamp': graph['timestamp'],
+            'snapshot_url': graph['snapshot_url']
         })
-
 
     #test_query(es_client, "title")
     #see_all_docs(es_client)
