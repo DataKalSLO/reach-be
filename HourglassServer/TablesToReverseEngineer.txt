@@ -20,3 +20,4 @@ text_block
 zip_area
 zip_code
 image_block
+story_feedback
