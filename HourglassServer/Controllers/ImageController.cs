@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using HourglassServer.Custom.Exception;
 using Microsoft.AspNetCore.Http;
+using HourglassServer.AmazonS3;
 
 namespace HourglassServer.Controllers
 {
@@ -51,10 +52,10 @@ namespace HourglassServer.Controllers
                     Id = block_id
                 };
 
-                string imageUrl = await ImageManipulator.UploadFormFileToBucket(
+                string imageUrl = await ImageManipulator.UploadFormImageToBucket(
                     image,
                     this.config,
-                    AmazonS3.Bucket.STORY_IMAGE_BLOCK
+                    Bucket.STORY_IMAGE_BLOCK
                );
                 return new CreatedResult(imageUrl, new { id = block_id, imageUrl });
             }); 
@@ -66,8 +67,10 @@ namespace HourglassServer.Controllers
 
             IFormFileCollection files = HttpContext.Request.Form.Files;
 
-            if (files.Count > 1 || files.Count == 0)
-                throw new HourglassException("Expected a single image" + files.Count, ExceptionTag.BadValue);
+            if (files.Count != 0)
+                throw new HourglassException(
+                    string.Format("Expected a single image. Received {0} images.", files.Count),
+                    ExceptionTag.BadValue);
 
             IFormFile imageFile = files.GetFile(FormImageKeyName);
 
@@ -91,9 +94,9 @@ namespace HourglassServer.Controllers
                 if (fileName == null || fileName.Length == 0)
                     throw new HourglassException("Received empty file name", ExceptionTag.BadValue);
 
-                await ImageManipulator.RemoveImageFromS3(
+                await ImageManipulator.RemoveImageFromBucket(
                     this.config,
-                    AmazonS3.Bucket.STORY_IMAGE_BLOCK,
+                    Bucket.STORY_IMAGE_BLOCK,
                     fileName
                     );
                 return new NoContentResult();
@@ -110,7 +113,7 @@ namespace HourglassServer.Controllers
                new ConstraintEnvironment(this.HttpContext.User, context),
                null);
             constraintChecker.AssertConstraint(Constraints.HAS_USER_ACCOUNT);
-            //TODO: Add Database table for storing owners of tables so only owners can delete images.
+            //TODO: Add Database table for storing owners of images so only owners can delete images.
         }
 
         private async Task<IActionResult> TryApiAction(Func<Task<IActionResult>> apiAction)

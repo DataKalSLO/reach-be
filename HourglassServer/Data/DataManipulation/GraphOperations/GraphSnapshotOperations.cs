@@ -18,7 +18,7 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
                 Type = ImageExtensions.SVG,
                 Id = graphModel.GraphId
             };
-            return await ImageManipulator.UploadEncodedImage(
+            return await ImageManipulator.UploadEncodedImageToBucket(
                 image,
                 config,
                 Bucket.GRAPH_SNAPSHOT
@@ -27,7 +27,7 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
 
         public static async Task RemoveSnapshotFromS3(IConfiguration config, string graphId)
         {
-            await ImageManipulator.RemoveImageFromS3(
+            await ImageManipulator.RemoveImageFromBucket(
                 config,
                 Bucket.GRAPH_SNAPSHOT,
                 ImageExtensions.SVG,

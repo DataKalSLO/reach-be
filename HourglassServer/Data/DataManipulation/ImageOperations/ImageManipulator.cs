@@ -16,7 +16,7 @@ namespace HourglassServer.Data.DataManipulation.ImageOperations
          * Upload Images
          */
 
-        public static async Task<string> UploadFormFileToBucket(
+        public static async Task<string> UploadFormImageToBucket(
             FormImage formImage,
             IConfiguration config,
             Bucket bucketType
@@ -26,10 +26,10 @@ namespace HourglassServer.Data.DataManipulation.ImageOperations
             formImage.ImageFile.CopyTo(stream);
             var contentType = ImageUtility.GetContentType(formImage.Type);
             var fileName = ImageUtility.CreateFileName(formImage.Id, formImage.Type);
-            return await UploadMemoryStream(config, bucketType, fileName, stream, contentType);
+            return await UploadMemoryStreamToBucket(config, bucketType, fileName, stream, contentType);
         }
 
-        public static async Task<string> UploadEncodedImage(
+        public static async Task<string> UploadEncodedImageToBucket(
             EncodedImage encodedImage,
             IConfiguration config,
             Bucket bucketType
@@ -38,10 +38,10 @@ namespace HourglassServer.Data.DataManipulation.ImageOperations
             string contentType = ImageUtility.GetContentType(encodedImage.Type);
             string fileName = ImageUtility.CreateFileName(encodedImage.Id, encodedImage.Type);
             MemoryStream stream = ImageUtility.DecodeContentToMemoryStream(encodedImage.ImageEncoded);
-            return await UploadMemoryStream(config, bucketType, fileName, stream, contentType);
+            return await UploadMemoryStreamToBucket(config, bucketType, fileName, stream, contentType);
         }
 
-        private static async Task<string> UploadMemoryStream(
+        private static async Task<string> UploadMemoryStreamToBucket(
             IConfiguration config,
             Bucket bucketType,
             string fileName,
@@ -68,7 +68,7 @@ namespace HourglassServer.Data.DataManipulation.ImageOperations
          * Delete Operations
          */
 
-        public static async Task RemoveImageFromS3(
+        public static async Task RemoveImageFromBucket(
             IConfiguration config,
             Bucket bucketType,
             ImageExtensions imageType,
@@ -76,10 +76,10 @@ namespace HourglassServer.Data.DataManipulation.ImageOperations
         )
         {
             var fileName = ImageUtility.CreateFileName(imageId, imageType);
-            await RemoveImageFromS3(config, bucketType, fileName);
+            await RemoveImageFromBucket(config, bucketType, fileName);
         }
 
-        public static async Task RemoveImageFromS3(
+        public static async Task RemoveImageFromBucket(
             IConfiguration config,
             Bucket bucketType,
             string fileName
