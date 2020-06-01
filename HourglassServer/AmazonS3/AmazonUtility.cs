@@ -31,6 +31,8 @@ namespace HourglassServer.AmazonS3
             {
                 case Bucket.GRAPH_SNAPSHOT:
                     return config.GetSection("AWS:Buckets")["GraphSnapshot"];
+                case Bucket.STORY_IMAGE_BLOCK:
+                    return config.GetSection("AWS:Buckets")["StoryImageBlock"];
                 default:
                     return null;
             }
@@ -43,6 +45,5 @@ namespace HourglassServer.AmazonS3
 
             return url;
         }
-
     }
 }

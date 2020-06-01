@@ -12,6 +12,7 @@
     using HourglassServer.Custom.Exception;
 
     // TODO: Catch different types of exceptions and return descriptive tags for all routes.
+    // TODO: Copy ImageController technique for reducing try catch 
     [DefaultControllerRoute]
     public class StoryController : Controller
     {
