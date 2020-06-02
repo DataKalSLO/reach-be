@@ -196,9 +196,10 @@
                 StoryFeedback feedback = context.StoryFeedback
                     .Find(feedbackId);
                 await context.DeleteAsync(feedback);
-                return new OkObjectResult(feedback);
+                return new NoContentResult();
             });
         }
+
         /*
          * Private Helper Methods
          */
