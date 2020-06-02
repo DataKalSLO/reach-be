@@ -34,7 +34,7 @@ namespace HourglassServer.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateOrModifyStory([FromBody] StoryApplicationModel storyFromBody)
         {
-            return await runAsyncApiOperation(async () =>
+            return await ExceptionHandler.TryAsyncApiAction(this, async () =>
             {
                 StoryConstraintChecker permissionChecker = new StoryConstraintChecker(
                    new ConstraintEnvironment(this.HttpContext.User, context),
@@ -68,7 +68,7 @@ namespace HourglassServer.Controllers
 
         public async Task<IActionResult> RetrieveStoryById(string storyId)
         {
-            return await runAsyncApiOperation(async () =>
+            return await ExceptionHandler.TryAsyncApiAction(this, async () =>
             {
                 StoryConstraintChecker permissionChecker = new StoryConstraintChecker(
                     new ConstraintEnvironment(this.HttpContext.User, context),
@@ -85,7 +85,7 @@ namespace HourglassServer.Controllers
         [HttpGet("draft")]
         public IActionResult RetrieveStoriesInDraftForUser()
         {
-            return runApiOperation(() =>
+            return ExceptionHandler.TryApiAction(this, () =>
             {
                 StoryConstraintChecker permissionChecker = new StoryConstraintChecker(
                    new ConstraintEnvironment(this.HttpContext.User, context), null);
@@ -104,7 +104,7 @@ namespace HourglassServer.Controllers
         [HttpGet("review")]
         public IActionResult RetrieveStoriesInReviewForUser()
         {
-            return runApiOperation(() =>
+            return ExceptionHandler.TryApiAction(this, () =>
             {
                 StoryConstraintChecker permissionChecker = new StoryConstraintChecker(
                     new ConstraintEnvironment(this.HttpContext.User, context), null);
@@ -129,7 +129,7 @@ namespace HourglassServer.Controllers
 
         private IActionResult HandleGetStoriesInPublicationStatus(PublicationStatus expectedStatus)
         {
-            return runApiOperation(() =>
+            return ExceptionHandler.TryApiAction(this, () =>
             {
                 IList<StoryApplicationModel> allStories = StoryModelRetriever.GetStoryApplicationModelsInPublicationStatus(this.context, expectedStatus);
                 return new OkObjectResult(allStories);
@@ -154,7 +154,7 @@ namespace HourglassServer.Controllers
         [HttpDelete("{storyId}")]
         public async Task<IActionResult> DeleteStoryById(string storyId)
         {
-            return await runAsyncApiOperation(async () =>
+            return await ExceptionHandler.TryAsyncApiAction(this, async () =>
             {
                 StoryConstraintChecker permissionChecker = new StoryConstraintChecker(
                     new ConstraintEnvironment(this.HttpContext.User, context),
@@ -181,7 +181,7 @@ namespace HourglassServer.Controllers
         [HttpPost("feedback")]
         public async Task<IActionResult> CreateStoryFeedback([FromBody] StoryFeedback feedback)
         {
-            return await runAsyncApiOperation(async () =>
+            return await ExceptionHandler.TryAsyncApiAction(this, async () =>
             {
                 StoryConstraintChecker permissionChecker = new StoryConstraintChecker(
                     new ConstraintEnvironment(HttpContext.User, context), null);
@@ -213,7 +213,7 @@ namespace HourglassServer.Controllers
         [HttpGet("feedback/{storyId}")]
         public IActionResult GetStoryFeedbackByStoryId(string storyId)
         {
-            return runApiOperation(() =>
+            return ExceptionHandler.TryApiAction(this, () =>
             {
                 IList<StoryFeedback> feedbacks = context.StoryFeedback
                     .Where(storyFeedback => storyFeedback.StoryId == storyId)
@@ -227,51 +227,15 @@ namespace HourglassServer.Controllers
         //Deletors
 
         [HttpDelete("feedback/{feedbackId}")]
-        public Task<IActionResult> DeleteStoryFeedbackById(string feedbackId)
+        public async Task<IActionResult> DeleteStoryFeedbackById(string feedbackId)
         {
-            return runAsyncApiOperation(async () =>
+            return await ExceptionHandler.TryAsyncApiAction(this, async () =>
             {
                 StoryFeedback feedback = context.StoryFeedback
                     .Find(feedbackId);
                 await context.DeleteAsync(feedback);
                 return new OkObjectResult(feedback);
             });
-        }
-
-        /*
-         * Private Helper Methods
-         */
-
-        public async Task<IActionResult> runAsyncApiOperation(Func<Task<IActionResult>> action)
-        {
-            return ExceptionHandler.TryApiAction(this, () =>
-            {
-                return await action();
-            }
-            catch (HourglassException e)
-            {
-                return this.BadRequest(e);
-            }
-            catch (Exception e)
-            {
-                return this.BadRequest(new HourglassException(e.ToString(), ExceptionTag.BadValue));
-            }
-        }
-
-        private IActionResult runApiOperation(Func<IActionResult> action)
-        {
-            try
-            {
-                return action();
-            }
-            catch (HourglassException e)
-            {
-                return this.BadRequest(e);
-            }
-            catch (Exception e)
-            {
-                return this.BadRequest(new HourglassException(e.ToString(), ExceptionTag.BadValue));
-            }
         }
     }
 }
