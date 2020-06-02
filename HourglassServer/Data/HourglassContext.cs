@@ -112,7 +112,6 @@ namespace HourglassServer.Data
                 entity.HasOne(d => d.GeoMap)
                     .WithMany(p => p.BookmarkGeoMap)
                     .HasForeignKey(d => d.GeoMapId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("geo_map_bookmark_geo_map_id_fkey");
             });
 
@@ -135,7 +134,6 @@ namespace HourglassServer.Data
                 entity.HasOne(d => d.Graph)
                     .WithMany(p => p.BookmarkGraph)
                     .HasForeignKey(d => d.GraphId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("graph_bookmark_graph_id_fkey");
             });
 
@@ -158,7 +156,6 @@ namespace HourglassServer.Data
                 entity.HasOne(d => d.Story)
                     .WithMany(p => p.BookmarkStory)
                     .HasForeignKey(d => d.StoryId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("story_bookmark_story_id_fkey");
             });
 
