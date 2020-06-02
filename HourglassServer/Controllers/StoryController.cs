@@ -138,8 +138,6 @@
          * Story feedback CRUD operations
          */
 
-        //Creators
-
         [HttpPost("feedback")]
         public async Task<IActionResult> CreateStoryFeedback([FromBody] StoryFeedback feedback)
         {
@@ -170,8 +168,6 @@
             });
         }
 
-        //Retrievers
-
         [HttpGet("feedback/{storyId}")]
         public IActionResult GetStoryFeedbackByStoryId(string storyId)
         {
@@ -183,10 +179,6 @@
                 return new OkObjectResult(feedbacks);
             });
         }
-
-        //Updates - Merged in CreateStoryFeedback.
-
-        //Deletors
 
         [HttpDelete("feedback/{feedbackId}")]
         public async Task<IActionResult> DeleteStoryFeedbackById(string feedbackId)
