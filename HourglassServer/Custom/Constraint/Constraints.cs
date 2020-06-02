@@ -1,4 +1,4 @@
-﻿using System;
+﻿
 namespace HourglassServer.Custom.Constraints
 {
     public enum Constraints

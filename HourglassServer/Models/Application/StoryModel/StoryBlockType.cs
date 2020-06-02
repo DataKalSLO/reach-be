@@ -1,5 +1,4 @@
-﻿
-namespace HourglassServer.Data.Application.StoryModel
+﻿namespace HourglassServer.Data.Application.StoryModel
 {
     public enum StoryBlockType
     {

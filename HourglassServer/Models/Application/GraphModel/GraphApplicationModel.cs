@@ -1,11 +1,3 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
-using HourglassServer.Models.Persistent;
-
 namespace HourglassServer.Data.Application.GraphModel
 {
     public class GraphApplicationModel

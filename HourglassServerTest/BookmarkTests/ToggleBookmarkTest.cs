@@ -1,5 +1,4 @@
-﻿using System;
-using HourglassServer.Data;
+﻿using HourglassServer.Data;
 using HourglassServer.Data.DataManipulation.DbSetOperations;
 using HourglassServerTest.StoryTests;
 using Microsoft.EntityFrameworkCore;
