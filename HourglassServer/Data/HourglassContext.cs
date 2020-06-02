@@ -37,6 +37,7 @@ namespace HourglassServer.Data
         public virtual DbSet<Point> Point { get; set; }
         public virtual DbSet<Story> Story { get; set; }
         public virtual DbSet<StoryCategory> StoryCategory { get; set; }
+        public virtual DbSet<StoryFeedback> StoryFeedback { get; set; }
         public virtual DbSet<TextBlock> TextBlock { get; set; }
         public virtual DbSet<ZipArea> ZipArea { get; set; }
         public virtual DbSet<ZipCode> ZipCode { get; set; }
@@ -109,7 +110,6 @@ namespace HourglassServer.Data
                 entity.HasOne(d => d.GeoMap)
                     .WithMany(p => p.BookmarkGeoMap)
                     .HasForeignKey(d => d.GeoMapId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("geo_map_bookmark_geo_map_id_fkey");
             });
 
@@ -132,7 +132,6 @@ namespace HourglassServer.Data
                 entity.HasOne(d => d.Graph)
                     .WithMany(p => p.BookmarkGraph)
                     .HasForeignKey(d => d.GraphId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("graph_bookmark_graph_id_fkey");
             });
 
@@ -155,7 +154,6 @@ namespace HourglassServer.Data
                 entity.HasOne(d => d.Story)
                     .WithMany(p => p.BookmarkStory)
                     .HasForeignKey(d => d.StoryId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("story_bookmark_story_id_fkey");
             });
 
@@ -687,6 +685,38 @@ namespace HourglassServer.Data
                     .HasForeignKey(d => d.StoryId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("story_category_story_id_fkey");
+            });
+
+            modelBuilder.Entity<StoryFeedback>(entity =>
+            {
+                entity.HasKey(e => e.FeedbackId)
+                    .HasName("story_feedback_pkey");
+
+                entity.ToTable("story_feedback");
+
+                entity.Property(e => e.FeedbackId)
+                    .HasColumnName("feedback_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.Property(e => e.Feedback)
+                    .HasColumnName("feedback")
+                    .HasMaxLength(10000);
+
+                entity.Property(e => e.ReviewerId)
+                    .HasColumnName("reviewer_id")
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.StoryId)
+                    .HasColumnName("story_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.HasOne(d => d.Story)
+                    .WithMany(p => p.StoryFeedback)
+                    .HasForeignKey(d => d.StoryId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("story_feedback_story_id_fkey");
             });
 
             modelBuilder.Entity<TextBlock>(entity =>
