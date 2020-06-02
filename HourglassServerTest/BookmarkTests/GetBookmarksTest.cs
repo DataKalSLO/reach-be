@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using HourglassServer.Data;
 using HourglassServer.Data.DataManipulation.BookmarkOperations;
-using HourglassServerTest.BookmarkTests;
 using HourglassServerTest.StoryTests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

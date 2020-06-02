@@ -5,12 +5,10 @@
  */
 namespace HourglassServer.Data.DataManipulation.StoryOperations
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using HourglassServer.Data.Application.StoryModel;
     using HourglassServer.Models.Persistent;
-    using HourglassServer.Data.DataManipulation.StoryOperations;
 
     // TODO: Replace `ToList` to `ToListAsync` and convert to async queries
     public static class StoryModelRetriever
