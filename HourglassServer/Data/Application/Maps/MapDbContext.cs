@@ -35,9 +35,14 @@ namespace HourglassServer.Data.Application.Maps
             return new NpgsqlConnection(_config.GetConnectionString("HourglassDatabase"));
         }
 
+        private int convertValueType(decimal value)
+        {
+            return (int)(value * 100);
+        }
+
         // checking for injection must be done before calling this function
         // including checking that DataSetMetaData includes given tableName
-        public async Task<List<LocationData>> getLocationData(string tableName)
+        public async Task<List<LocationData>> getLocationData(string tableName, string valueType)
         {
             var conn = getConnection();
             await conn.OpenAsync();
@@ -56,7 +61,14 @@ namespace HourglassServer.Data.Application.Maps
                     while (await reader.ReadAsync())
                     {
                         geoName = reader.GetString(0);
-                        value = (int?)reader.GetValue(1);
+                        if (valueType == "decimal")
+                        {
+                            value = convertValueType((decimal)reader.GetValue(1));
+                        }
+                        else
+                        {
+                            value = (int?)reader.GetValue(1);
+                        }
 
                         locationData = new LocationData
                         {
@@ -66,6 +78,59 @@ namespace HourglassServer.Data.Application.Maps
                         dataRows.Add(locationData);
                     }
                 return dataRows;
+            }
+            catch (PostgresException e)
+            {
+                // SqlState 42P01 is an error code for table names that do not exist in the database
+                // A stale metadata cache would be the reason for this error
+                if (e.SqlState == "42P01")
+                {
+                    _logger.LogError(
+                        string.Format("{0}: Bad SQL query due to stale cache. Table {1} does not exist in database.",
+                        nameof(getLocationData),
+                        tableName));
+
+                    // Expire the cache and throw an exception
+                    _logger.LogDebug(string.Format("{0}: Expiring stale cache", nameof(getLocationData)));
+                    _cache.Remove(CacheKeys.MetadataKey);
+
+                    throw new StaleRequestException(string.Format("Table no longer exists in database: {0}", tableName));
+                }
+
+                // Other Postgres exception occured
+                throw e;
+            }
+        }
+
+        public async Task<List<Feature>> getPoints(string tableName)
+        {
+            var conn = getConnection();
+            await conn.OpenAsync();
+            decimal longitude;
+            decimal latitude;
+            string name;
+
+            PointGeometry point;
+            Feature feature;
+            List<Feature> pointRows = new List<Feature>();
+
+            // prepared statement not working here
+            var sql = "SELECT latitude, longitude, name from datasets." + tableName;
+            using var cmd = new NpgsqlCommand(sql, conn);
+            try
+            {
+                await using (var reader = await cmd.ExecuteReaderAsync())
+                    while (await reader.ReadAsync())
+                    {
+                        latitude = (decimal)reader.GetValue(0);
+                        longitude = (decimal)reader.GetValue(1);
+                        name = reader.GetString(2);
+
+                        point = new PointGeometry(longitude, latitude);
+                        feature = new Feature(point, name, 0);
+                        pointRows.Add(feature);
+                    }
+                return pointRows;
             }
             catch (PostgresException e)
             {

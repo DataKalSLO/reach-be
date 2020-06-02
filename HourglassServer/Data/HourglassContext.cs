@@ -166,7 +166,7 @@ namespace HourglassServer.Data
                 entity.HasKey(e => e.Name)
                     .HasName("census_variables_pkey");
 
-                entity.ToTable("census_variables", "datasets");
+                entity.ToTable("census_variables", "public");
 
                 entity.Property(e => e.Name)
                     .HasColumnName("name")

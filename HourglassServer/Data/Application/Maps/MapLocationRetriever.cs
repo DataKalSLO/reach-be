@@ -16,7 +16,7 @@ namespace HourglassServer.Data.Application.Maps
         {
         }
 
-        private List<Point> GetPoints(string geoName, HourglassContext context)
+        private List<Point> GetHeatMapPoints(string geoName, HourglassContext context)
         {
             // all rows in Area with specified zipcode name
             var points = from area in context.Area
@@ -33,6 +33,18 @@ namespace HourglassServer.Data.Application.Maps
             return pts;
         }
 
+        private PointGeometry GetMarkerPoints(string geoName, HourglassContext context)
+        {
+            var points = from location in context.Location
+                         join point in context.Point
+                         on location.PointId equals point.Id
+                         where location.Name == geoName
+                         select point;
+
+            PointGeometry pt = new PointGeometry(points.First().Longitude, points.First().Latitude);
+            return pt;
+        }
+
         public PolygonFeatureCollection GetPolygonFeatureCollection(string tableName, HourglassContext context, MapDbContext dataContext)
         {
             
@@ -40,16 +52,17 @@ namespace HourglassServer.Data.Application.Maps
             // if bad table name, Exception is thrown
             var metaData = from meta in context.DatasetMetaData
                             where meta.TableName == tableName
+                            && meta.GeoType == "area"
                             select meta;
 
             // get location data from table
-            List<LocationData> dataSet = dataContext.getLocationData(tableName).Result;
+            List<LocationData> dataSet = dataContext.getLocationData(tableName, "int").Result;
             List<PolygonFeature> features = new List<PolygonFeature>();
 
             // for each row of location data, get the latitude, longitude pairs
             foreach (LocationData row in dataSet)
             {
-                List<Point> points = GetPoints(row.GeoName, context);
+                List<Point> points = GetHeatMapPoints(row.GeoName, context);
                 // create feature from list of points
                 PolygonFeature geom = new PolygonFeature(points, row.GeoName, row.Value);
                 features.Add(geom);
@@ -59,6 +72,25 @@ namespace HourglassServer.Data.Application.Maps
             collection.Name = tableName;
             return collection;
             
+        }
+
+        public FeatureCollection GetPointFeatureCollection(string tableName, HourglassContext context, MapDbContext dataContext)
+        {
+            var metaData = from meta in context.DatasetMetaData
+                          where meta.TableName == tableName
+                          && meta.GeoType == "location"
+                          select meta;
+            List<LocationData> locationData = dataContext.getLocationData(tableName, "decimal").Result;
+            List<Feature> features = new List<Feature>();
+
+            foreach (LocationData row in locationData)
+            {
+                Feature feature = new Feature(GetMarkerPoints(row.GeoName, context), row.GeoName, row.Value);
+                features.Add(feature);
+            }
+           
+            FeatureCollection collection = new FeatureCollection(tableName, features);
+            return collection;
         }
     }
 }

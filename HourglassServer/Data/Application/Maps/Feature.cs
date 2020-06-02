@@ -7,18 +7,18 @@ namespace HourglassServer.Data.Application.Maps
     {
         public string Type { get; set; }
         public PointGeometry Geometry { get; set; }
-        public Properties Property { get; set; }
+        public Properties Properties { get; set; }
 
-        public Feature(Location location)
+        public Feature(PointGeometry point, string name, int? value)
         {
             this.Type = "Feature";
-            this.Geometry = new PointGeometry(location.Point.Longitude, location.Point.Latitude);
-            //this.Property = new Property(location.Name);
+            this.Geometry = point;
+            this.Properties = new Properties(name, value);
         }
 
         public override string ToString()
         {
-            return Type + ", " + Geometry.ToString() + ", " + Property.Name;
+            return Type + ", " + Geometry.ToString() + ", " + Properties.Name;
         }
     }
 }

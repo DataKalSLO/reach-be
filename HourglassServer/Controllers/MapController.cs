@@ -84,7 +84,7 @@ namespace HourglassServer.Controllers
         // GET: api/map/[censusVar]
         // get PolygonFeatureCollection for given census variable description
         // get FC based on given data table name
-        [HttpGet("{tableName}")]
+        [HttpGet("heatmap/{tableName}")]
         public ActionResult<PolygonFeatureCollection> GetZipCodes(string tableName)
         {
             try
@@ -92,6 +92,28 @@ namespace HourglassServer.Controllers
                 MapLocationRetriever retriever = new MapLocationRetriever();
                 PolygonFeatureCollection collection =
                     retriever.GetPolygonFeatureCollection(tableName, _context, _dataContext);
+                return collection;
+            }
+            catch (Exception e)
+            {
+                return BadRequest(
+                        new ExceptionMessageContent()
+                        {
+                            Error = "Table does not exist",
+                            Message = e.ToString()
+                        }); ;
+            }
+        }
+
+        // get feature collection for markers
+        [HttpGet("markers/{tableName}")]
+        public ActionResult<FeatureCollection> GetMarkers(string tableName)
+        {
+            try
+            {
+                MapLocationRetriever retriever = new MapLocationRetriever();
+                FeatureCollection collection =
+                    retriever.GetPointFeatureCollection(tableName, _context, _dataContext);
                 return collection;
             }
             catch (Exception e)

@@ -4,6 +4,7 @@ bookmark_geo_map
 bookmark_graph
 bookmark_story
 category
+census_variables
 dataset_meta_data
 default_graph
 geo_map_tables

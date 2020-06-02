@@ -9,7 +9,7 @@ namespace HourglassServer.Data.Application.Maps
         public string Type { get; set; }
         public string Name { get; set; }
 
-        public IEnumerable<IEnumerable<Feature>> FeatureList { get; set; }
+        public IEnumerable<IEnumerable<Feature>> features { get; set; }
 
         public FeatureCollection() { }
 
@@ -17,7 +17,7 @@ namespace HourglassServer.Data.Application.Maps
         {
             this.Type = "FeatureCollection";
             this.Name = tableName;
-            this.FeatureList = features.Select(f =>
+            this.features = features.Select(f =>
             {
                 List<Feature> innerList = new List<Feature>();
                 innerList.Add(f);
