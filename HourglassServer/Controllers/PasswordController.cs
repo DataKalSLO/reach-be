@@ -33,9 +33,9 @@ namespace HourglassServer
         public async Task<IActionResult> Post([FromBody]EmailModel model)
         {
             string host = _configuration["Smtp:Host"];
-            int port = 25;
+            int port = 587;
 
-            using (var client = new SmtpClient(host, port))
+            using (var client = new System.Net.Mail.SmtpClient(host, port))
             {
                 var username = _configuration["Smtp:Username"];
                 var password = _configuration["Smtp:Password"];
@@ -44,6 +44,7 @@ namespace HourglassServer
                 client.EnableSsl = true;
 
                 var toSend = _emailService.GeneratePasswordEmail(model.Email);
+                toSend.Headers.Add("X-SES_CONFIGURATION-SET", "ConfigSet");
 
                 try
                 {
