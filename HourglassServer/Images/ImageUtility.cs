@@ -5,14 +5,20 @@ namespace HourglassServer.Images
 {
     public class ImageUtility
     {
-        public readonly string CONTENT_TYPE_SVG = "image/svg+xml";
+        public const string CONTENT_TYPE_JPG = "image/jpeg";
+        public const string CONTENT_TYPE_PNG = "image/png";
+        public const string CONTENT_TYPE_SVG = "image/svg+xml";
 
         public static string GetContentType(ImageExtensions extension)
         {
             switch (extension)
             {
                 case ImageExtensions.SVG:
-                    return "image/svg+xml";
+                    return CONTENT_TYPE_SVG;
+                case ImageExtensions.PNG:
+                    return CONTENT_TYPE_PNG;
+                case ImageExtensions.JPG:
+                    return CONTENT_TYPE_JPG;
                 default:
                     return "";
             }
@@ -23,10 +29,40 @@ namespace HourglassServer.Images
             return id + "." + extension.ToString().ToLower();
         }
 
-        public static MemoryStream EncodedSvgToStream(string encodedGraphSVG)
+        public static MemoryStream DecodeContentToMemoryStream(string encodedContent)
         {
-            byte[] data = Convert.FromBase64String(encodedGraphSVG);
+            byte[] data = Convert.FromBase64String(encodedContent);
             return new MemoryStream(data);
+        }
+
+        public static ImageExtensions ParseImageExtensionFromContentType(string contentType)
+        {
+            switch (contentType.ToLower())
+            {
+                case CONTENT_TYPE_SVG:
+                    return ImageExtensions.SVG;
+                case CONTENT_TYPE_PNG:
+                    return ImageExtensions.PNG ;
+                case CONTENT_TYPE_JPG:
+                    return ImageExtensions.JPG;
+                default:
+                    throw new InvalidCastException("Could not identify content type: " + contentType);
+            }
+        }
+
+        public static Boolean IsSupportedContentType(string contentType)
+        {
+            switch(contentType.ToLower())
+            {
+                case CONTENT_TYPE_JPG:
+                    return true;
+                case CONTENT_TYPE_PNG:
+                    return true;
+                case CONTENT_TYPE_SVG:
+                    return true;
+                default:
+                    return false;
+            }
         }
     }
 }
