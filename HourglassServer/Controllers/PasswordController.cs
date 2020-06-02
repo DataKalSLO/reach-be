@@ -30,33 +30,20 @@ namespace HourglassServer
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]EmailModel model)
+        public IActionResult Post([FromBody]EmailModel model)
         {
-            string host = _configuration["Smtp:Host"];
-            int port = 25;
+            var toSend = _emailService.GeneratePasswordEmail(model.Email);
 
-            using (var client = new SmtpClient(host, port))
+            try {
+                _emailService.SendMail(toSend);
+            }
+            catch (SmtpFailedRecipientException)
             {
-                var username = _configuration["Smtp:Username"];
-                var password = _configuration["Smtp:Password"];
-
-                client.Credentials = new System.Net.NetworkCredential(username, password);
-                client.EnableSsl = true;
-
-                var toSend = _emailService.GeneratePasswordEmail(model.Email);
-
-                try
-                {
-                    await client.SendMailAsync(toSend);
-                }
-                catch (SmtpFailedRecipientException)
-                {
-                    return BadRequest(new { tag = "failedEmailRecipient" });
-                }
-                catch (SmtpException)
-                {
-                    return BadRequest(new { tag = "smtpError" });
-                }
+                return BadRequest(new { tag = "failedEmailRecipient" });
+            }
+            catch (SmtpException)
+            {
+                return BadRequest(new { tag = "smtpError" });
             }
 
             return Ok();
