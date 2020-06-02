@@ -9,6 +9,7 @@
     using HourglassServer.Data.DataManipulation.StoryOperations;
     using HourglassServer.Custom.Constraints;
     using HourglassServer.Custom.Exception;
+    using HourglassServer.Models.Persistent;
 
     [DefaultControllerRoute]
     public class StoryController : Controller
