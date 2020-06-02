@@ -1,6 +1,5 @@
 ﻿namespace HourglassServer.Controllers
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -11,8 +10,6 @@
     using HourglassServer.Custom.Constraints;
     using HourglassServer.Custom.Exception;
 
-    // TODO: Catch different types of exceptions and return descriptive tags for all routes.
-    // TODO: Copy ImageController technique for reducing try catch 
     [DefaultControllerRoute]
     public class StoryController : Controller
     {
@@ -37,30 +34,33 @@
         [HttpGet("review")]
         public IActionResult GetStoriesInReviewForUser()
         {
-            StoryConstraintChecker permissionChecker = new StoryConstraintChecker(
+            return ExceptionHandler.TryApiAction(this, () =>
+            {
+                StoryConstraintChecker permissionChecker = new StoryConstraintChecker(
                     new ConstraintEnvironment(this.HttpContext.User, context), null);
-            permissionChecker.AssertConstraint(Constraints.HAS_USER_ACCOUNT);
+                permissionChecker.AssertConstraint(Constraints.HAS_USER_ACCOUNT);
 
-            string userId = HttpContext.User.GetUserId();
-            if (HttpContext.User.HasRole(Role.Admin))
-            {
-                return HandleGetStoriesInPublicationStatus(PublicationStatus.REVIEW);
-            }
-            else
-            {
-                IList<StoryApplicationModel> storiesInReviewForUser =
-                    StoryModelRetriever.GetStoryApplicationModelsInPublicationStatusByUserId(
-                        this.context,
-                        PublicationStatus.REVIEW,
-                        userId);
-                return new OkObjectResult(storiesInReviewForUser);
-            }
+                string userId = HttpContext.User.GetUserId();
+                if (HttpContext.User.HasRole(Role.Admin))
+                {
+                    return HandleGetStoriesInPublicationStatus(PublicationStatus.REVIEW);
+                }
+                else
+                {
+                    IList<StoryApplicationModel> storiesInReviewForUser =
+                        StoryModelRetriever.GetStoryApplicationModelsInPublicationStatusByUserId(
+                            this.context,
+                            PublicationStatus.REVIEW,
+                            userId);
+                    return new OkObjectResult(storiesInReviewForUser);
+                }
+            }); 
         }
 
         [HttpGet("draft")]
         public IActionResult GetStoriesInDraftForUser()
         {
-            try
+            return ExceptionHandler.TryApiAction(this, () =>
             {
                 StoryConstraintChecker permissionChecker = new StoryConstraintChecker(
                    new ConstraintEnvironment(this.HttpContext.User, context), null);
@@ -73,17 +73,13 @@
                         PublicationStatus.DRAFT,
                         userId);
                 return new OkObjectResult(storiesInReviewForUser);
-            }
-            catch (Exception e)
-            {
-                return this.BadRequest(new HourglassException(e.ToString(), ExceptionTag.BadValue));
-            }
+            }); 
         }
 
         [HttpGet("{storyId}", Name = nameof(GetStoryById))]
         public async Task<IActionResult> GetStoryById(string storyId)
         {
-            try
+            return await ExceptionHandler.TryAsyncApiAction(this, async () =>
             {
                 StoryConstraintChecker permissionChecker = new StoryConstraintChecker(
                     new ConstraintEnvironment(this.HttpContext.User, context),
@@ -94,21 +90,13 @@
                 StoryApplicationModel storyWithId = StoryModelRetriever.GetStoryApplicationModelById(this.context, storyId);
                 await this.context.SaveChangesAsync();
                 return new OkObjectResult(storyWithId);
-            }
-            catch (HourglassException e)
-            {
-                return this.BadRequest(e);
-            }
-            catch (Exception e)
-            {
-                return this.BadRequest(new HourglassException(e.ToString(), ExceptionTag.BadValue));
-            }
+            }); 
         }
 
         [HttpPost]
         public async Task<IActionResult> ModifyStory([FromBody] StoryApplicationModel storyFromBody)
         {
-            try
+            return await ExceptionHandler.TryAsyncApiAction(this, async () =>
             {
                 StoryConstraintChecker permissionChecker = new StoryConstraintChecker(
                     new ConstraintEnvironment(this.HttpContext.User, context),
@@ -121,21 +109,13 @@
                     PerformStoryCreation(storyFromBody, permissionChecker);
                 await this.context.SaveChangesAsync();
                 return response;
-            }
-            catch (HourglassException e)
-            {
-                return this.BadRequest(e);
-            }
-            catch (Exception e)
-            {
-                return this.BadRequest(new HourglassException(e.ToString(), ExceptionTag.BadValue));
-            }
+            });
         }
 
         [HttpDelete("{storyId}")]
         public async Task<IActionResult> DeleteStoryById(string storyId)
         {
-            try
+            return await ExceptionHandler.TryAsyncApiAction(this, async () =>
             {
                 StoryConstraintChecker permissionChecker = new StoryConstraintChecker(
                     new ConstraintEnvironment(this.HttpContext.User, context),
@@ -150,15 +130,7 @@
                 StoryModelDeleter.DeleteStoryById(this.context, storyId);
                 await this.context.SaveChangesAsync();
                 return new NoContentResult();
-            }
-            catch (HourglassException e)
-            {
-                return this.BadRequest(e);
-            }
-            catch (Exception e)
-            {
-                return this.BadRequest(new HourglassException(e.ToString(), ExceptionTag.BadValue));
-            }
+            }); 
         }
 
         /*
@@ -167,15 +139,11 @@
 
         private IActionResult HandleGetStoriesInPublicationStatus(PublicationStatus expectedStatus)
         {
-            try
+            return ExceptionHandler.TryApiAction(this, () =>
             {
                 IList<StoryApplicationModel> allStories = StoryModelRetriever.GetStoryApplicationModelsInPublicationStatus(this.context, expectedStatus);
                 return new OkObjectResult(allStories);
-            }
-            catch (Exception e)
-            {
-                return this.BadRequest(new HourglassException(e.ToString(), ExceptionTag.BadValue));
-            }
+            });
         }
 
         private IActionResult PerformStoryCreation(StoryApplicationModel storyFromBody, StoryConstraintChecker permissionChecker)
