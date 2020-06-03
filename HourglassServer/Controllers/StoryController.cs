@@ -9,15 +9,19 @@
     using HourglassServer.Data.DataManipulation.StoryOperations;
     using HourglassServer.Custom.Constraints;
     using HourglassServer.Custom.Exception;
+    using HourglassServer.Models.Persistent;
+    using HourglassServer.Mail;
 
     [DefaultControllerRoute]
     public class StoryController : Controller
     {
         private readonly HourglassContext context;
+        private readonly IEmailService emailService;
 
-        public StoryController(HourglassContext context)
+        public StoryController(HourglassContext context, IEmailService emailService)
         {
             this.context = context;
+            this.emailService = emailService;
         }
 
         /*
@@ -104,9 +108,17 @@
 
                 permissionChecker.AssertConstraint(Constraints.HAS_USER_ACCOUNT);
 
-                IActionResult response = this.context.Story.Any(story => story.StoryId == storyFromBody.Id) ?
+                Story story = this.context.Story.SingleOrDefault(story => story.StoryId == storyFromBody.Id);
+
+                IActionResult response = story == null ?
                     PerformStoryUpdate(storyFromBody, permissionChecker) :
                     PerformStoryCreation(storyFromBody, permissionChecker);
+
+                if (story.User.NotificationsEnabled)
+                {
+                    var email = this.emailService.GenerateStatusUpdateEmail(story.User, storyFromBody.Title, storyFromBody.PublicationStatus.ToString());
+                    this.emailService.SendMail(email);
+                }
                 await this.context.SaveChangesAsync();
                 return response;
             });
