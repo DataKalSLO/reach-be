@@ -4,7 +4,6 @@ bookmark_geo_map
 bookmark_graph
 bookmark_story
 category
-census_variables
 dataset_meta_data
 default_graph
 geo_area
@@ -17,7 +16,10 @@ graph_block
 graph_source
 location
 point
-polygon
 story
 story_category
 text_block
+zip_area
+zip_code
+image_block
+story_feedback
