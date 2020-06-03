@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
 namespace HourglassServer.Data.Application.Maps
@@ -7,13 +8,13 @@ namespace HourglassServer.Data.Application.Maps
     {
         public string Type { get; set; }
         public JObject Geometry { get; set; }
-        public Properties Properties { get; set; }
+        public Dictionary<string, object> Properties { get; set; }
 
-        public PolygonFeature(string jsonString, string name, int? value)
+        public PolygonFeature(string jsonString, Dictionary<string, object> values)
         {
             this.Type = Enum.GetName(typeof(MapType), MapType.Feature);
             this.Geometry = JObject.Parse(jsonString);
-            this.Properties = new Properties(name, value);
+            this.Properties = values;
         }
 
         public override string ToString()

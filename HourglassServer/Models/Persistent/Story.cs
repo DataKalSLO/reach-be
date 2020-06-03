@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 
 namespace HourglassServer.Models.Persistent
@@ -26,7 +27,9 @@ namespace HourglassServer.Models.Persistent
         public virtual ICollection<BookmarkStory> BookmarkStory { get; set; }
         public virtual ICollection<GeoMapBlock> GeoMapBlock { get; set; }
         public virtual ICollection<GraphBlock> GraphBlock { get; set; }
+        public virtual ICollection<ImageBlock> ImageBlock { get; set; }
         public virtual ICollection<StoryCategory> StoryCategory { get; set; }
+        public virtual ICollection<StoryFeedback> StoryFeedback { get; set; }
         public virtual ICollection<TextBlock> TextBlock { get; set; }
     }
 }

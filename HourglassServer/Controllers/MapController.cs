@@ -89,12 +89,12 @@ namespace HourglassServer.Controllers
       {
          try
          {
-            MapLocationRetriever retriever = new MapLocationRetriever();
-            PolygonFeatureCollection collection =
-                retriever.GetPolygonFeatureCollection(tableName, _context, _dataContext);
-            return collection;
-         }
-         catch (Exception e)
+                MapLocationRetriever retriever = new MapLocationRetriever();
+                PolygonFeatureCollection collection =
+                    retriever.GetPolygonFeatureCollection(tableName, _context, _dataContext);
+                return collection;
+            }
+            catch (Exception e)
          {
             return BadRequest(
                     new ExceptionMessageContent()

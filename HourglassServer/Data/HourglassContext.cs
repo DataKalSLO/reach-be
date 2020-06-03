@@ -36,12 +36,14 @@ namespace HourglassServer.Data
         public virtual DbSet<Graph> Graph { get; set; }
         public virtual DbSet<GraphBlock> GraphBlock { get; set; }
         public virtual DbSet<GraphSource> GraphSource { get; set; }
+        public virtual DbSet<ImageBlock> ImageBlock { get; set; }
         public virtual DbSet<Location> Location { get; set; }
         public virtual DbSet<Person> Person { get; set; }
         public virtual DbSet<Point> Point { get; set; }
         public virtual DbSet<Polygon> Polygon { get; set; }
         public virtual DbSet<Story> Story { get; set; }
         public virtual DbSet<StoryCategory> StoryCategory { get; set; }
+        public virtual DbSet<StoryFeedback> StoryFeedback { get; set; }
         public virtual DbSet<TextBlock> TextBlock { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -423,6 +425,35 @@ namespace HourglassServer.Data
                     .HasConstraintName("graph_source_graphid_fkey");
             });
 
+            modelBuilder.Entity<ImageBlock>(entity =>
+            {
+                entity.HasKey(e => e.BlockId)
+                    .HasName("image_block_pkey");
+
+                entity.ToTable("image_block");
+
+                entity.Property(e => e.BlockId)
+                    .HasColumnName("block_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.Property(e => e.BlockPosition).HasColumnName("block_position");
+
+                entity.Property(e => e.ImageUrl)
+                    .HasColumnName("image_url")
+                    .HasMaxLength(1000);
+
+                entity.Property(e => e.StoryId)
+                    .HasColumnName("story_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.HasOne(d => d.Story)
+                    .WithMany(p => p.ImageBlock)
+                    .HasForeignKey(d => d.StoryId)
+                    .HasConstraintName("image_block_story_id_fkey");
+            });
+
             modelBuilder.Entity<Location>(entity =>
             {
                 entity.HasNoKey();
@@ -581,6 +612,38 @@ namespace HourglassServer.Data
                     .HasForeignKey(d => d.StoryId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("story_category_story_id_fkey");
+            });
+
+            modelBuilder.Entity<StoryFeedback>(entity =>
+            {
+                entity.HasKey(e => e.FeedbackId)
+                    .HasName("story_feedback_pkey");
+
+                entity.ToTable("story_feedback");
+
+                entity.Property(e => e.FeedbackId)
+                    .HasColumnName("feedback_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.Property(e => e.Feedback)
+                    .HasColumnName("feedback")
+                    .HasMaxLength(10000);
+
+                entity.Property(e => e.ReviewerId)
+                    .HasColumnName("reviewer_id")
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.StoryId)
+                    .HasColumnName("story_id")
+                    .HasMaxLength(36)
+                    .IsFixedLength();
+
+                entity.HasOne(d => d.Story)
+                    .WithMany(p => p.StoryFeedback)
+                    .HasForeignKey(d => d.StoryId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("story_feedback_story_id_fkey");
             });
 
             modelBuilder.Entity<TextBlock>(entity =>

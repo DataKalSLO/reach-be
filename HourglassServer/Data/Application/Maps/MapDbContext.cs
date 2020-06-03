@@ -40,9 +40,28 @@ namespace HourglassServer.Data.Application.Maps
             return (int)(value * 100);
         }
 
+        public async Task<List<object[]>> GetColumns(string tableName, string valueType)
+        {
+            List<object[]> datasetRows = new List<object[]>();
+            var conn = getConnection();
+            await conn.OpenAsync();
+
+            var sql = "SELECT * from datasets." + tableName;
+            await using (var cmd = new NpgsqlCommand(sql, conn))
+            await using (var reader = await cmd.ExecuteReaderAsync())
+                while (await reader.ReadAsync())
+                {
+                    object[] values = new object[reader.FieldCount];
+                    reader.GetValues(values);
+                    datasetRows.Add(values);
+                }
+            conn.Close();
+            return datasetRows;
+        }
+
         // checking for injection must be done before calling this function
         // including checking that DataSetMetaData includes given tableName
-        public async Task<List<LocationData>> getLocationData(string tableName, string valueType)
+        public async Task<List<LocationData>> GetLocationData(string tableName, string valueType)
         {
             var conn = getConnection();
             await conn.OpenAsync();
@@ -87,11 +106,11 @@ namespace HourglassServer.Data.Application.Maps
                 {
                     _logger.LogError(
                         string.Format("{0}: Bad SQL query due to stale cache. Table {1} does not exist in database.",
-                        nameof(getLocationData),
+                        nameof(GetLocationData),
                         tableName));
 
                     // Expire the cache and throw an exception
-                    _logger.LogDebug(string.Format("{0}: Expiring stale cache", nameof(getLocationData)));
+                    _logger.LogDebug(string.Format("{0}: Expiring stale cache", nameof(GetLocationData)));
                     _cache.Remove(CacheKeys.MetadataKey);
 
                     throw new StaleRequestException(string.Format("Table no longer exists in database: {0}", tableName));
