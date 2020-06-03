@@ -17,30 +17,30 @@ namespace HourglassServer.Controllers
    public class MapController : Controller
    {
       private HourglassContext _context;
-      private MapDbContext _dataContext;
+      private DatasetDbContext _dataContext;
 
-      public MapController(HourglassContext context, MapDbContext dataContext)
+      public MapController(HourglassContext context, DatasetDbContext dataContext)
       {
          _context = context;
          _dataContext = dataContext;
       }
 
-      public class metaCensus
+      public class MetaCensus
       {
-         public string tableName { get; set; }
-         public string censusDesc { get; set; }
-         public string geoType { get; set; }
+         public string TableName { get; set; }
+         public string CensusDesc { get; set; }
+         public string GeoType { get; set; }
 
       }
 
       // GET: api/map/tableNames
       [HttpGet("tableNames")]
-      public ActionResult<List<metaCensus>> ReadableCensusNames()
+      public ActionResult<List<MetaCensus>> ReadableCensusNames()
       {
          try
          {
             Dictionary<string, string> censusNameDesc = new Dictionary<string, string>();
-            List<metaCensus> metaCensusList = new List<metaCensus>();
+            List<MetaCensus> metaCensusList = new List<MetaCensus>();
             var censusVariables = from census in _context.CensusVariables
                                   select census;
             var metaData = from meta in _context.DatasetMetaData
@@ -53,18 +53,18 @@ namespace HourglassServer.Controllers
 
             foreach (DatasetMetaData data in metaData)
             {
-               var temp = new metaCensus();
-               temp.geoType = data.GeoType;
+               var temp = new MetaCensus();
+               temp.GeoType = data.GeoType;
                if (censusNameDesc.Keys.Contains(data.TableName))
                {
 
-                  temp.tableName = data.TableName;
-                  temp.censusDesc = (censusNameDesc[data.TableName]);
+                  temp.TableName = data.TableName;
+                  temp.CensusDesc = (censusNameDesc[data.TableName]);
                   metaCensusList.Add(temp);
                }
                else
                {
-                  temp.tableName = data.TableName;
+                  temp.TableName = data.TableName;
                   metaCensusList.Add(temp);
                }
             }

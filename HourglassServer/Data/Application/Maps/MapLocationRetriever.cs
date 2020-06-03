@@ -16,15 +16,14 @@ namespace HourglassServer.Data.Application.Maps
         {
         }
 
-        public PolygonFeatureCollection GetPolygonFeatureCollection(string tableName, HourglassContext context, MapDbContext dataContext)
+        public PolygonFeatureCollection GetPolygonFeatureCollection(string tableName, HourglassContext context, DatasetDbContext dataContext)
         {
-
             // search for table name in metadata table
             // if bad table name, Exception is thrown
             var metaData = context.DatasetMetaData.Where(md => md.TableName == tableName && md.GeoType == "area").First();
 
             string[] columns = metaData.ColumnNames;
-            List<object[]> values = dataContext.GetColumns(tableName, "int").Result;
+            List<object[]> values = dataContext.getDataSet(tableName, columns).Result.Data;
            
             int nameId = columns.ToList().IndexOf("geo_name");
 
@@ -57,12 +56,13 @@ namespace HourglassServer.Data.Application.Maps
             
         }
 
-        public FeatureCollection GetPointFeatureCollection(string tableName, HourglassContext context, MapDbContext dataContext)
+        public FeatureCollection GetPointFeatureCollection(string tableName, HourglassContext context, DatasetDbContext dataContext)
         {
             var metaData = context.DatasetMetaData.Where(md => md.TableName == tableName && md.GeoType == "location");
 
             string[] columns = metaData.First().ColumnNames;
-            List<object[]> values = dataContext.GetColumns(tableName, "int").Result;
+            
+            List<object[]> values = dataContext.getDataSet(tableName, columns).Result.Data;
             int nameId = columns.ToList().IndexOf("geo_name");
 
             List<Feature> features = new List<Feature>();
