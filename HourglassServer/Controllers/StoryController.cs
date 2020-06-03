@@ -11,6 +11,10 @@
     using HourglassServer.Custom.Exception;
     using HourglassServer.Models.Persistent;
     using HourglassServer.Mail;
+    using System;
+    using System.Diagnostics;
+    using Newtonsoft.Json;
+    using Microsoft.EntityFrameworkCore;
 
     [DefaultControllerRoute]
     public class StoryController : Controller
@@ -110,16 +114,20 @@
 
                 Story story = this.context.Story.SingleOrDefault(story => story.StoryId == storyFromBody.Id);
 
-                IActionResult response = story == null ?
+                IActionResult response = story != null ?
                     PerformStoryUpdate(storyFromBody, permissionChecker) :
                     PerformStoryCreation(storyFromBody, permissionChecker);
 
-                if (story.User.NotificationsEnabled)
+                await this.context.SaveChangesAsync();
+
+                story ??= this.context.Story.Single(story => story.StoryId == storyFromBody.Id);
+                Person user = this.context.Person.Single(p => p.Email == story.UserId);
+                if (user.NotificationsEnabled)
                 {
                     var email = this.emailService.GenerateStatusUpdateEmail(story.User, storyFromBody.Title, storyFromBody.PublicationStatus.ToString());
                     this.emailService.SendMail(email);
                 }
-                await this.context.SaveChangesAsync();
+
                 return response;
             });
         }
@@ -169,8 +177,9 @@
         private IActionResult PerformStoryUpdate(StoryApplicationModel storyFromBody, StoryConstraintChecker permissionChecker)
         {
             permissionChecker.AssertConstraint(Constraints.HAS_PERMISSION_TO_CHANGE_STATUS);
-            storyFromBody.UserId = context.Story.
-                Where(story => story.StoryId == storyFromBody.Id)
+            storyFromBody.UserId = context.Story
+                .AsNoTracking()
+                .Where(story => story.StoryId == storyFromBody.Id)
                 .Select(story => story.UserId)
                 .Single(); //Fills potentially null value with real owner
             StoryModelUpdater.UpdateStoryApplicationModel(this.context, storyFromBody);

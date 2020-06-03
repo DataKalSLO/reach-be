@@ -40,12 +40,12 @@ namespace HourglassServer.Mail
         public MailMessage GenerateStatusUpdateEmail(Person user, string title, string publicationStatus)
         {
             string body = $"Hi {user.Name},<br><br>The status of your story <strong>{title}</strong>" +
-                          $"has been updated to <strong>{publicationStatus}</strong>.";
+                          $" has been updated to <strong>{publicationStatus}</strong>.";
 
             var message = new MailMessage(
                 ReachEmail,
                 user.Email,
-                "Reach - Change your password",
+                "Reach - Your story status has changed",
                 HtmlFormatters.BuildBodyFromTemplate(body));
 
             message.IsBodyHtml = true;
