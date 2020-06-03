@@ -12,81 +12,81 @@ using System.Text;
 
 namespace HourglassServer
 {
-   public class Startup
-   {
-      public Startup(IConfiguration configuration)
-      {
-         Configuration = configuration;
-      }
+    public class Startup
+    {
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
 
-      public IConfiguration Configuration { get; }
-      readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+        public IConfiguration Configuration { get; }
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
-      // This method gets called by the runtime. Use this method to add services to the container.
-      public void ConfigureServices(IServiceCollection services)
-      {
-         services.AddDbContext<HourglassContext>();
-         services.AddDbContext<DatasetDbContext>();
+        // This method gets called by the runtime. Use this method to add services to the container.
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddDbContext<HourglassContext>();
+            services.AddDbContext<DatasetDbContext>();
 
-         services.AddScoped<IAuthorizationHandler, UserExistsHandler>();
-         services.AddAuthorization(options =>
-         {
-            options.AddPolicy("UserExists", policy =>
-                   policy.Requirements.Add(new UserExistsRequirement()));
-            options.AddPolicy("ValidPasswordResetToken", policy =>
-                   policy.RequireAssertion(PolicyHandlers.CheckValidPasswordResetToken));
-         });
-
-         services.AddTransient<IJwtTokenService, JwtTokenService>();
-         services.AddSingleton<IEmailService, EmailService>();
-         services.AddAuthentication(options =>
-         {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-         })
-         .AddJwtBearer(options =>
-         {
-            options.TokenValidationParameters = new TokenValidationParameters
+            services.AddScoped<IAuthorizationHandler, UserExistsHandler>();
+            services.AddAuthorization(options =>
             {
-               ValidateIssuer = true,
-               ValidateAudience = true,
-               ValidateLifetime = true,
-               ValidateIssuerSigningKey = true,
-               ValidIssuer = Configuration["Jwt:Issuer"],
-               ValidAudience = Configuration["Jwt:Audience"],
-               IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
-            };
-         });
+                options.AddPolicy("UserExists", policy =>
+                    policy.Requirements.Add(new UserExistsRequirement()));
+                options.AddPolicy("ValidPasswordResetToken", policy =>
+                    policy.RequireAssertion(PolicyHandlers.CheckValidPasswordResetToken));
+            });
 
-         services.AddCors(options =>
-         {
-            options.AddPolicy(MyAllowSpecificOrigins,
-               builder =>
-               {
-                builder.AllowAnyOrigin()
-                          .AllowAnyMethod()
-                          .WithHeaders(HeaderNames.ContentType)
-                          .WithHeaders(HeaderNames.Authorization);
-             });
-         });
+            services.AddTransient<IJwtTokenService, JwtTokenService>();
+            services.AddSingleton<IEmailService, EmailService>();
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = Configuration["Jwt:Issuer"],
+                    ValidAudience = Configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                };
+            });
 
-         services.AddMemoryCache();
+            services.AddCors(options =>
+            {
+                options.AddPolicy(MyAllowSpecificOrigins,
+                builder =>
+                {
+                    builder.AllowAnyOrigin()
+                           .AllowAnyMethod()
+                           .WithHeaders(HeaderNames.ContentType)
+                           .WithHeaders(HeaderNames.Authorization);
+                });
+            });
 
-         services.AddControllers().AddNewtonsoftJson();
-      }
+            services.AddMemoryCache();
 
-      // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-      public void Configure(IApplicationBuilder app, IHostEnvironment env)
-      {
-         app.UseCors(MyAllowSpecificOrigins);
-         app.UseRouting();
-         app.UseAuthentication();
-         app.UseAuthorization();
+            services.AddControllers().AddNewtonsoftJson();
+        }
 
-         app.UseEndpoints(endpoints =>
-         {
-            endpoints.MapControllers();
-         });
-      }
-   }
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IHostEnvironment env)
+        {
+            app.UseCors(MyAllowSpecificOrigins);
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+        }
+    }
 }
