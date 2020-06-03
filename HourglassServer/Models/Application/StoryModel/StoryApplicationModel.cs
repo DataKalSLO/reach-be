@@ -25,6 +25,8 @@ namespace HourglassServer.Data.Application.StoryModel
 
         public string UserId { get; set; }
 
+        public string UserName { get; set; }
+
         [Required]
         public string Title { get; set; }
 
