@@ -1,18 +1,19 @@
 ﻿using System;
 using HourglassServer.Models.Persistent;
+using Newtonsoft.Json.Linq;
 
 namespace HourglassServer.Data.Application.Maps
 {
     public class Feature
     {
         public string Type { get; set; }
-        public PointGeometry Geometry { get; set; }
+        public JObject Geometry { get; set; }
         public Properties Properties { get; set; }
 
-        public Feature(PointGeometry point, string name, int? value)
+        public Feature(string jsonString, string name, int? value)
         {
             this.Type = "Feature";
-            this.Geometry = point;
+            this.Geometry = JObject.Parse(jsonString);
             this.Properties = new Properties(name, value);
         }
 

@@ -106,26 +106,6 @@ namespace HourglassServer.Controllers
             }
         }
 
-        [HttpGet("heatmap/geometry/{geoName}")]
-        public ActionResult<PolygonFeature> GetGeometry(string geoName)
-        {
-            try
-            {
-                string jsonString = _context.GeoArea.Where(g => g.Name == geoName).First().Geometry;
-                string name = _context.GeoArea.Where(g => g.Name == geoName).First().Name;
-                return new PolygonFeature(jsonString, name, 0);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(
-                    new ExceptionMessageContent()
-                    {
-                        Error = "GeoName does not exist",
-                        Message = e.ToString()
-                    });
-            }
-        }
-
         // get feature collection for markers
         [HttpGet("markers/{tableName}")]
         public ActionResult<FeatureCollection> GetMarkers(string tableName)
