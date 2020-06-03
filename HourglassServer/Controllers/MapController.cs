@@ -93,15 +93,15 @@ namespace HourglassServer.Controllers
                 PolygonFeatureCollection collection =
                     retriever.GetPolygonFeatureCollection(tableName, _context, _dataContext);
                 return collection;
-            }
+          }
             catch (Exception e)
          {
             return BadRequest(
-                    new ExceptionMessageContent()
-                    {
-                       Error = "Table does not exist",
-                       Message = e.ToString()
-                    }); ;
+                new ExceptionMessageContent()
+                {
+                    Error = "Table is not found or is unmappable.",
+                    Message = e.ToString()
+                }); ;
          }
       }
 

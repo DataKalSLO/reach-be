@@ -28,9 +28,6 @@ namespace HourglassServer.Data.Application.Maps
            
             int nameId = columns.ToList().IndexOf("geo_name");
 
-            // get location data from table
-        //    List<LocationData> dataSet = dataContext.GetLocationData(tableName, "int").Result;
-            
             List<object> features = new List<object>();
 
             // for each row of location data, get the latitude, longitude pairs
@@ -68,7 +65,6 @@ namespace HourglassServer.Data.Application.Maps
             List<object[]> values = dataContext.GetColumns(tableName, "int").Result;
             int nameId = columns.ToList().IndexOf("geo_name");
 
-            //  List<LocationData> locationData = dataContext.GetLocationData(tableName, "decimal").Result;
             List<Feature> features = new List<Feature>();
 
             foreach (object[] row in values)
@@ -76,6 +72,7 @@ namespace HourglassServer.Data.Application.Maps
                 Dictionary<string, object> dataColumnValuePairs = new Dictionary<string, object>();
                 string geoName = (string)row[nameId];
                 GeoLocation loc = context.GeoLocation.Where(g => g.Name == geoName).First();
+
                 for (int i = 0; i < columns.Length; i++)
                 {
                     string colName = columns[i];
