@@ -2,12 +2,14 @@ using System.Threading.Tasks;
 using HourglassServer.Models.Persistent;
 using HourglassServer.Data.Application.GraphModel;
 using HourglassServer.Data.DataManipulation.DbSetOperations;
+using Microsoft.Extensions.Configuration;
 
 namespace HourglassServer.Data.DataManipulation.GraphOperations
 {
     public class GraphModelCreator
     {
-        public static async Task<GraphApplicationModel> CreateGraph(HourglassContext db, GraphModel graphModel, string currentUserId)
+        public static async Task<GraphApplicationModel> CreateGraph(HourglassContext db,
+                IConfiguration config, GraphModel graphModel, string currentUserId)
         {
             // Append the userId from the session token to the graph model
             graphModel.UserId = currentUserId;
@@ -21,6 +23,8 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
                 graphModel.DataSources,
                 graph.GraphId
             );
+
+            graph.SnapshotUrl = await GraphSnapshotOperations.UploadSnapshotToS3(config, graphModel);
 
             DbSetMutator.PerformOperationOnDbSet<Graph>(db.Graph, MutatorOperations.ADD, graph);
             GraphSourceOperations.PerformOperationForGraphSources(db, MutatorOperations.ADD, sources);

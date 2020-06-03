@@ -7,19 +7,19 @@ namespace HourglassServer.Controllers
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using HourglassServer.Custom.Constraints;
+    using HourglassServer.Custom.Exception;
     using HourglassServer.Data;
+    using HourglassServer.Data.DataManipulation.BookmarkOperations;
     using HourglassServer.Data.DataManipulation.DbSetOperations;
     using HourglassServer.Models.Persistent;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
+
 
     [DefaultControllerRoute]
     public class BookmarkController : Controller
     {
-        private const string ErrorType = "badValue";
-        private const string NoOwnershipError = "The authenticated user is not the owner of this UserId: {0}";
-        private const string MissingTokenError = "This operations requires a user token. None found.";
         private readonly HourglassContext context;
 
         public BookmarkController(HourglassContext context)
@@ -30,139 +30,85 @@ namespace HourglassServer.Controllers
         [HttpGet("geomap")]
         public IActionResult GetGeoMapBookmarks()
         {
-            try
+            return ExceptionHandler.TryApiAction(this, () =>
             {
+                ConstraintChecker<BookmarkGeoMap> constraintChecker = new ConstraintChecker<BookmarkGeoMap>(
+                    new ConstraintEnvironment(this.HttpContext.User, context), null);
+                constraintChecker.AssertConstraint(Constraints.HAS_USER_ACCOUNT);
                 string userId = HttpContext.User.GetUserId();
-                List<string> geoMapIdsBookmarked = this.context.BookmarkGeoMap
-                    .Where(geoMapBookmark => geoMapBookmark.UserId == userId)
-                    .Select(bs => bs.GeoMapId).ToList();
+                List<string> geoMapIdsBookmarked = BookmarkRetriever.GetBookmarkGeoMapByUserId(context, userId);
                 return new OkObjectResult(geoMapIdsBookmarked);
-            }
-            catch (Exception e)
-            {
-                return this.BadRequest(new[] { new HourglassError(e.ToString(), ErrorType) });
-            }
+            });
         }
 
         [HttpGet("graph")]
         public IActionResult GetGraphBookmarks()
         {
-            try
+            return ExceptionHandler.TryApiAction(this, () =>
             {
+                ConstraintChecker<BookmarkGeoMap> constraintChecker = new ConstraintChecker<BookmarkGeoMap>(
+                    new ConstraintEnvironment(this.HttpContext.User, context), null);
                 string userId = HttpContext.User.GetUserId();
-                List<string> graphIdsBookmarked = this.context.BookmarkGraph
-                    .Where(graphBookmark => graphBookmark.UserId == userId)
-                    .Select(bs => bs.GraphId)
-                    .ToList();
+                List<string> graphIdsBookmarked = BookmarkRetriever.GetBookmarkGraphByUserId(context, userId);
                 return new OkObjectResult(graphIdsBookmarked);
-            }
-            catch (Exception e)
-            {
-                return this.BadRequest(new[] { new HourglassError(e.ToString(), ErrorType) });
-            }
+            }); 
         }
 
         [HttpGet("story")]
         public IActionResult GetStoryBookmarks()
         {
-            try
+            return ExceptionHandler.TryApiAction(this, () =>
             {
+                ConstraintChecker<BookmarkGeoMap> constraintChecker = new ConstraintChecker<BookmarkGeoMap>(
+                    new ConstraintEnvironment(this.HttpContext.User, context), null);
                 string userId = HttpContext.User.GetUserId();
-                List<string> storiesIdsBookmarked = this.context.BookmarkStory
-                    .Where(storyBookmark => storyBookmark.UserId == userId)
-                    .Select(bs => bs.StoryId)
-                    .ToList();
+                List<string> storiesIdsBookmarked = BookmarkRetriever.GetBookmarkStoryByUserId(context, userId);
                 return new OkObjectResult(storiesIdsBookmarked);
-            }
-            catch (Exception e)
-            {
-                return this.BadRequest(new[] { new HourglassError(e.ToString(), ErrorType) });
-            }
+            });
         }
 
         [HttpPost("graph")]
-        public IActionResult ToggleGraphBookmark([FromBody] BookmarkGraph graphBookmark)
+        public async Task<IActionResult> ToggleGraphBookmark([FromBody] BookmarkGraph graphBookmark)
         {
-            try
+            return await ExceptionHandler.TryAsyncApiAction(this, async () =>
             {
-                this.AssertAuthenticationTokenUserIdMatchesString(graphBookmark.UserId);
-                return new OkObjectResult(this.ToggleBookmark(this.context.BookmarkGraph, graphBookmark));
-            }
-            catch (Exception e)
-            {
-                return this.BadRequest(new[] { new HourglassError(e.ToString(), ErrorType) });
-            }
+                ConstraintChecker<BookmarkGeoMap> constraintChecker = new ConstraintChecker<BookmarkGeoMap>(
+                    new ConstraintEnvironment(this.HttpContext.User, context), null);
+                graphBookmark.UserId = HttpContext.User.GetUserId();
+                ToggleState state = Toggler.ToggleEntity(this.context.BookmarkGraph, graphBookmark);
+                await context.SaveChangesAsync();
+                return new OkObjectResult(state);
+            });
         }
 
         [HttpPost("geomap")]
-        public IActionResult ToggleGeoMapBookmark([FromBody] BookmarkGeoMap requestedGeoMapBookmark)
+        public async Task<IActionResult> ToggleGeoMapBookmark([FromBody] BookmarkGeoMap geoMapBookmark)
         {
-            try
+            return await ExceptionHandler.TryAsyncApiAction(this, async () =>
             {
-                this.AssertAuthenticationTokenUserIdMatchesString(requestedGeoMapBookmark.UserId);
-                return new OkObjectResult(this.ToggleBookmark(this.context.BookmarkGeoMap, requestedGeoMapBookmark));
-            }
-            catch (Exception e)
-            {
-                return this.BadRequest(new[] { new HourglassError(e.ToString(), ErrorType) });
-            }
+                ConstraintChecker<BookmarkGeoMap> constraintChecker = new ConstraintChecker<BookmarkGeoMap>(
+                    new ConstraintEnvironment(this.HttpContext.User, context), null);
+                geoMapBookmark.UserId = HttpContext.User.GetUserId();
+                ToggleState state = Toggler.ToggleEntity(this.context.BookmarkGeoMap, geoMapBookmark);
+                await context.SaveChangesAsync();
+
+                return new OkObjectResult(state);
+            });
         }
 
 
         [HttpPost("story")]
-        public IActionResult ToggleStoryBookmark([FromBody] BookmarkStory requestStoryBookmark)
+        public async Task<IActionResult> ToggleStoryBookmark([FromBody] BookmarkStory storyBookmark)
         {
-            try
+            return await ExceptionHandler.TryAsyncApiAction(this, async () =>
             {
-                this.AssertAuthenticationTokenUserIdMatchesString(requestStoryBookmark.UserId);
-                return new OkObjectResult(this.ToggleBookmark(this.context.BookmarkStory, requestStoryBookmark));
-            }
-            catch (Exception e)
-            {
-                return this.BadRequest(new[] { new HourglassError(e.ToString(), ErrorType) });
-            }
+                ConstraintChecker<BookmarkGeoMap> constraintChecker = new ConstraintChecker<BookmarkGeoMap>(
+                                    new ConstraintEnvironment(this.HttpContext.User, context), null);
+                storyBookmark.UserId = HttpContext.User.GetUserId();
+                ToggleState state = Toggler.ToggleEntity(this.context.BookmarkStory, storyBookmark);
+                await context.SaveChangesAsync();
+                return new OkObjectResult(state);
+            });
         }
-
-        /*
-         * Private Generalized Methods. No public facing endpoints.
-         */
-
-        private void AssertAuthenticationTokenUserIdMatchesString(string userId)
-        {
-            string tokenUserId = HttpContext.User.GetUserId();
-            if (tokenUserId != userId)
-            {
-                throw new InvalidOperationException(string.Format(NoOwnershipError, userId));
-            }
-        }
-
-        private BookmarkState ToggleBookmark<T>(DbSet<T> dbSet, T requestedBookmark)
-            where T : class
-        {
-            bool bookmarkIsEnabled;
-            if (dbSet.Any(dbBookmark => dbBookmark == requestedBookmark))
-            {
-                DbSetMutator.PerformOperationOnDbSet<T>(dbSet, MutatorOperations.DELETE, requestedBookmark);
-                bookmarkIsEnabled = false;
-            }
-            else
-            {
-                DbSetMutator.PerformOperationOnDbSet<T>(dbSet, MutatorOperations.ADD, requestedBookmark);
-                bookmarkIsEnabled = true;
-            }
-
-            this.context.SaveChanges();
-            return new BookmarkState(bookmarkIsEnabled);
-        }
-    }
-
-    internal class BookmarkState
-    {
-        public BookmarkState(bool enabled)
-        {
-            this.Enabled = enabled;
-        }
-
-        private bool Enabled { get; set; }
     }
 }

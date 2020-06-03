@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Linq;
 using HourglassServer.Data;
 using HourglassServer.Models.Persistent;
-using System.Collections.Generic;
+using HourglassServer.Custom.User;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace HourglassServer
 {
@@ -21,32 +22,27 @@ namespace HourglassServer
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody]TokenModel tokenModel)
+        public async Task<IActionResult> Post([FromBody]TokenModel tokenModel)
         {
             Person loggedInUser;
 
             try
             {
-                Person userWithEmail = _context.Person.First(p => p.Email == tokenModel.Email);
-                if (userWithEmail.Salt == null ||
-                    userWithEmail.PasswordHash == null ||
-                    !UserPasswordHasher.PasswordMatches(tokenModel.Password, userWithEmail.Salt, userWithEmail.PasswordHash))
+                loggedInUser = await _context.Person.FirstAsync(p => p.Email == tokenModel.Email);
+                if (loggedInUser.Salt == null ||
+                    loggedInUser.PasswordHash == null ||
+                    !UserPasswordHasher.PasswordMatches(tokenModel.Password, loggedInUser.Salt, loggedInUser.PasswordHash))
                 {
                     return Unauthorized(new { tag = "badLogin" });
                 }
-
-                loggedInUser = userWithEmail;
-
-                string token = _jwtTokenService.BuildToken(loggedInUser);
-
-                return Ok(new { email = tokenModel.Email, name = userWithEmail.Name, occupation = userWithEmail.Occupation, role = userWithEmail.Role, notificationsEnabled = userWithEmail.NotificationsEnabled, token });
             }
             catch (InvalidOperationException)
             {
                 return Unauthorized(new { tag = "badLogin" });
             }
 
-            
+            string token = _jwtTokenService.BuildToken(ClaimBuilders.BuildLoginClaims(loggedInUser));
+            return Ok(new { email = tokenModel.Email, name = loggedInUser.Name, occupation = loggedInUser.Occupation, role = loggedInUser.Role, notificationsEnabled = loggedInUser.NotificationsEnabled, isThirdParty = loggedInUser.IsThirdParty, token });
         }
     }
 }

@@ -1,5 +1,5 @@
 using HourglassServer.Data;
-using HourglassServer.Data.Application.Maps;
+using HourglassServer.Mail;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -12,79 +12,82 @@ using System.Text;
 
 namespace HourglassServer
 {
-    public class Startup
-    {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+   public class Startup
+   {
+      public Startup(IConfiguration configuration)
+      {
+         Configuration = configuration;
+      }
 
-        public IConfiguration Configuration { get; }
-        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+      public IConfiguration Configuration { get; }
+      readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddDbContext<HourglassContext>();
-            services.AddDbContext<DatasetDbContext>();
-            services.AddDbContext<MapDbContext>();
+      // This method gets called by the runtime. Use this method to add services to the container.
+      public void ConfigureServices(IServiceCollection services)
+      {
+         services.AddDbContext<HourglassContext>();
+         services.AddDbContext<DatasetDbContext>();
+         services.AddDbContext<MapDbContext>();
 
-            services.AddScoped<IAuthorizationHandler, UserExistsHandler>();
-            services.AddAuthorization(options =>
+         services.AddScoped<IAuthorizationHandler, UserExistsHandler>();
+         services.AddAuthorization(options =>
+         {
+            options.AddPolicy("UserExists", policy =>
+                   policy.Requirements.Add(new UserExistsRequirement()));
+            options.AddPolicy("ValidPasswordResetToken", policy =>
+                   policy.RequireAssertion(PolicyHandlers.CheckValidPasswordResetToken));
+         });
+
+         services.AddTransient<IJwtTokenService, JwtTokenService>();
+         services.AddSingleton<IEmailService, EmailService>();
+         services.AddAuthentication(options =>
+         {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+         })
+         .AddJwtBearer(options =>
+         {
+            options.TokenValidationParameters = new TokenValidationParameters
             {
-                options.AddPolicy("UserExists", policy =>
-                    policy.Requirements.Add(new UserExistsRequirement()));
-            });
+               ValidateIssuer = true,
+               ValidateAudience = true,
+               ValidateLifetime = true,
+               ValidateIssuerSigningKey = true,
+               ValidIssuer = Configuration["Jwt:Issuer"],
+               ValidAudience = Configuration["Jwt:Audience"],
+               IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+            };
+         });
 
-            services.AddTransient<IJwtTokenService, JwtTokenService>();
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = Configuration["Jwt:Issuer"],
-                    ValidAudience = Configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
-                };
-            });
+         services.AddCors(options =>
+         {
+            options.AddPolicy(MyAllowSpecificOrigins,
+               builder =>
+               {
+                builder.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .WithHeaders(HeaderNames.ContentType)
+                          .WithHeaders(HeaderNames.Authorization);
+             });
+         });
 
-            services.AddCors(options =>
-            {
-                options.AddPolicy(MyAllowSpecificOrigins,
-                builder =>
-                {
-                    builder.AllowAnyOrigin()
-                           .AllowAnyMethod()
-                           .WithHeaders(HeaderNames.ContentType)
-                           .WithHeaders(HeaderNames.Authorization);
-                });
-            });
+         services.AddMemoryCache();
 
-            services.AddMemoryCache();
+         services.AddControllers().AddNewtonsoftJson();
+      }
 
-            services.AddControllers().AddNewtonsoftJson();
-        }
+      // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+      public void Configure(IApplicationBuilder app, IHostEnvironment env)
+      {
+         app.UseCors(MyAllowSpecificOrigins);
+         app.UseRouting();
+         app.UseAuthentication();
+         app.UseAuthorization();
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostEnvironment env)
-        {
-            app.UseCors(MyAllowSpecificOrigins);
-            app.UseRouting();
-            app.UseAuthentication();
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
-        }
-    }
+         app.UseEndpoints(endpoints =>
+         {
+            endpoints.MapControllers();
+         });
+      }
+   }
 }

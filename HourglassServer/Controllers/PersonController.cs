@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using HourglassServer.Data;
+using HourglassServer.Models.Persistent;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using HourglassServer.Data;
-using HourglassServer.Models.Persistent;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -59,7 +59,7 @@ namespace HourglassServer
             }
             if (await DuplicateEmail(model))
             {
-                return BadRequest(new { errorName = "duplicateEmail" });
+                return BadRequest(new { tag = "duplicateEmail" });
             }
 
             var (salt, hash) = UserPasswordHasher.HashPassword(model.Password);
@@ -67,11 +67,12 @@ namespace HourglassServer
             {
                 Name = model.Name,
                 Email = model.Email,
-                Role = (int) newRole,
+                Role = (int)newRole,
                 Salt = salt,
                 PasswordHash = hash,
                 Occupation = model.Occupation == "" ? null : model.Occupation,
-                NotificationsEnabled = model.NotificationsEnabled
+                NotificationsEnabled = model.NotificationsEnabled,
+                IsThirdParty = model.IsThirdParty
             });
 
             return Ok(new { email = model.Email });
@@ -88,6 +89,23 @@ namespace HourglassServer
             catch (InvalidOperationException)
             {
                 return BadRequest(new { errorName = "unusedEmail" });
+            }
+
+            if (userSettings.PasswordChangeRequest != null)
+            {
+                bool enteredCorrectPassword = UserPasswordHasher.PasswordMatches(
+                    userSettings.PasswordChangeRequest.CurrentPassword,
+                    person.Salt,
+                    person.PasswordHash);
+
+                if (!enteredCorrectPassword)
+                {
+                    return Unauthorized(new { tag = "badLogin" });
+                }
+
+                var (salt, hash) = UserPasswordHasher.HashPassword(userSettings.PasswordChangeRequest.NewPassword);
+                person.Salt = salt;
+                person.PasswordHash = hash;
             }
 
             person.Name = userSettings.Name ?? person.Name;

@@ -1,12 +1,9 @@
-﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
+using HourglassServer.Custom.Exception;
 
 namespace HourglassServer
 {
@@ -17,12 +14,12 @@ namespace HourglassServer
             IList<Claim> userClaimsWithId = user.Claims
                 .Where(c => c.Type == ClaimTypes.Email).ToList();
             if (userClaimsWithId.Count < 1)
-                throw new PermissionDeniedException();
+                throw new PermissionDeniedException("No email claim type found for user.", ExceptionTag.BadValue);
 
             Claim userClaim = userClaimsWithId[0];
 
             if (userClaim == null)
-                throw new PermissionDeniedException();
+                throw new PermissionDeniedException("User claim is null.", ExceptionTag.BadValue);
 
             return userClaim.Value;
         }
@@ -35,6 +32,12 @@ namespace HourglassServer
         public static async Task<int> InsertAsync<TEntity>(this DbContext context, TEntity entity) where TEntity : class
         {
             context.Set<TEntity>().Add(entity);
+            return await context.SaveChangesAsync();
+        }
+
+        public static async Task<int> InsertAsync<TEntity>(this DbContext context, TEntity[] entities) where TEntity : class
+        {
+            context.Set<TEntity>().AddRange(entities);
             return await context.SaveChangesAsync();
         }
 

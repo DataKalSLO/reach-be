@@ -1,9 +1,9 @@
-﻿using HourglassServer.Models.Persistent;
+﻿using System.Security.Claims;
 
 namespace HourglassServer
 {
     public interface IJwtTokenService
     {
-        string BuildToken(Person person);
+        string BuildToken(Claim[] claims);
     }
 }
