@@ -40,7 +40,7 @@ namespace HourglassServer.Data.DataManipulation.StoryOperations
             string storyId = story.StoryId;
             List<StoryBlockModel> storyBlocks = GetStoryBlocksByStoryId(db, storyId);
             StoryApplicationModel model = new StoryApplicationModel(story);
-            model.UserName = db.Person.Find(story.UserId).Name;
+            model.UserName = db.Person.Where(person => person.Email == story.UserId).Single().Name; //Not using find bc can't mock it
             model.StoryBlocks = storyBlocks;
             return model;
         }

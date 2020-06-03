@@ -24,9 +24,11 @@ namespace HourglassServerTest.StoryTests
         public Mock<DbSet<GraphBlock>> MockGraphBlockDbSet;
         public Mock<DbSet<GeoMapBlock>> MockGeoMapBlockDbDSet;
         public Mock<DbSet<ImageBlock>> MockImageBlockDbSet;
+        public Mock<DbSet<Person>> MockPersonDbSet;
 
         public readonly string EditorState;
         public readonly string UserId;
+        public readonly string UserName;
         public readonly string StoryDescription;
         public readonly string StoryTitle;
         public readonly DateTime DateCreated;
@@ -42,6 +44,7 @@ namespace HourglassServerTest.StoryTests
 
             EditorState = "{\"MeaningOfLife\": 42}";
             UserId = "test@test.com";
+            UserName = "Test User";
             StoryDescription = "Sample Description";
             StoryTitle = "Example Title";
             DateCreated = StoryFactory.GetNow();
@@ -59,11 +62,14 @@ namespace HourglassServerTest.StoryTests
             MockGraphBlockDbSet = new Mock<DbSet<GraphBlock>>();
             MockGeoMapBlockDbDSet = new Mock<DbSet<GeoMapBlock>>();
             MockImageBlockDbSet = new Mock<DbSet<ImageBlock>>();
+            MockPersonDbSet = new Mock<DbSet<Person>>();
+
             CreateQueryableMockDbSet(MockStoryDbSet, new List<Story>());
             CreateQueryableMockDbSet(MockTextBlockDbSet, new List<TextBlock>());
             CreateQueryableMockDbSet(MockGraphBlockDbSet, new List<GraphBlock>());
             CreateQueryableMockDbSet(MockGeoMapBlockDbDSet, new List<GeoMapBlock>());
             CreateQueryableMockDbSet(MockImageBlockDbSet, new List<ImageBlock>());
+            CreateQueryableMockDbSet(MockPersonDbSet, new List<Person>());
         }
 
         protected override void AddDbSetsToMockContext()
@@ -73,6 +79,7 @@ namespace HourglassServerTest.StoryTests
             MockContext.Setup(m => m.GraphBlock).Returns(MockGraphBlockDbSet.Object);
             MockContext.Setup(m => m.GeoMapBlock).Returns(MockGeoMapBlockDbDSet.Object);
             MockContext.Setup(m => m.ImageBlock).Returns(MockImageBlockDbSet.Object);
+            MockContext.Setup(m => m.Person).Returns(MockPersonDbSet.Object);
         }
 
         /*
@@ -86,6 +93,8 @@ namespace HourglassServerTest.StoryTests
             CreateQueryableMockSetWithItem(MockGraphBlockDbSet, CreateGraphBlock());
             CreateQueryableMockSetWithItem(MockGeoMapBlockDbDSet, CreateGeoMapBlock());
             CreateQueryableMockSetWithItem(MockImageBlockDbSet, CreateImageBlock());
+            CreateQueryableMockSetWithItem(MockPersonDbSet, CreatePerson());
+
             AddDbSetsToMockContext();
         }
 
@@ -144,6 +153,15 @@ namespace HourglassServerTest.StoryTests
                 BlockPosition = 3,
                 BlockId = this.TextBlockId,
                 EditorState = EditorState
+            };
+        }
+
+        private Person CreatePerson()
+        {
+            return new Person
+            {
+                Email = UserId,
+                Name = UserName
             };
         }
     }
