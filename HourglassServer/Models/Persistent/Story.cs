@@ -11,7 +11,9 @@ namespace HourglassServer.Models.Persistent
             BookmarkStory = new HashSet<BookmarkStory>();
             GeoMapBlock = new HashSet<GeoMapBlock>();
             GraphBlock = new HashSet<GraphBlock>();
+            ImageBlock = new HashSet<ImageBlock>();
             StoryCategory = new HashSet<StoryCategory>();
+            StoryFeedback = new HashSet<StoryFeedback>();
             TextBlock = new HashSet<TextBlock>();
         }
 
