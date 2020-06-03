@@ -4,26 +4,19 @@ using System.Linq;
 
 namespace HourglassServer.Data.Application.Maps
 {
-    public class PolygonFeatureCollection
+    public class MultiPolygonFeatureCollection
     {
-        private List<PolygonFeature> features;
-
         public string Type { get; set; }
         public string Name { get; set; }
 
-        public List<object> Features { get; set; }
+        public IEnumerable<PolygonFeature> Features { get; set; }
 
-        public PolygonFeatureCollection() { }
+        public MultiPolygonFeatureCollection() { }
 
-        public PolygonFeatureCollection(List<object> features)
+        public MultiPolygonFeatureCollection(IEnumerable<MultiPolygonFeature> features)
         {
             this.Type = "PolygonFeatureCollection";
-            this.Features = features;
-        }
-
-        public PolygonFeatureCollection(List<PolygonFeature> features)
-        {
-            this.features = features;
+            //this.Features = features;
         }
 
         public override string ToString()

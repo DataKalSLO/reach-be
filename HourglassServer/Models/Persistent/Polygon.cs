@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace HourglassServer.Models.Persistent
 {
-    public partial class Area
+    public partial class Polygon
     {
 
-        public string Name { get; set; }
-        public int PolygonId { get; set; }
+        public int Id { get; set; }
+        public int PointId { get; set; }
 
     }
 }

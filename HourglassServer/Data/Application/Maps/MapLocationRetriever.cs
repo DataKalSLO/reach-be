@@ -16,21 +16,51 @@ namespace HourglassServer.Data.Application.Maps
         {
         }
 
-        private List<Point> GetHeatMapPoints(string geoName, HourglassContext context)
+        private List<int> GetHeatMapPolygon(string geoName, HourglassContext context)
         {
             // all rows in Area with specified zipcode name
-            var points = from area in context.Area
-                         join point in context.Point
-                             on area.PointId equals point.Id
+            var polygons = (from area in context.Area
+                         join polygon in context.Polygon
+                             on area.PolygonId equals polygon.Id
                          where area.Name == geoName
-                         select point;
+                         select polygon.Id).Distinct();
+            Console.WriteLine("Getting polygons");
 
+            List<int> polygonIds = new List<int>();
+            foreach (int polygonId in polygons)
+            {
+                Console.WriteLine(polygonId);
+                polygonIds.Add(polygonId);
+            }
+            return polygonIds;
+        }
+
+        private List<Point> GetHeatMapPoints(int polygonId, HourglassContext context)
+        {
+            // all rows in Area with specified zipcode name
+            var points = from polygon in context.Polygon
+                           join point in context.Point
+                           on polygon.PointId equals point.Id
+                           where polygon.Id == polygonId
+                           select point;
+            Console.WriteLine("Points retrieved from polygonId: " + polygonId);
             List<Point> pts = new List<Point>();
             foreach (Point pt in points)
             {
                 pts.Add(pt);
             }
             return pts;
+        }
+
+        private List<List<Point>> GetMultiPolygonPoints(List<int> polygonIds, HourglassContext context)
+        {
+            List<List<Point>> points = new List<List<Point>>();
+            foreach (int polygonId in polygonIds)
+            {
+                List<Point> polygonPoints = GetHeatMapPoints(polygonId, context);
+                points.Add(polygonPoints);
+            }
+            return points;
         }
 
         private PointGeometry GetMarkerPoints(string geoName, HourglassContext context)
@@ -57,15 +87,33 @@ namespace HourglassServer.Data.Application.Maps
 
             // get location data from table
             List<LocationData> dataSet = dataContext.getLocationData(tableName, "int").Result;
-            List<PolygonFeature> features = new List<PolygonFeature>();
+            List<object> features = new List<object>();
 
             // for each row of location data, get the latitude, longitude pairs
             foreach (LocationData row in dataSet)
             {
-                List<Point> points = GetHeatMapPoints(row.GeoName, context);
-                // create feature from list of points
-                PolygonFeature geom = new PolygonFeature(points, row.GeoName, row.Value);
-                features.Add(geom);
+                Console.WriteLine("GEO_NAME" + row.GeoName);
+
+                List<int> polygonIds = GetHeatMapPolygon(row.GeoName, context);
+
+               // List<Polygon> polygons = dataContext.getPolygons(row.GeoName).Result;
+
+                // normal Polygon
+                if (polygonIds.Count() == 1)
+                {
+                    List<Point> points = GetHeatMapPoints(polygonIds.First(), context);
+                    PolygonFeature geom = new PolygonFeature(points, row.GeoName, row.Value);
+                    Console.WriteLine(geom);
+                    features.Add(geom);
+
+                }
+                else // MultiPolygon
+                {
+                    List<List<Point>> polygonPoints = GetMultiPolygonPoints(polygonIds, context);
+                    MultiPolygonFeature feat = new MultiPolygonFeature(polygonPoints, row.GeoName, row.Value);
+                    features.Add(feat);
+                }
+
             }
 
             PolygonFeatureCollection collection = new PolygonFeatureCollection(features);

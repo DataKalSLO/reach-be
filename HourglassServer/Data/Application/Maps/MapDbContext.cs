@@ -40,6 +40,59 @@ namespace HourglassServer.Data.Application.Maps
             return (int)(value * 100);
         }
 
+        public async Task<List<Polygon>> getPolygons(string geoName)
+        {
+            var conn = getConnection();
+            await conn.OpenAsync();
+            int id;
+            int pointId;
+
+            Polygon polygon;
+            List<Polygon> polygons = new List<Polygon>();
+            // select * from polygon p join area a on a.polygon_id=p.id where a.Name='93422'
+            var sql = "SELECT p.id, p.point_id from polygon p join area a on a.polygon_id=p.id where a.name='"
+                + geoName + "'";
+            using var cmd = new NpgsqlCommand(sql, conn);
+            try
+            {
+                await using (var reader = await cmd.ExecuteReaderAsync())
+                    while (await reader.ReadAsync())
+                    {
+                        id = (int)reader.GetValue(0);
+                        pointId = (int)reader.GetValue(1);
+                        
+                        polygon = new Polygon
+                        {
+                            Id = id,
+                            PointId = pointId
+                        };
+                        polygons.Add(polygon);
+                    }
+                return polygons;
+            }
+            catch (PostgresException e)
+            {
+                // SqlState 42P01 is an error code for table names that do not exist in the database
+                // A stale metadata cache would be the reason for this error
+                if (e.SqlState == "42P01")
+                {
+                    _logger.LogError(
+                        string.Format("{0}: Bad SQL query due to stale cache. Table {1} does not exist in database.",
+                        nameof(getLocationData),
+                        geoName));
+
+                    // Expire the cache and throw an exception
+                    _logger.LogDebug(string.Format("{0}: Expiring stale cache", nameof(getLocationData)));
+                    _cache.Remove(CacheKeys.MetadataKey);
+
+                    throw new StaleRequestException(string.Format("Table no longer exists in database: {0}", geoName));
+                }
+
+                // Other Postgres exception occured
+                throw e;
+            }
+        }
+
         // checking for injection must be done before calling this function
         // including checking that DataSetMetaData includes given tableName
         public async Task<List<LocationData>> getLocationData(string tableName, string valueType)

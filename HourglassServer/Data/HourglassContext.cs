@@ -37,6 +37,7 @@ namespace HourglassServer.Data
         public virtual DbSet<Location> Location { get; set; }
         public virtual DbSet<Person> Person { get; set; }
         public virtual DbSet<Point> Point { get; set; }
+        public virtual DbSet<Polygon> Polygon { get; set; }
         public virtual DbSet<Story> Story { get; set; }
         public virtual DbSet<StoryCategory> StoryCategory { get; set; }
         public virtual DbSet<TextBlock> TextBlock { get; set; }
@@ -58,7 +59,7 @@ namespace HourglassServer.Data
 
             modelBuilder.Entity<Area>(entity =>
             {
-                entity.HasKey(e => new { e.Name, e.PointId })
+                entity.HasKey(e => new { e.Name, e.PolygonId })
                     .HasName("area_pkey");
 
                 entity.ToTable("area");
@@ -67,13 +68,13 @@ namespace HourglassServer.Data
                     .HasColumnName("name")
                     .HasMaxLength(200);
 
-                entity.Property(e => e.PointId).HasColumnName("point_id");
+                entity.Property(e => e.PolygonId).HasColumnName("polygon_id");
 
-                entity.HasOne(d => d.Point)
-                    .WithMany(p => p.Area)
-                    .HasForeignKey(d => d.PointId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("area_point_id_fkey");
+                //entity.HasOne(d => d.Polygon)
+                //    //.WithMany(p => p.Area)
+                //    //.HasForeignKey(d => d.PolygonId)
+                //    .OnDelete(DeleteBehavior.ClientSetNull)
+                //    .HasConstraintName("area_polygon_id_fkey");
             });
 
             modelBuilder.Entity<BookmarkGeoMap>(entity =>
@@ -478,6 +479,21 @@ namespace HourglassServer.Data
 
                 entity.Property(e => e.Longitude)
                     .HasColumnName("longitude")
+                    .HasColumnType("numeric");
+            });
+
+            modelBuilder.Entity<Polygon>(entity =>
+            {
+                entity.ToTable("polygon");
+
+                entity.HasIndex(e => e.Id)
+                    .HasName("polygon_id_key")
+                    .IsUnique();
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.PointId)
+                    .HasColumnName("point_id")
                     .HasColumnType("numeric");
             });
 
