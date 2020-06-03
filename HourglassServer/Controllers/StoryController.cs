@@ -112,7 +112,7 @@
 
                 permissionChecker.AssertConstraint(Constraints.HAS_USER_ACCOUNT);
 
-                Story story = this.context.Story.SingleOrDefault(story => story.StoryId == storyFromBody.Id);
+                Story story = this.context.Story.AsNoTracking().SingleOrDefault(story => story.StoryId == storyFromBody.Id);
 
                 IActionResult response = story != null ?
                     PerformStoryUpdate(storyFromBody, permissionChecker) :
@@ -124,7 +124,7 @@
                 Person user = this.context.Person.Single(p => p.Email == story.UserId);
                 if (user.NotificationsEnabled)
                 {
-                    var email = this.emailService.GenerateStatusUpdateEmail(story.User, storyFromBody.Title, storyFromBody.PublicationStatus.ToString());
+                    var email = this.emailService.GenerateStatusUpdateEmail(user, storyFromBody.Title, storyFromBody.PublicationStatus.ToString());
                     this.emailService.SendMail(email);
                 }
 
