@@ -18,13 +18,10 @@ namespace HourglassServer.Data.Application.Maps
 
         public PolygonFeatureCollection GetPolygonFeatureCollection(string tableName, HourglassContext context, MapDbContext dataContext)
         {
-            
+
             // search for table name in metadata table
             // if bad table name, Exception is thrown
-            var metaData = from meta in context.DatasetMetaData
-                            where meta.TableName == tableName
-                            && meta.GeoType == "area"
-                            select meta;
+            var metaData = context.DatasetMetaData.Where(md => md.TableName == tableName && md.GeoType == "area");
 
             // get location data from table
             List<LocationData> dataSet = dataContext.getLocationData(tableName, "int").Result;
@@ -47,10 +44,7 @@ namespace HourglassServer.Data.Application.Maps
 
         public FeatureCollection GetPointFeatureCollection(string tableName, HourglassContext context, MapDbContext dataContext)
         {
-            var metaData = from meta in context.DatasetMetaData
-                          where meta.TableName == tableName
-                          && meta.GeoType == "location"
-                          select meta;
+            var metaData = context.DatasetMetaData.Where(md => md.TableName == tableName && md.GeoType == "location");
 
             List<LocationData> locationData = dataContext.getLocationData(tableName, "decimal").Result;
             List<Feature> features = new List<Feature>();

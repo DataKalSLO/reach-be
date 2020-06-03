@@ -17,7 +17,7 @@ namespace HourglassServer.Data.Application.Maps
 
         public PolygonFeatureCollection(List<object> features)
         {
-            this.Type = "PolygonFeatureCollection";
+            this.Type = Enum.GetName(typeof(MapType), MapType.PolygonFeatureCollection);
             this.Features = features;
         }
 
@@ -31,9 +31,7 @@ namespace HourglassServer.Data.Application.Maps
             string result = "";
             foreach (PolygonFeature feat in Features)
             {
-
-             result += (feat.ToString());
-                
+                result += (feat.ToString());
             }
             return result;
         }

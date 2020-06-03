@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace HourglassServer.Data.Application.Maps
 {
     public class FeatureCollection
     {
-
         public string Type { get; set; }
         public string Name { get; set; }
 
@@ -15,7 +15,7 @@ namespace HourglassServer.Data.Application.Maps
 
         public FeatureCollection(string tableName, IEnumerable<Feature> features)
         {
-            this.Type = "FeatureCollection";
+            this.Type = Enum.GetName(typeof(MapType), MapType.FeatureCollection);
             this.Name = tableName;
             this.features = features.Select(f =>
             {
@@ -24,6 +24,5 @@ namespace HourglassServer.Data.Application.Maps
                 return innerList;
             });
         }
-
     }
 }
