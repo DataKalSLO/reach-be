@@ -11,9 +11,6 @@
     using HourglassServer.Custom.Exception;
     using HourglassServer.Models.Persistent;
     using HourglassServer.Mail;
-    using System;
-    using System.Diagnostics;
-    using Newtonsoft.Json;
     using Microsoft.EntityFrameworkCore;
 
     [DefaultControllerRoute]
@@ -151,6 +148,64 @@
                 await this.context.SaveChangesAsync();
                 return new NoContentResult();
             }); 
+        }
+
+        /* 
+         * Story feedback CRUD operations
+         */
+
+        [HttpPost("feedback")]
+        public async Task<IActionResult> CreateStoryFeedback([FromBody] StoryFeedback feedback)
+        {
+            return await ExceptionHandler.TryAsyncApiAction(this, async () =>
+            {
+                StoryConstraintChecker permissionChecker = new StoryConstraintChecker(
+                    new ConstraintEnvironment(HttpContext.User, context), null);
+                permissionChecker.AssertConstraint(Constraints.HAS_ADMIN_ACCOUNT);
+
+                feedback.ReviewerId = HttpContext.User.GetUserId();
+
+                bool storyFeedbackExists = context.StoryFeedback.Any(
+                    storyFeedback => storyFeedback.FeedbackId == feedback.FeedbackId);
+                IActionResult result;
+                if (storyFeedbackExists)
+                {
+                    context.Update(feedback);
+                    result = new NoContentResult();
+                }
+                else
+                {
+                    feedback.FeedbackId = System.Guid.NewGuid().ToString();
+                    context.StoryFeedback.Add(feedback);
+                    result = new CreatedAtRouteResult(new { feedbackId = feedback.FeedbackId }, feedback);
+                }
+                await context.SaveChangesAsync();
+                return result;
+            });
+        }
+
+        [HttpGet("feedback/{storyId}")]
+        public IActionResult GetStoryFeedbackByStoryId(string storyId)
+        {
+            return ExceptionHandler.TryApiAction(this, () =>
+            {
+                IList<StoryFeedback> feedbacks = context.StoryFeedback
+                    .Where(storyFeedback => storyFeedback.StoryId == storyId)
+                    .ToList();
+                return new OkObjectResult(feedbacks);
+            });
+        }
+
+        [HttpDelete("feedback/{feedbackId}")]
+        public async Task<IActionResult> DeleteStoryFeedbackById(string feedbackId)
+        {
+            return await ExceptionHandler.TryAsyncApiAction(this, async () =>
+            {
+                StoryFeedback feedback = context.StoryFeedback
+                    .Find(feedbackId);
+                await context.DeleteAsync(feedback);
+                return new NoContentResult();
+            });
         }
 
         /*
