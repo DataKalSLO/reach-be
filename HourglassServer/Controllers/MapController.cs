@@ -8,6 +8,7 @@ using HourglassServer.Data.Application.Maps;
 using HourglassServer.Data;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -102,6 +103,26 @@ namespace HourglassServer.Controllers
                             Error = "Table does not exist",
                             Message = e.ToString()
                         }); ;
+            }
+        }
+
+        [HttpGet("heatmap/geometry/{geoName}")]
+        public ActionResult<PolygonFeature> GetGeometry(string geoName)
+        {
+            try
+            {
+                string jsonString = _context.GeoArea.Where(g => g.Name == geoName).First().Geometry;
+                string name = _context.GeoArea.Where(g => g.Name == geoName).First().Name;
+                return new PolygonFeature(jsonString, name, 0);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(
+                    new ExceptionMessageContent()
+                    {
+                        Error = "GeoName does not exist",
+                        Message = e.ToString()
+                    });
             }
         }
 

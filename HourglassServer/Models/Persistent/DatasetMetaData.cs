@@ -9,7 +9,6 @@ namespace HourglassServer.Models.Persistent
         {
             GeoMapTables = new HashSet<GeoMapTables>();
             GraphSource = new HashSet<GraphSource>();
-            Location = new HashSet<Location>();
         }
 
         public string TableName { get; set; }
@@ -19,6 +18,5 @@ namespace HourglassServer.Models.Persistent
 
         public virtual ICollection<GeoMapTables> GeoMapTables { get; set; }
         public virtual ICollection<GraphSource> GraphSource { get; set; }
-        public virtual ICollection<Location> Location { get; set; }
     }
 }

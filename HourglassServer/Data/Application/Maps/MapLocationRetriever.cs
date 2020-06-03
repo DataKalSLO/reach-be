@@ -93,26 +93,28 @@ namespace HourglassServer.Data.Application.Maps
             foreach (LocationData row in dataSet)
             {
                 Console.WriteLine("GEO_NAME" + row.GeoName);
+                GeoArea area = context.GeoArea.Where(g => g.Name == row.GeoName).First();
 
-                List<int> polygonIds = GetHeatMapPolygon(row.GeoName, context);
+                PolygonFeature geom = new PolygonFeature(area.Geometry, row.GeoName, row.Value);
+                features.Add(geom);
+               // List<int> polygonIds = GetHeatMapPolygon(row.GeoName, context);
 
-               // List<Polygon> polygons = dataContext.getPolygons(row.GeoName).Result;
+               //// List<Polygon> polygons = dataContext.getPolygons(row.GeoName).Result;
 
-                // normal Polygon
-                if (polygonIds.Count() == 1)
-                {
-                    List<Point> points = GetHeatMapPoints(polygonIds.First(), context);
-                    PolygonFeature geom = new PolygonFeature(points, row.GeoName, row.Value);
-                    Console.WriteLine(geom);
-                    features.Add(geom);
-
-                }
-                else // MultiPolygon
-                {
-                    List<List<Point>> polygonPoints = GetMultiPolygonPoints(polygonIds, context);
-                    MultiPolygonFeature feat = new MultiPolygonFeature(polygonPoints, row.GeoName, row.Value);
-                    features.Add(feat);
-                }
+               // // normal Polygon
+               // if (polygonIds.Count() == 1)
+               // {
+               //     List<Point> points = GetHeatMapPoints(polygonIds.First(), context);
+               //     PolygonFeature geom = new PolygonFeature(points, row.GeoName, row.Value);
+               //     Console.WriteLine(geom);
+               //     features.Add(geom);
+               // }
+               // else // MultiPolygon
+               // {
+               //     List<List<Point>> polygonPoints = GetMultiPolygonPoints(polygonIds, context);
+               //     MultiPolygonFeature feat = new MultiPolygonFeature(polygonPoints, row.GeoName, row.Value);
+               //     features.Add(feat);
+               // }
 
             }
 

@@ -19,4 +19,7 @@
   <ItemGroup>
     <Folder Include="Data\Application\Maps\" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Data\Application\Maps\PolygonFeatureCollection %28copy%29.cs" />
+  </ItemGroup>
 </Project>
