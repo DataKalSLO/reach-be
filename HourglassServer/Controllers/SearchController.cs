@@ -28,16 +28,8 @@ namespace HourglassServer.Controllers
         [HttpPost("all")]
         public async Task<IActionResult> QueryElasticsearchAll()
         {
-            // Read raw body of request (query to ES) as string
-            string bodyAsString;
-            using (var streamReader = new StreamReader(Request.Body, Encoding.UTF8))
-            {
-                bodyAsString = await streamReader.ReadToEndAsync();
-            }
-
-            // Send query to ES and give raw JSON results as response
             string esResult = "";
-            esResult = await QueryElasticsearch("/_search", bodyAsString);
+            esResult = await QueryElasticsearch("/_search");
 
             return Ok(esResult);
         }
@@ -45,16 +37,8 @@ namespace HourglassServer.Controllers
         [HttpPost("graphs")]
         public async Task<IActionResult> QueryElasticsearchGraphs()
         {
-            // Read raw body of request (query to ES) as string
-            string bodyAsString;
-            using (var streamReader = new StreamReader(Request.Body, Encoding.UTF8))
-            {
-                bodyAsString = await streamReader.ReadToEndAsync();
-            }
-
-            // Send query to ES and give raw JSON results as response
             string esResult = "";
-            esResult = await QueryElasticsearch("/graphs/_search", bodyAsString);
+            esResult = await QueryElasticsearch("/graphs/_search");
 
             return Ok(esResult);
         }
@@ -62,6 +46,13 @@ namespace HourglassServer.Controllers
         [HttpPost("stories")]
         public async Task<IActionResult> QueryElasticsearchStories()
         {
+            string esResult = "";
+            esResult = await QueryElasticsearch("/stories/_search");
+
+            return Ok(esResult);
+        }
+
+        public async Task<string> QueryElasticsearch(string qtype) {
             // Read raw body of request (query to ES) as string
             string bodyAsString;
             using (var streamReader = new StreamReader(Request.Body, Encoding.UTF8))
@@ -70,13 +61,6 @@ namespace HourglassServer.Controllers
             }
 
             // Send query to ES and give raw JSON results as response
-            string esResult = "";
-            esResult = await QueryElasticsearch("/stories/_search", bodyAsString);
-
-            return Ok(esResult);
-        }
-
-        public async Task<string> QueryElasticsearch(string qtype, string bodyAsString) {
             using (var httpClient = new HttpClient())
             {
                 httpClient.BaseAddress = new Uri(elasticURL);
