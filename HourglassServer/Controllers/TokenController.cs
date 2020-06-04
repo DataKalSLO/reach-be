@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Linq;
 using HourglassServer.Data;
 using HourglassServer.Models.Persistent;
 using HourglassServer.Custom.User;
@@ -43,8 +42,7 @@ namespace HourglassServer
             }
 
             string token = _jwtTokenService.BuildToken(ClaimBuilders.BuildLoginClaims(loggedInUser));
-
-            return Ok(new { email = tokenModel.Email, name = loggedInUser.Name, occupation = loggedInUser.Occupation, role = loggedInUser.Role, notificationsEnabled = loggedInUser.NotificationsEnabled, token });
+            return Ok(new { email = tokenModel.Email, name = loggedInUser.Name, occupation = loggedInUser.Occupation, role = loggedInUser.Role, notificationsEnabled = loggedInUser.NotificationsEnabled, isThirdParty = loggedInUser.IsThirdParty, token });
         }
     }
 }

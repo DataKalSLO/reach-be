@@ -71,7 +71,8 @@ namespace HourglassServer
                 Salt = salt,
                 PasswordHash = hash,
                 Occupation = model.Occupation == "" ? null : model.Occupation,
-                NotificationsEnabled = model.NotificationsEnabled
+                NotificationsEnabled = model.NotificationsEnabled,
+                IsThirdParty = model.IsThirdParty
             });
 
             return Ok(new { email = model.Email });
@@ -88,6 +89,23 @@ namespace HourglassServer
             catch (InvalidOperationException)
             {
                 return BadRequest(new { errorName = "unusedEmail" });
+            }
+
+            if (userSettings.PasswordChangeRequest != null)
+            {
+                bool enteredCorrectPassword = UserPasswordHasher.PasswordMatches(
+                    userSettings.PasswordChangeRequest.CurrentPassword,
+                    person.Salt,
+                    person.PasswordHash);
+
+                if (!enteredCorrectPassword)
+                {
+                    return Unauthorized(new { tag = "badLogin" });
+                }
+
+                var (salt, hash) = UserPasswordHasher.HashPassword(userSettings.PasswordChangeRequest.NewPassword);
+                person.Salt = salt;
+                person.PasswordHash = hash;
             }
 
             person.Name = userSettings.Name ?? person.Name;

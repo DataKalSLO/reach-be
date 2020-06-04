@@ -9,7 +9,7 @@ namespace HourglassServer.Controllers
     using System.Linq;
     using System.Threading.Tasks;
     using HourglassServer.Custom.Constraints;
-    using HourglassServer.Custom.Exceptions;
+    using HourglassServer.Custom.Exception;
     using HourglassServer.Data;
     using HourglassServer.Data.DataManipulation.BookmarkOperations;
     using HourglassServer.Data.DataManipulation.DbSetOperations;
@@ -30,7 +30,7 @@ namespace HourglassServer.Controllers
         [HttpGet("geomap")]
         public IActionResult GetGeoMapBookmarks()
         {
-            try
+            return ExceptionHandler.TryApiAction(this, () =>
             {
                 ConstraintChecker<BookmarkGeoMap> constraintChecker = new ConstraintChecker<BookmarkGeoMap>(
                     new ConstraintEnvironment(this.HttpContext.User, context), null);
@@ -38,51 +38,39 @@ namespace HourglassServer.Controllers
                 string userId = HttpContext.User.GetUserId();
                 List<string> geoMapIdsBookmarked = BookmarkRetriever.GetBookmarkGeoMapByUserId(context, userId);
                 return new OkObjectResult(geoMapIdsBookmarked);
-            }
-            catch (Exception e)
-            {
-                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.BadValue));
-            }
+            });
         }
 
         [HttpGet("graph")]
         public IActionResult GetGraphBookmarks()
         {
-            try
+            return ExceptionHandler.TryApiAction(this, () =>
             {
                 ConstraintChecker<BookmarkGeoMap> constraintChecker = new ConstraintChecker<BookmarkGeoMap>(
                     new ConstraintEnvironment(this.HttpContext.User, context), null);
                 string userId = HttpContext.User.GetUserId();
                 List<string> graphIdsBookmarked = BookmarkRetriever.GetBookmarkGraphByUserId(context, userId);
                 return new OkObjectResult(graphIdsBookmarked);
-            }
-            catch (Exception e)
-            {
-                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.BadValue));
-            }
+            }); 
         }
 
         [HttpGet("story")]
         public IActionResult GetStoryBookmarks()
         {
-            try
+            return ExceptionHandler.TryApiAction(this, () =>
             {
                 ConstraintChecker<BookmarkGeoMap> constraintChecker = new ConstraintChecker<BookmarkGeoMap>(
                     new ConstraintEnvironment(this.HttpContext.User, context), null);
                 string userId = HttpContext.User.GetUserId();
                 List<string> storiesIdsBookmarked = BookmarkRetriever.GetBookmarkStoryByUserId(context, userId);
                 return new OkObjectResult(storiesIdsBookmarked);
-            }
-            catch (Exception e)
-            {
-                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.BadValue));
-            }
+            });
         }
 
         [HttpPost("graph")]
         public async Task<IActionResult> ToggleGraphBookmark([FromBody] BookmarkGraph graphBookmark)
         {
-            try
+            return await ExceptionHandler.TryAsyncApiAction(this, async () =>
             {
                 ConstraintChecker<BookmarkGeoMap> constraintChecker = new ConstraintChecker<BookmarkGeoMap>(
                     new ConstraintEnvironment(this.HttpContext.User, context), null);
@@ -90,17 +78,13 @@ namespace HourglassServer.Controllers
                 ToggleState state = Toggler.ToggleEntity(this.context.BookmarkGraph, graphBookmark);
                 await context.SaveChangesAsync();
                 return new OkObjectResult(state);
-            }
-            catch (Exception e)
-            {
-                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.BadValue));
-            }
+            });
         }
 
         [HttpPost("geomap")]
         public async Task<IActionResult> ToggleGeoMapBookmark([FromBody] BookmarkGeoMap geoMapBookmark)
         {
-            try
+            return await ExceptionHandler.TryAsyncApiAction(this, async () =>
             {
                 ConstraintChecker<BookmarkGeoMap> constraintChecker = new ConstraintChecker<BookmarkGeoMap>(
                     new ConstraintEnvironment(this.HttpContext.User, context), null);
@@ -109,18 +93,14 @@ namespace HourglassServer.Controllers
                 await context.SaveChangesAsync();
 
                 return new OkObjectResult(state);
-            }
-            catch (Exception e)
-            {
-                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.BadValue));
-            }
+            });
         }
 
 
         [HttpPost("story")]
         public async Task<IActionResult> ToggleStoryBookmark([FromBody] BookmarkStory storyBookmark)
         {
-            try
+            return await ExceptionHandler.TryAsyncApiAction(this, async () =>
             {
                 ConstraintChecker<BookmarkGeoMap> constraintChecker = new ConstraintChecker<BookmarkGeoMap>(
                                     new ConstraintEnvironment(this.HttpContext.User, context), null);
@@ -128,11 +108,7 @@ namespace HourglassServer.Controllers
                 ToggleState state = Toggler.ToggleEntity(this.context.BookmarkStory, storyBookmark);
                 await context.SaveChangesAsync();
                 return new OkObjectResult(state);
-            }
-            catch (Exception e)
-            {
-                return this.BadRequest(new HourglassError(e.ToString(), ErrorTag.BadValue));
-            }
+            });
         }
     }
 }

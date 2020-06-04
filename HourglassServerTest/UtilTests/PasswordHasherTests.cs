@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HourglassServer;
-using System;
 
 // A class which trivially implements `Hash` by returning the given password.
 class PlaintextPasswordHasher : PasswordHasher

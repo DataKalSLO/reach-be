@@ -1,7 +1,7 @@
 ﻿using HourglassServer.Data;
 using HourglassServer.Data.Application.StoryModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using HourglassServer.Data.DataManipulation.StoryModel;
+using HourglassServer.Data.DataManipulation.StoryOperations;
 using System.Collections.Generic;
 
 /* Note, the reason some of these tests are so similar and not 
@@ -21,9 +21,10 @@ namespace HourglassServerTest.StoryTests
 
             //VP 1 - Correct story returned
             Assert.AreEqual(sampleData.StoryId, story.Id);
+            Assert.AreEqual(sampleData.DateCreated, story.DateCreated);
 
             //VP 2 - Story blocks returned with story
-            int expectedStoryBlockCount = 3;
+            int expectedStoryBlockCount = 4;
             GeneralAssertions.AssertListHasCount(story.StoryBlocks, expectedStoryBlockCount);
             for (int i = 0; i < expectedStoryBlockCount; i++) //Checks that blocks are sorted.
                 Assert.AreEqual(i, story.StoryBlocks[i].BlockPosition);

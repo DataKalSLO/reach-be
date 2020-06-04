@@ -1,4 +1,5 @@
 ﻿using HourglassServer.Custom.User;
+using HourglassServer.Models.Persistent;
 using Microsoft.Extensions.Configuration;
 using System.Net.Mail;
 
@@ -21,15 +22,30 @@ namespace HourglassServer.Mail
         {
             string token = _jwtTokenService.BuildToken(ClaimBuilders.BuildPasswordResetClaims(to));
 
-            string link = HtmlFormatters.GenerateLink("https://joinreach.org/passwordreset?token=" + token + "&email=" + to, "Reset here");
+            string link = HtmlFormatters.GenerateLink("https://www.joinreach.org/passwordreset?token=" + token + "&email=" + to, "Reset here");
 
             string body = @"Follow this link to change your password:<br>" + link +
                            "<br><br>If you did not make a password change request, ignore this email.";
 
             var message = new MailMessage(
-                "reachcentralcoast@gmail.com",
+                ReachEmail,
                 to,
                 "Reach - Change your password",
+                HtmlFormatters.BuildBodyFromTemplate(body));
+
+            message.IsBodyHtml = true;
+            return message;
+        }
+
+        public MailMessage GenerateStatusUpdateEmail(Person user, string title, string publicationStatus)
+        {
+            string body = $"Hi {user.Name},<br><br>The status of your story <strong>{title}</strong>" +
+                          $" has been updated to <strong>{publicationStatus}</strong>.";
+
+            var message = new MailMessage(
+                ReachEmail,
+                user.Email,
+                "Reach - Your story status has changed",
                 HtmlFormatters.BuildBodyFromTemplate(body));
 
             message.IsBodyHtml = true;

@@ -1,53 +1,38 @@
-using System;
-using System.IO;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using HourglassServer.AmazonS3;
+using HourglassServer.Images;
+using HourglassServer.Data.Application.GraphModel;
+using HourglassServer.Data.DataManipulation.ImageOperations;
+using HourglassServer.Models.Application.ImageModel;
 
 namespace HourglassServer.Data.DataManipulation.GraphOperations
 {
     public class GraphSnapshotOperations
     {
-        public static string UploadSnapshotToS3(string encodedGraphSVG) 
+        public static async Task<string> UploadSnapshotToS3(IConfiguration config, GraphModel graphModel)
         {
-            string path = GraphSnapshotOperations.GetTempFilePath();
-
-            if (GraphSnapshotOperations.WriteSvgFile(encodedGraphSVG, path)) 
+            EncodedImage image = new EncodedImage()
             {
-                // TODO: Connect backend with S3 bucket and add upload functionality
-                string snapshotURL = "NOT_IMPLEMENTED";
-
-                File.Delete(path);
-
-                // Return the URL to the image in S3
-                return snapshotURL;
-            }
-
-            return String.Empty;
+                ImageEncoded = graphModel.GraphSVG,
+                Type = ImageExtensions.SVG,
+                Id = graphModel.GraphId
+            };
+            return await ImageManipulator.UploadEncodedImageToBucket(
+                image,
+                config,
+                Bucket.GRAPH_SNAPSHOT
+                );
         }
 
-        // Returns a new random file name in the temp file directory
-        private static string GetTempFilePath() 
+        public static async Task RemoveSnapshotFromS3(IConfiguration config, string graphId)
         {
-            return Path.GetTempPath() + Path.GetRandomFileName() + ".svg";
-        }
-
-        // Decode the base64 encoded SVG string and write bytes as an SVG file
-        private static bool WriteSvgFile(string encodedGraphSVG, string path) 
-        {
-            try 
-            {
-                byte[] data = Convert.FromBase64String(encodedGraphSVG);
-                File.WriteAllBytes(path, data);
-                return true;
-            }
-            catch (FormatException)
-            {
-                // TODO: Implement static logging to be able to log the error from this function
-                return false;
-            }
-            catch (Exception)
-            {
-                // TODO: Implement static logging to be able to log the error from this function
-                return false;
-            }
+            await ImageManipulator.RemoveImageFromBucket(
+                config,
+                Bucket.GRAPH_SNAPSHOT,
+                ImageExtensions.SVG,
+                graphId
+                );
         }
     }
 }

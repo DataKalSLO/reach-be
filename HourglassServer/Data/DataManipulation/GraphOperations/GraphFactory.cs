@@ -16,7 +16,6 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
         {
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             var graphOptions = model.GraphOptions.ToString(Formatting.None);
-            var snapshotUrl = GraphSnapshotOperations.UploadSnapshotToS3(model.GraphSVG);
 
             return new Graph()
             {
@@ -24,7 +23,7 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
                 GraphTitle = model.GraphTitle,
                 UserId = model.UserId,
                 Timestamp = timestamp,
-                SnapshotUrl = snapshotUrl,
+                SnapshotUrl = null,
                 GraphOptions = graphOptions
             };
         }
@@ -85,6 +84,7 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
             {
                 GraphId = graph.GraphId,
                 UserId = graph.UserId,
+                UserName = graph.User.Name,
                 TimeStamp = graph.Timestamp.Value,
                 GraphTitle = graph.GraphTitle,
                 SnapshotUrl = graph.SnapshotUrl,
