@@ -13,6 +13,7 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
         {
             Graph requestedGraph = await db.Graph
                     .Include(g => g.GraphSource)
+                    .Include(g => g.User)
                     .SingleAsync(g => g.GraphId == graphId);
 
             return GraphFactory.CreateGraphApplicationModel(requestedGraph, requestedGraph.GraphSource.ToArray());
@@ -22,12 +23,13 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
         {
             List<GraphApplicationModel> graphModels = new List<GraphApplicationModel>();
             List<Graph> graphsForUser = await db.Graph
-                    .Include(g => g.GraphSource)
                     .Where(g => g.UserId == userId)
+                    .Include(g => g.GraphSource)
+                    .Include(g => g.User)
                     .ToListAsync();
             foreach (Graph graph in graphsForUser)
             {
-                GraphApplicationModel graphModel =  
+                GraphApplicationModel graphModel =
                     GraphFactory.CreateGraphApplicationModel(graph, graph.GraphSource.ToArray());
                 graphModels.Add(graphModel);
             }

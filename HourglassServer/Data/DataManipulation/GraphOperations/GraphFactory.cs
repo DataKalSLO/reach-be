@@ -84,6 +84,7 @@ namespace HourglassServer.Data.DataManipulation.GraphOperations
             {
                 GraphId = graph.GraphId,
                 UserId = graph.UserId,
+                UserName = graph.User.Name,
                 TimeStamp = graph.Timestamp.Value,
                 GraphTitle = graph.GraphTitle,
                 SnapshotUrl = graph.SnapshotUrl,
