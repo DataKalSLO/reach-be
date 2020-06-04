@@ -19,4 +19,5 @@ artifacts:
     - build_output/**/*
     - scripts/**/*
     - appspec.yml
+    - Config/**/*
 
