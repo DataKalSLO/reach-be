@@ -8,7 +8,8 @@ namespace HourglassServer.Mail
 
         public static string BuildBodyFromTemplate(string messageBody)
         {
-            using StreamReader reader = File.OpenText($"Mail{Path.DirectorySeparatorChar}{emailTemplate}");
+            using StreamReader reader = File.OpenText($"..{Path.DirectorySeparatorChar}"
+                + $"Config{Path.DirectorySeparatorChar}{emailTemplate}");
             string body = reader.ReadToEnd();
             return body.Replace("{{MESSAGE_BODY}}", messageBody); ;
         }
