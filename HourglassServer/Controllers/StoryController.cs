@@ -10,15 +10,19 @@
     using HourglassServer.Custom.Constraints;
     using HourglassServer.Custom.Exception;
     using HourglassServer.Models.Persistent;
+    using HourglassServer.Mail;
+    using Microsoft.EntityFrameworkCore;
 
     [DefaultControllerRoute]
     public class StoryController : Controller
     {
         private readonly HourglassContext context;
+        private readonly IEmailService emailService;
 
-        public StoryController(HourglassContext context)
+        public StoryController(HourglassContext context, IEmailService emailService)
         {
             this.context = context;
+            this.emailService = emailService;
         }
 
         /*
@@ -105,10 +109,22 @@
 
                 permissionChecker.AssertConstraint(Constraints.HAS_USER_ACCOUNT);
 
-                IActionResult response = this.context.Story.Any(story => story.StoryId == storyFromBody.Id) ?
+                Story story = this.context.Story.AsNoTracking().SingleOrDefault(story => story.StoryId == storyFromBody.Id);
+
+                IActionResult response = story != null ?
                     PerformStoryUpdate(storyFromBody, permissionChecker) :
                     PerformStoryCreation(storyFromBody, permissionChecker);
+
                 await this.context.SaveChangesAsync();
+
+                story ??= this.context.Story.Single(story => story.StoryId == storyFromBody.Id);
+                Person user = this.context.Person.Single(p => p.Email == story.UserId);
+                if (user.NotificationsEnabled)
+                {
+                    var email = this.emailService.GenerateStatusUpdateEmail(user, storyFromBody.Title, storyFromBody.PublicationStatus.ToString());
+                    this.emailService.SendMail(email);
+                }
+
                 return response;
             });
         }
@@ -216,8 +232,9 @@
         private IActionResult PerformStoryUpdate(StoryApplicationModel storyFromBody, StoryConstraintChecker permissionChecker)
         {
             permissionChecker.AssertConstraint(Constraints.HAS_PERMISSION_TO_CHANGE_STATUS);
-            storyFromBody.UserId = context.Story.
-                Where(story => story.StoryId == storyFromBody.Id)
+            storyFromBody.UserId = context.Story
+                .AsNoTracking()
+                .Where(story => story.StoryId == storyFromBody.Id)
                 .Select(story => story.UserId)
                 .Single(); //Fills potentially null value with real owner
             StoryModelUpdater.UpdateStoryApplicationModel(this.context, storyFromBody);
