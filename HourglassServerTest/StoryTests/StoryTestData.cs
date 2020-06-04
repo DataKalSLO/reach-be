@@ -112,7 +112,7 @@ namespace HourglassServerTest.StoryTests
             };
         }
 
-        private GeoMapBlock CreateGeoMapBlock()
+        public GeoMapBlock CreateGeoMapBlock()
         {
             return new GeoMapBlock
             {
@@ -123,7 +123,7 @@ namespace HourglassServerTest.StoryTests
             };
         }
 
-        private GraphBlock CreateGraphBlock()
+        public GraphBlock CreateGraphBlock()
         {
             return new GraphBlock
             {
@@ -134,7 +134,7 @@ namespace HourglassServerTest.StoryTests
             };
         }
 
-        private ImageBlock CreateImageBlock()
+        public ImageBlock CreateImageBlock()
         {
             return new ImageBlock
             {
@@ -145,7 +145,7 @@ namespace HourglassServerTest.StoryTests
             };
         }
 
-        private TextBlock CreateTextBlock()
+        public TextBlock CreateTextBlock()
         {
             return new TextBlock
             {
@@ -156,7 +156,7 @@ namespace HourglassServerTest.StoryTests
             };
         }
 
-        private Person CreatePerson()
+        public Person CreatePerson()
         {
             return new Person
             {
