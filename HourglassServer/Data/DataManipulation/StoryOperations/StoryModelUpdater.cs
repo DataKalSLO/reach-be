@@ -13,15 +13,22 @@ namespace HourglassServer.Data.DataManipulation.StoryOperations
     using System.Linq;
     using HourglassServer.Data.Application.StoryModel;
     using HourglassServer.Models.Persistent;
+    using Microsoft.EntityFrameworkCore;
 
     public static class StoryModelUpdater
     {
         public static void UpdateStoryApplicationModel(HourglassContext db, StoryApplicationModel storyModel)
         {
+            //Referential Entities
+            ClearFeedbackOnReviewSubmission(db, storyModel);
+
+            //Story
             Story storyWithId = StoryFactory.CreateStoryFromStoryModel(storyModel); // Isolates the Story part
             storyModel.DateLastEdited = StoryFactory.GetNow();
+            storyWithId.DateLastEdited = storyModel.DateLastEdited;
             db.Story.Update(storyWithId);
 
+            //Story Blocks
             List<string> storyBlockIdsRequestedToUpdate = new List<string>();
             foreach (StoryBlockModel storyBlockModel in storyModel.StoryBlocks)
             {
@@ -72,6 +79,21 @@ namespace HourglassServer.Data.DataManipulation.StoryOperations
                     return db.GeoMapBlock.Any(geoMapBlock => geoMapBlock.BlockId == blockId);
                 default:
                     throw new ArgumentException("Could not recognize type of story block: " + storyBlock.Type);
+            }
+        }
+
+        public static void ClearFeedbackOnReviewSubmission(HourglassContext db, StoryApplicationModel storyModel)
+        {
+            //Referential Entities
+            Story existingStory = db.Story.AsNoTracking().Where(Story => Story.StoryId == storyModel.Id).First();
+                PublicationStatus oldPublicationStatus = StoryFactory.GetPublicationStatus(existingStory);
+            if (oldPublicationStatus != storyModel.PublicationStatus &&
+                storyModel.PublicationStatus == PublicationStatus.REVIEW)
+            {
+                IList<StoryFeedback> feedbackToRemove = db.StoryFeedback
+                    .Where(storyFeedback => storyFeedback.StoryId == storyModel.Id)
+                    .ToList();
+                db.StoryFeedback.RemoveRange(feedbackToRemove);
             }
         }
     }
