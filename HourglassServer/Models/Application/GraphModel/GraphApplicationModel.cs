@@ -4,6 +4,7 @@ namespace HourglassServer.Data.Application.GraphModel
     {
         public string GraphId { get; set; }
         public string UserId { get; set; }
+        public string UserName { get; set; }
         public long TimeStamp { get; set; }
         public string GraphTitle { get; set; }
         public string SnapshotUrl { get; set; }
