@@ -1,6 +1,6 @@
 import os
 
-from ReverseEngineerTables.constants import app_settings_connection_string, path_to_context_file, \
+from constants import app_settings_connection_string, path_to_context_file, \
     query_connection_string_from_config_statement, old_constructor_header, \
     constructor_header_with_configuration, \
     namespace_keyword, configuration_import_statement, assign_local_config_to_constructor_config_statement, \

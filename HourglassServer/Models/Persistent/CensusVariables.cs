@@ -3,11 +3,9 @@ using System.Collections.Generic;
 
 namespace HourglassServer.Models.Persistent
 {
-    public partial class Location
+    public partial class CensusVariables
     {
         public string Name { get; set; }
-        public int? PointId { get; set; }
-
-        public virtual Point Point { get; set; }
+        public string Description { get; set; }
     }
 }

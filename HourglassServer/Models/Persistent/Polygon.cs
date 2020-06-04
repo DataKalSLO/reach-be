@@ -3,10 +3,9 @@ using System.Collections.Generic;
 
 namespace HourglassServer.Models.Persistent
 {
-    public partial class Point
+    public partial class Polygon
     {
         public int Id { get; set; }
-        public decimal Longitude { get; set; }
-        public decimal Latitude { get; set; }
+        public int PointId { get; set; }
     }
 }
