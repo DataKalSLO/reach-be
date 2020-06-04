@@ -49,7 +49,7 @@ namespace HourglassServer.Controllers
                 {
                     ImageFile = imageFile,
                     Type = ImageUtility.ParseImageExtensionFromContentType(imageFile.ContentType),
-                    Id = block_id
+                    Id = block_id + "_" + DateTimeOffset.Now.ToUnixTimeSeconds()
                 };
 
                 string imageUrl = await ImageManipulator.UploadFormImageToBucket(
