@@ -22,7 +22,8 @@ def convert_graph_to_dict(obj):
         'graph_title': obj[1],
         'user_id': obj[2],
         'timestamp': obj[3],
-        'snapshot_url': obj[4]
+        'snapshot_url': obj[4],
+        'user_name': obj[7]
     }
 
     return res
@@ -83,7 +84,7 @@ def handler(event, context):
         res = convert_story_to_dict(row)
         dicts.append(res)
 
-    cur.execute("SELECT * FROM public.graph")
+    cur.execute("SELECT * FROM public.graph LEFT JOIN public.person ON public.graph.user_id = public.person.email;")
     rows = cur.fetchall()
     dicts2 = []
     for row in rows:
@@ -115,7 +116,8 @@ def handler(event, context):
             'title': graph['graph_title'],
             'user_id': graph['user_id'],
             'timestamp': graph['timestamp'],
-            'snapshot_url': graph['snapshot_url']
+            'snapshot_url': graph['snapshot_url'],
+            'user_name': graph['user_name']
         })
 
 
