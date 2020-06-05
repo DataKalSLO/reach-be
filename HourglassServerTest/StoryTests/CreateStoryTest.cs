@@ -3,33 +3,35 @@ using HourglassServer.Data.Application.StoryModel;
 using HourglassServer.Data;
 using HourglassServer.Data.DataManipulation.StoryOperations;
 using System.Collections.Generic;
+using HourglassServer.Models.Persistent;
+using System.Linq;
 
 namespace HourglassServerTest.StoryTests
 {
     [TestClass]
     public class CreateStoryTest
     {
-        StoryTestData sampleData;
-        HourglassContext context;
-        StoryApplicationModel exampleStory;
-        string StoryId = System.Guid.NewGuid().ToString();
+        const string EditorState = "{\"TheMeaningOfLife\": 42}";
 
+        StoryApplicationModel exampleStory;
+        const string StoryId = "fa370adf-ffcc-4b2d-9d78-f89b588e9714";
+        const string BlockId = "18f84b62-c1fc-45f6-a251-3a938666930d";
+        const string exampleTitle = "This is an example title";
+        const string exampleDescription = "This is an example description";
         [TestInitialize]
         public void InitTest()
         {
-            sampleData = new StoryTestData();
-            context = sampleData.GetMockContext();
             StoryBlockModel newTextBlock = new StoryBlockModel()
             {
-                Id = System.Guid.NewGuid().ToString(),
-                EditorState = "{\"TheMeaningOfLife\": 42}",
+                Id = BlockId,
+                EditorState = EditorState,
                 Type = StoryBlockType.TEXTDB
             };
             exampleStory = new StoryApplicationModel()
             {
                 Id = StoryId,
-                Title = "This is an example title",
-                Description = "This is an example description",
+                Title = exampleTitle,
+                Description = exampleDescription,
                 StoryBlocks = new List<StoryBlockModel>() { newTextBlock }
             };
         }
@@ -37,16 +39,27 @@ namespace HourglassServerTest.StoryTests
         [TestMethod]
         public void CreateTestWithCreator()
         {
-            sampleData.ClearDataInContext();
-            StoryModelCreator.AddStoryApplicationModelToDatabaseContext(context, exampleStory);
-            AssertItemsCreated();
-        }
+            StoryTestData sampleData = new StoryTestData();
+            HourglassContext mockContext = sampleData.GetMockContext();
+            StoryModelCreator.AddStoryApplicationModelToDatabaseContext(mockContext, exampleStory);
 
-        public void AssertItemsCreated()
-        {
-            int count = 1;
-            GeneralAssertions.AssertDbSetHasCount(context.TextBlock, count);
-            GeneralAssertions.AssertDbSetHasCount(context.Story, count);
+            Story story = mockContext.Story
+                .Where(story => story.StoryId == StoryId)
+                .Single();
+
+            //Story meta information
+            Assert.AreEqual(exampleTitle, story.Title);
+            Assert.AreEqual(exampleDescription, story.Description);
+
+            string InitialDate = "0001-01-01T00:00:00";
+            Assert.AreNotEqual(InitialDate, story.DateCreated);
+            Assert.AreNotEqual(InitialDate, story.DateLastEdited);
+
+            //Story Blocks
+            TextBlock textBlock = mockContext.TextBlock
+               .Where(textBlock => textBlock.BlockId == BlockId).Single();
+
+            Assert.AreEqual(EditorState, textBlock.EditorState);
         }
     }
 }
