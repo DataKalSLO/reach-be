@@ -35,17 +35,22 @@ namespace HourglassServer.Data.DataManipulation.StoryOperations
                 storyBlockIdsRequestedToUpdate.Add(storyBlockModel.Id);
             }
 
-            List<GraphBlock> graphBlocksNoLongerInStory = db.GraphBlock
+            List<GraphBlock> graphBlocksRemovedFromStory = db.GraphBlock
                 .Where(graphBlock => graphBlock.StoryId == storyModel.Id && !storyBlockIdsRequestedToUpdate.Contains(graphBlock.BlockId)).ToList();
-            db.GraphBlock.RemoveRange(graphBlocksNoLongerInStory);
+            db.GraphBlock.RemoveRange(graphBlocksRemovedFromStory);
 
-            List<GeoMapBlock> geoMapsBlocksNoLongerInStory = db.GeoMapBlock
+            List<GeoMapBlock> geoMapsBlocksRemovedFromStory = db.GeoMapBlock
                .Where(geoMapBlock => geoMapBlock.StoryId == storyModel.Id && !storyBlockIdsRequestedToUpdate.Contains(geoMapBlock.BlockId)).ToList();
-            db.GeoMapBlock.RemoveRange(geoMapsBlocksNoLongerInStory);
+            db.GeoMapBlock.RemoveRange(geoMapsBlocksRemovedFromStory);
 
-            List<TextBlock> textBlocksNoLongerInStory = db.TextBlock
+            List<TextBlock> textBlocksRemovedFromStory = db.TextBlock
                .Where(textBlock => textBlock.StoryId == storyModel.Id && !storyBlockIdsRequestedToUpdate.Contains(textBlock.BlockId)).ToList();
-            db.TextBlock.RemoveRange(textBlocksNoLongerInStory);
+            db.TextBlock.RemoveRange(textBlocksRemovedFromStory);
+
+            List<ImageBlock> imageBlocksRemovedFromStory = db.ImageBlock
+              .Where(imageBlock => imageBlock.StoryId == storyModel.Id &&
+              !storyBlockIdsRequestedToUpdate.Contains(imageBlock.BlockId)).ToList();
+            db.ImageBlock.RemoveRange(imageBlocksRemovedFromStory);
 
             UpdateExistingOrAddNewStoryBlocks(db, storyModel.StoryBlocks, storyModel.Id);
         }
@@ -67,6 +72,7 @@ namespace HourglassServer.Data.DataManipulation.StoryOperations
             }
         }
 
+        //can't be generalized because you need a lambda that knows the type it receives
         private static bool TypeBlockExists(HourglassContext db, StoryBlockModel storyBlock, string blockId)
         {
             switch (storyBlock.Type)
@@ -77,6 +83,8 @@ namespace HourglassServer.Data.DataManipulation.StoryOperations
                     return db.GraphBlock.Any(graphBlock => graphBlock.BlockId == blockId);
                 case StoryBlockType.GEOMAP:
                     return db.GeoMapBlock.Any(geoMapBlock => geoMapBlock.BlockId == blockId);
+                case StoryBlockType.IMAGE:
+                    return db.ImageBlock.Any(imageBlock => imageBlock.BlockId == blockId);
                 default:
                     throw new ArgumentException("Could not recognize type of story block: " + storyBlock.Type);
             }

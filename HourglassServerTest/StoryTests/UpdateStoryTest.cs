@@ -13,7 +13,7 @@ namespace HourglassServerTest.StoryTests
     public class UpdateStoryTest
     {
         [TestMethod]
-        public void UpdateStoryFromControllerContainingStory()
+        public void UpdateStoryTextBlock()
         {
             StoryTestData testData = new StoryTestData();
             string newTitle = "This is a new title";
@@ -44,6 +44,34 @@ namespace HourglassServerTest.StoryTests
             testData.MockStoryDbSet.Verify(mock => mock.Update(It.IsAny<Story>()), Times.AtLeastOnce());
             testData.MockTextBlockDbSet.Verify(mock => mock.Update(It.IsAny<TextBlock>()), Times.AtLeastOnce());
             testData.MockTextBlockDbSet.Verify(mock => mock.Add(It.IsAny<TextBlock>()), Times.Never()); // Nothing new being added
+        }
+
+        [TestMethod]
+        public void UpdateStoryImageBlock()
+        {
+            StoryTestData testData = new StoryTestData();
+            ImageBlock newImageBlock = testData.CreateImageBlock();
+            string newUrl = "Https://localhost:5000/newURL";
+            newImageBlock.ImageUrl = newUrl;
+
+            List<StoryBlockModel> storyBlocks = new List<StoryBlockModel> { new StoryBlockModel(newImageBlock) };
+            StoryApplicationModel story = new StoryApplicationModel()
+            {
+                Id = testData.StoryId,
+                StoryBlocks = storyBlocks
+            };
+            HourglassContext mockContext = testData.GetMockContext();
+
+            StoryModelUpdater.UpdateStoryApplicationModel(mockContext, story);
+
+            List<Story> stories = mockContext.Story.ToList();
+            GeneralAssertions.AssertListHasCount(stories, 1);
+            Story testStory = stories[0];
+            Assert.AreEqual(testData.StoryId, testStory.StoryId);
+
+            testData.MockStoryDbSet.Verify(mock => mock.Update(It.IsAny<Story>()), Times.AtLeastOnce());
+            testData.MockImageBlockDbSet.Verify(mock => mock.Update(It.IsAny<ImageBlock>()), Times.AtLeastOnce());
+            testData.MockImageBlockDbSet.Verify(mock => mock.Add(It.IsAny<ImageBlock>()), Times.Never()); // Nothing new being added
         }
 
         [TestMethod]
