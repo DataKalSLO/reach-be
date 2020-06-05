@@ -3,6 +3,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HourglassServer.Models.Persistent;
 using HourglassServer.Data;
 using System.Collections.Generic;
+using HourglassServer.Data.DataManipulation.StoryOperations;
+using System;
 
 /* Tests the Test Data. In order reliably test my https routes I assume that
  * the sample data can get, add, and remove data without fail. This ensures that.
