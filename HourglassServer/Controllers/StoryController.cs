@@ -97,8 +97,8 @@
             }); 
         }
 
-        [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetStoriesByUserId(string userId)
+        [HttpGet("user")]
+        public async Task<IActionResult> GetStoriesByUserId()
         {
             return await ExceptionHandler.TryAsyncApiAction(this, async () =>
             {
@@ -107,7 +107,7 @@
                     null);
 
                 permissionChecker.AssertConstraint(Constraints.HAS_USER_ACCOUNT);
-                string userId = HttpContext.User.GetUserId();
+                string userId = HttpContext.User.GetUserId(); // uses authenticated token for user id
                 return new OkObjectResult(StoryModelRetriever.GetStoriesByUserId(context, userId));
             });
         }
