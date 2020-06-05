@@ -93,9 +93,23 @@
                 permissionChecker.AssertConstraint(Constraints.STORY_EXISTS_WITH_ID);
 
                 StoryApplicationModel storyWithId = StoryModelRetriever.GetStoryApplicationModelById(this.context, storyId);
-                await this.context.SaveChangesAsync();
                 return new OkObjectResult(storyWithId);
             }); 
+        }
+
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> GetStoriesByUserId(string userId)
+        {
+            return await ExceptionHandler.TryAsyncApiAction(this, async () =>
+            {
+                StoryConstraintChecker permissionChecker = new StoryConstraintChecker(
+                    new ConstraintEnvironment(this.HttpContext.User, context),
+                    null);
+
+                permissionChecker.AssertConstraint(Constraints.HAS_USER_ACCOUNT);
+                string userId = HttpContext.User.GetUserId();
+                return new OkObjectResult(StoryModelRetriever.GetStoriesByUserId(context, userId));
+            });
         }
 
         [HttpPost]
