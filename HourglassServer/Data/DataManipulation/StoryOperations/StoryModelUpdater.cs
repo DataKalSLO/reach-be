@@ -35,22 +35,22 @@ namespace HourglassServer.Data.DataManipulation.StoryOperations
                 storyBlockIdsRequestedToUpdate.Add(storyBlockModel.Id);
             }
 
-            List<GraphBlock> graphBlocksNoLongerInStory = db.GraphBlock
+            List<GraphBlock> graphBlocksRemovedFromStory = db.GraphBlock
                 .Where(graphBlock => graphBlock.StoryId == storyModel.Id && !storyBlockIdsRequestedToUpdate.Contains(graphBlock.BlockId)).ToList();
-            db.GraphBlock.RemoveRange(graphBlocksNoLongerInStory);
+            db.GraphBlock.RemoveRange(graphBlocksRemovedFromStory);
 
-            List<GeoMapBlock> geoMapsBlocksNoLongerInStory = db.GeoMapBlock
+            List<GeoMapBlock> geoMapsBlocksRemovedFromStory = db.GeoMapBlock
                .Where(geoMapBlock => geoMapBlock.StoryId == storyModel.Id && !storyBlockIdsRequestedToUpdate.Contains(geoMapBlock.BlockId)).ToList();
-            db.GeoMapBlock.RemoveRange(geoMapsBlocksNoLongerInStory);
+            db.GeoMapBlock.RemoveRange(geoMapsBlocksRemovedFromStory);
 
-            List<TextBlock> textBlocksNoLongerInStory = db.TextBlock
+            List<TextBlock> textBlocksRemovedFromStory = db.TextBlock
                .Where(textBlock => textBlock.StoryId == storyModel.Id && !storyBlockIdsRequestedToUpdate.Contains(textBlock.BlockId)).ToList();
-            db.TextBlock.RemoveRange(textBlocksNoLongerInStory);
+            db.TextBlock.RemoveRange(textBlocksRemovedFromStory);
 
-            List<ImageBlock> imageBlocksNoLongerInStory = db.ImageBlock
+            List<ImageBlock> imageBlocksRemovedFromStory = db.ImageBlock
               .Where(imageBlock => imageBlock.StoryId == storyModel.Id &&
               !storyBlockIdsRequestedToUpdate.Contains(imageBlock.BlockId)).ToList();
-            db.ImageBlock.RemoveRange(imageBlocksNoLongerInStory);
+            db.ImageBlock.RemoveRange(imageBlocksRemovedFromStory);
 
             UpdateExistingOrAddNewStoryBlocks(db, storyModel.StoryBlocks, storyModel.Id);
         }
