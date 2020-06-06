@@ -61,6 +61,20 @@ namespace HourglassServer.Data.DataManipulation.StoryOperations
             return allStories;
         }
 
+        public static IList<StoryApplicationModel> GetStoriesByUserId(HourglassContext db, string userId)
+        {
+            IList<string> storiesIdsWithUserId = db.Story
+                .Where(story => story.UserId == userId)
+                .Select(story => story.StoryId)
+                .ToList();
+            IList<StoryApplicationModel> storiesWithUserIds = new List<StoryApplicationModel>();
+            foreach (string storyId in storiesIdsWithUserId)
+            {
+                storiesWithUserIds.Add(StoryModelRetriever.GetStoryApplicationModelById(db, storyId));
+            }
+            return storiesWithUserIds;
+        }
+
         /*
          * (private) Helper Methods
          */

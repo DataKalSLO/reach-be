@@ -8,6 +8,7 @@
  */
 namespace HourglassServer.Data.DataManipulation.StoryOperations
 {
+    using System;
     using HourglassServer.Data.Application.StoryModel;
     using HourglassServer.Data.DataManipulation.DbSetOperations;
     using HourglassServer.Models.Persistent;
@@ -16,16 +17,22 @@ namespace HourglassServer.Data.DataManipulation.StoryOperations
     {
         public static StoryApplicationModel AddStoryApplicationModelToDatabaseContext(HourglassContext db, StoryApplicationModel storyModel)
         {
+            DateTime now = StoryFactory.GetNow();
             Story newStory = StoryFactory.CreateStoryFromStoryModel(storyModel);
-            newStory.DateCreated = StoryFactory.GetNow();
-            newStory.DateLastEdited = StoryFactory.GetNow();
+            newStory.DateCreated = now;
+            newStory.DateLastEdited = now;
             db.Story.Add(newStory);
+
             for (int position = 0; position < storyModel.StoryBlocks.Count; position++)
             {
                 var storyBlockModel = storyModel.StoryBlocks[position];
                 storyBlockModel.BlockPosition = position;
                 TypeBlockOperations.MutateTypeBlock(db, storyBlockModel, MutatorOperations.ADD, storyModel.Id);
             }
+
+            //cleanup
+            storyModel.DateCreated = now;
+            storyModel.DateLastEdited = now;
 
             return storyModel;
         }

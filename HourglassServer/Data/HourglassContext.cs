@@ -71,6 +71,28 @@ namespace HourglassServer.Data
                 entity.Property(e => e.PolygonId).HasColumnName("polygon_id");
             });
 
+            modelBuilder.Entity<Airports>(entity =>
+            {
+                entity.HasKey(e => e.Code)
+                    .HasName("airports_pkey");
+
+                entity.ToTable("airports", "datasets");
+
+                entity.Property(e => e.Code).HasColumnName("code");
+
+                entity.Property(e => e.Latitude)
+                    .HasColumnName("latitude")
+                    .HasColumnType("numeric");
+
+                entity.Property(e => e.Longitude)
+                    .HasColumnName("longitude")
+                    .HasColumnType("numeric");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasColumnName("name");
+            });
+
             modelBuilder.Entity<BookmarkGeoMap>(entity =>
             {
                 entity.HasKey(e => new { e.UserId, e.GeoMapId })
@@ -166,7 +188,38 @@ namespace HourglassServer.Data
 
                 entity.Property(e => e.Description).HasColumnName("description");
             });
+            modelBuilder.Entity<CommuteTimes>(entity =>
+            {
+                entity.HasKey(e => new { e.Year, e.City })
+                    .HasName("commute_times_pkey");
 
+                entity.ToTable("commute_times", "datasets");
+
+                entity.Property(e => e.Year)
+                    .HasColumnName("year")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.City).HasColumnName("city");
+
+                entity.Property(e => e.AvgMinutes)
+                    .HasColumnName("avg_minutes")
+                    .HasColumnType("numeric");
+            });
+
+            modelBuilder.Entity<CovidUnemployment>(entity =>
+            {
+                entity.HasKey(e => e.WeekEnd)
+                    .HasName("covid_unemployment_pkey");
+
+                entity.ToTable("covid_unemployment", "datasets");
+
+                entity.Property(e => e.WeekEnd)
+                    .HasColumnName("week_end")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.UnemploymentClaims).HasColumnName("unemployment_claims");
+            });
+            
             modelBuilder.Entity<DatasetMetaData>(entity =>
             {
                 entity.HasKey(e => e.TableName)
@@ -225,6 +278,21 @@ namespace HourglassServer.Data
                     .HasColumnType("json");
             });
 
+            modelBuilder.Entity<IncomeInequalitySlo>(entity =>
+            {
+                entity.HasKey(e => e.Year)
+                    .HasName("income_inequality_slo_pkey");
+
+                entity.ToTable("income_inequality_slo", "datasets");
+
+                entity.Property(e => e.Year)
+                    .HasColumnName("year")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.IncomeInequality)
+                    .HasColumnName("income_inequality")
+                    .HasColumnType("numeric");
+            });
             modelBuilder.Entity<GeoLocation>(entity =>
             {
                 entity.HasKey(e => e.Name)
@@ -473,6 +541,34 @@ namespace HourglassServer.Data
                     .HasConstraintName("location_point_id_fkey");
             });
 
+            modelBuilder.Entity<MedianHouseIncomeSlo>(entity =>
+            {
+                entity.HasKey(e => e.Year)
+                    .HasName("median_house_income_slo_pkey");
+
+                entity.ToTable("median_house_income_slo", "datasets");
+
+                entity.Property(e => e.Year)
+                    .HasColumnName("year")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.MedianIncome).HasColumnName("median_income");
+            });
+            
+            modelBuilder.Entity<NetMigrationSlo>(entity =>
+            {
+                entity.HasKey(e => e.Year)
+                    .HasName("net_migration_slo_pkey");
+
+                entity.ToTable("net_migration_slo", "datasets");
+
+                entity.Property(e => e.Year)
+                    .HasColumnName("year")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.NetMigration).HasColumnName("net_migration");
+            });
+
             modelBuilder.Entity<Person>(entity =>
             {
                 entity.HasKey(e => e.Email)
@@ -541,6 +637,34 @@ namespace HourglassServer.Data
                 entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.PointId).HasColumnName("point_id");
+            });
+
+            modelBuilder.Entity<SloAirport>(entity =>
+            {
+                entity.HasKey(e => e.Month)
+                    .HasName("slo_airport_pkey");
+
+                entity.ToTable("slo_airport", "datasets");
+
+                entity.Property(e => e.Month)
+                    .HasColumnName("month")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.Alaska).HasColumnName("alaska");
+
+                entity.Property(e => e.American).HasColumnName("american");
+
+                entity.Property(e => e.Contour).HasColumnName("contour");
+
+                entity.Property(e => e.GrandTotal2018).HasColumnName("grand_total_2018");
+
+                entity.Property(e => e.GrandTotal2019).HasColumnName("grand_total_2019");
+
+                entity.Property(e => e.PctChange)
+                    .HasColumnName("pct_change")
+                    .HasColumnType("numeric");
+
+                entity.Property(e => e.United).HasColumnName("united");
             });
 
             modelBuilder.Entity<Story>(entity =>
@@ -678,8 +802,42 @@ namespace HourglassServer.Data
                     .HasConstraintName("text_block_story_id_fkey");
             });
 
+            modelBuilder.Entity<UniversityInfo>(entity =>
+            {
+                entity.HasKey(e => new { e.IdGender, e.IdUniversity, e.Year })
+                    .HasName("university_info_pkey");
+
+                entity.ToTable("university_info", "datasets");
+
+                entity.Property(e => e.IdGender).HasColumnName("id_gender");
+
+                entity.Property(e => e.IdUniversity).HasColumnName("id_university");
+
+                entity.Property(e => e.Year).HasColumnName("year");
+
+                entity.Property(e => e.Completions).HasColumnName("completions");
+
+                entity.Property(e => e.County)
+                    .IsRequired()
+                    .HasColumnName("county");
+
+                entity.Property(e => e.Gender)
+                    .IsRequired()
+                    .HasColumnName("gender");
+
+                entity.Property(e => e.IdGeography)
+                    .IsRequired()
+                    .HasColumnName("id_geography");
+
+                entity.Property(e => e.University)
+                    .IsRequired()
+                    .HasColumnName("university");
+            });
+
             OnModelCreatingPartial(modelBuilder);
         }
+
+        
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
