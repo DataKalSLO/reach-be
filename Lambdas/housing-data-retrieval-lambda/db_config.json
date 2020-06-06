@@ -1,0 +1,7 @@
+{
+    "database": "YOUR_DB_HERE",
+    "user": "YOUR_DB_USER_HERE", 
+    "password": "YOUR_DB_USER_PW_HERE",
+    "host": "YOUR_DB_HOST_HERE",
+    "port": "YOUR_PORT_HERE"
+}
