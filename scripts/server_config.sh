@@ -10,7 +10,5 @@ then
     sudo cp /home/ec2-user/Hourglass/scripts/server_production.conf /etc/httpd/conf.d/server.conf
 fi
 
-# install systemd to use systemctl
-sudo apt-get install systemd
 # Start the Apache service
 sudo systemctl start httpd.service
