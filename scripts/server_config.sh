@@ -1,4 +1,5 @@
 # Copy over Apache server configuration
+
 # Different server configuration files are used for the dev/staging server and the production/release server
 # these are the application names specified in CodeDeploy
 if [ "$APPLICATION_NAME" == "reach-be-deploy-dev" ]
