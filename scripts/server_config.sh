@@ -5,6 +5,7 @@
 if [ "$APPLICATION_NAME" == "reach-be-deploy-dev" ]
 then
     sudo cp /home/ec2-user/Hourglass/scripts/server_staging.conf /etc/httpd/conf.d/server.conf
+    export ASPNETCORE_ENVIRONMENT=Development
 fi
 
 if [ "$APPLICATION_NAME" == "reach-be-deploy-prod" ]
