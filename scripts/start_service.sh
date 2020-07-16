@@ -11,7 +11,7 @@ sudo chmod 755 $LOG_FILE
 # Start the ASP.NET core application
 cd $SERVICE_ROOT/build_output
 
-# Different server configuration files are used for the dev/staging server and the production/release server
+# Different appsettings json files are used for the dev/staging server and the production/release server
 # these are the application names specified in CodeDeploy
 if [ "$APPLICATION_NAME" == "reach-be-deploy-dev" ]
 then
